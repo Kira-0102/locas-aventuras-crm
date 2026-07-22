@@ -426,9 +426,9 @@ async function loadAll(){
     const[v,c,r,p,g]=await Promise.all([
       sb.from('viajes').select('*').order('fecha'),
       sb.from('clientes').select('*').order('apellido'),
-      sb.from('reservas').select('*').order('fecha',{ascending:false}),
-      sb.from('pagos').select('*').order('fecha',{ascending:false}),
-      sb.from('gastos').select('*').order('fecha',{ascending:false}),
+      sb.from('reservas').select('*').order('id',{ascending:true}),
+      sb.from('pagos').select('*').order('id',{ascending:true}),
+      sb.from('gastos').select('*').order('id',{ascending:true}),
     ]);
     const err=v.error||c.error||r.error||p.error||g.error;
     if(err)throw err;
