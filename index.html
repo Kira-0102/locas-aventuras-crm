@@ -150,6 +150,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       <div class="nav-item" onclick="nav('reservas')"><i class="ti ti-clipboard-list"></i><span class="nav-label">Reservas</span></div>
       <div class="nav-item" onclick="nav('pagos')"><i class="ti ti-credit-card"></i><span class="nav-label">Pagos</span></div>
       <div class="nav-item" onclick="nav('gastos')"><i class="ti ti-receipt"></i><span class="nav-label">Gastos</span></div>
+      <div class="nav-item" onclick="nav('presupuesto')"><i class="ti ti-calculator"></i><span class="nav-label">Presupuesto</span></div>
     </nav>
   </div>
 
@@ -216,6 +217,111 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       </div>
 
       <!-- GASTOS -->
+      <!-- PRESUPUESTO -->
+      <div class="page" id="page-presupuesto">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+          <!-- TRANSPORTE -->
+          <div class="card">
+            <div class="card-title">🚌 Cotización de transporte</div>
+            <table style="min-width:unset">
+              <thead><tr><th>Tipo</th><th>Capacidad</th><th>Precio chofer (RD$)</th><th>Costo/persona</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Minibús</td><td>15</td>
+                  <td><input type="number" id="t-mini" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
+                  <td id="cpp-mini" style="font-weight:600;color:var(--teal)">—</td>
+                  <td><input type="radio" name="bus" value="mini" onchange="calcPresupuesto()"></td>
+                </tr>
+                <tr style="background:var(--gray-lt)">
+                  <td>Autobús mediano</td><td>30</td>
+                  <td><input type="number" id="t-med" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
+                  <td id="cpp-med" style="font-weight:600;color:var(--teal)">—</td>
+                  <td><input type="radio" name="bus" value="med" onchange="calcPresupuesto()" checked></td>
+                </tr>
+                <tr>
+                  <td>Autobús grande</td><td>50</td>
+                  <td><input type="number" id="t-grande" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
+                  <td id="cpp-grande" style="font-weight:600;color:var(--teal)">—</td>
+                  <td><input type="radio" name="bus" value="grande" onchange="calcPresupuesto()"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- COSTOS POR PERSONA -->
+          <div class="card">
+            <div class="card-title">👤 Costos por persona</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Refrigerio (RD$) <span style="color:var(--teal);font-size:10px">siempre</span></label>
+                <input type="number" id="c-refri" placeholder="0" oninput="calcPresupuesto()">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Entrada al lugar (RD$)</label>
+                <input type="number" id="c-entrada" placeholder="0" oninput="calcPresupuesto()">
+              </div>
+              <div class="form-group" style="margin:0">
+                <label class="form-label">Almuerzo (RD$)</label>
+                <input type="number" id="c-almuerzo" placeholder="0" oninput="calcPresupuesto()">
+              </div>
+            </div>
+            <div class="section-label" style="margin-top:8px">Otros costos</div>
+            <div id="otros-lista"></div>
+            <button class="btn btn-sm" onclick="agregarOtro()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar otro costo</button>
+          </div>
+        </div>
+
+        <!-- RESULTADO -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-title">📊 Resultado del presupuesto</div>
+            <table style="min-width:unset">
+              <tbody>
+                <tr><td style="color:var(--gray-dk)">Transporte por persona</td><td id="r-transporte" style="font-weight:600;text-align:right">—</td></tr>
+                <tr><td style="color:var(--gray-dk)">Refrigerio</td><td id="r-refri" style="font-weight:600;text-align:right">—</td></tr>
+                <tr><td style="color:var(--gray-dk)">Entrada</td><td id="r-entrada" style="font-weight:600;text-align:right">—</td></tr>
+                <tr><td style="color:var(--gray-dk)">Almuerzo</td><td id="r-almuerzo" style="font-weight:600;text-align:right">—</td></tr>
+                <tr id="r-otros-row" style="display:none"><td style="color:var(--gray-dk)">Otros</td><td id="r-otros" style="font-weight:600;text-align:right">—</td></tr>
+                <tr style="border-top:2px solid var(--border)">
+                  <td style="font-weight:700;color:var(--navy)">Costo total/persona</td>
+                  <td id="r-costo-total" style="font-weight:700;color:var(--navy);text-align:right;font-size:16px">—</td>
+                </tr>
+                <tr>
+                  <td style="color:var(--gray-dk)">
+                    Margen de ganancia
+                    <input type="number" id="margen" value="30" min="0" max="100" oninput="calcPresupuesto()" style="width:55px;padding:3px 6px;font-size:12px;display:inline-block;margin-left:6px">%
+                  </td>
+                  <td id="r-margen" style="font-weight:600;color:var(--orange);text-align:right">—</td>
+                </tr>
+                <tr style="background:var(--teal-lt)">
+                  <td style="font-weight:700;color:var(--teal);font-size:14px">Precio sugerido</td>
+                  <td id="r-precio-sug" style="font-weight:700;color:var(--teal);text-align:right;font-size:18px">—</td>
+                </tr>
+                <tr>
+                  <td style="color:var(--gray-dk)">Precio final (editable)</td>
+                  <td><input type="number" id="precio-final" placeholder="0" oninput="calcSensibilidad()" style="text-align:right;font-weight:600;font-size:14px"></td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:14px;display:flex;gap:8px">
+              <button class="btn btn-sm" onclick="usarPrecioSugerido()"><i class="ti ti-wand"></i> Usar precio sugerido</button>
+              <button class="btn btn-primary btn-sm" onclick="abrirCrearViaje()"><i class="ti ti-map-pin"></i> Crear viaje con este precio</button>
+            </div>
+          </div>
+
+          <!-- TABLA SENSIBILIDAD -->
+          <div class="card">
+            <div class="card-title">📈 Tabla de sensibilidad</div>
+            <p style="font-size:12px;color:var(--gray-dk);margin-bottom:10px">Ganancia según número de pasajeros que lleves</p>
+            <div class="table-wrap"><table id="tabla-sensibilidad" style="min-width:unset">
+              <thead><tr><th>Pasajeros</th><th>Ingresos</th><th>Costo transporte</th><th>Otros costos</th><th>Ganancia</th><th>Margen</th></tr></thead>
+              <tbody id="tbody-sensibilidad"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Ingresa los datos para ver la tabla</td></tr></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+
       <div class="page" id="page-gastos">
         <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Viaje</th><th>Categoría</th><th>Descripción</th><th>Fecha</th><th>Monto</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-gastos"></tbody></table></div></div>
       </div>
@@ -426,9 +532,9 @@ async function loadAll(){
     const[v,c,r,p,g]=await Promise.all([
       sb.from('viajes').select('*').order('fecha'),
       sb.from('clientes').select('*').order('apellido'),
-      sb.from('reservas').select('*').order('id',{ascending:true}),
-      sb.from('pagos').select('*').order('id',{ascending:true}),
-      sb.from('gastos').select('*').order('id',{ascending:true}),
+      sb.from('reservas').select('*').order('fecha',{ascending:false}),
+      sb.from('pagos').select('*').order('fecha',{ascending:false}),
+      sb.from('gastos').select('*').order('fecha',{ascending:false}),
     ]);
     const err=v.error||c.error||r.error||p.error||g.error;
     if(err)throw err;
@@ -484,10 +590,10 @@ function nav(page){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item')[['dashboard','viajes','clientes','reservas','pagos','gastos'].indexOf(page)].classList.add('active');
-  document.getElementById('topbar-title').textContent={dashboard:'Dashboard',viajes:'Viajes',clientes:'Clientes',reservas:'Reservas',pagos:'Pagos',gastos:'Gastos'}[page];
+  document.querySelectorAll('.nav-item')[['dashboard','viajes','clientes','reservas','pagos','gastos','presupuesto'].indexOf(page)].classList.add('active');
+  document.getElementById('topbar-title').textContent={dashboard:'Dashboard',viajes:'Viajes',clientes:'Clientes',reservas:'Reservas',pagos:'Pagos',gastos:'Gastos',presupuesto:'Presupuesto de viaje'}[page];
   const btn=document.getElementById('btn-add');
-  if(page!=='dashboard'){btn.style.display='inline-flex';document.getElementById('btn-add-label').textContent={viajes:'Viaje',clientes:'Cliente',reservas:'Reserva',pagos:'Pago',gastos:'Gasto'}[page];}
+  if(page!=='dashboard'&&page!=='presupuesto'){btn.style.display='inline-flex';document.getElementById('btn-add-label').textContent={viajes:'Viaje',clientes:'Cliente',reservas:'Reserva',pagos:'Pago',gastos:'Gasto'}[page];}
   else btn.style.display='none';
   closeMobileSidebar();
 }
@@ -708,22 +814,6 @@ async function saveReserva(){
   const vid=document.getElementById('r-viaje').value;
   const cid=document.getElementById('r-cliente').value;
   if(!vid||!cid){toast('Selecciona un viaje y un cliente','error');return;}
-
-  // ── VALIDACIÓN DUPLICADO ──────────────────────────────────────
-  const esNueva=!document.getElementById('r-id').value;
-  if(esNueva){
-    const duplicado=DB.reservas.find(r=>
-      r.viaje_id===vid &&
-      r.cliente_id===cid &&
-      r.estado!=='Cancelado'
-    );
-    if(duplicado){
-      toast(`Este cliente ya tiene una reserva activa en este viaje (${duplicado.id})`, 'error');
-      return;
-    }
-  }
-  // ─────────────────────────────────────────────────────────────
-
   const precio=Number(document.getElementById('r-precio').value);
   const pasajeros=Number(document.getElementById('r-pasajeros').value);
   const pagoMonto=Number(document.getElementById('r-pago-monto').value)||0;
@@ -935,6 +1025,131 @@ function exportExcel(){
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.pagos.map(p=>({ID:p.id,Reserva:p.reserva_id,Fecha:fmtDate(p.fecha),Tipo:p.tipo||'Pago',Monto:p.monto,Metodo:p.metodo,Banco:p.banco,Ref:p.ref,Comentario:p.comment}))),'Pagos');
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.gastos.map(g=>({ID:g.id,Viaje:g.viaje_id,Cat:g.cat,Descripcion:g.descripcion,Fecha:fmtDate(g.fecha),Monto:g.monto}))),'Gastos');
   XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');
+}
+
+// ── PRESUPUESTO ────────────────────────────────────────────────────────────
+let otrosCostos=[];
+
+function agregarOtro(){
+  const id=Date.now();
+  otrosCostos.push({id,desc:'',monto:0});
+  renderOtros();
+}
+
+function renderOtros(){
+  document.getElementById('otros-lista').innerHTML=otrosCostos.map(o=>`
+    <div style="display:grid;grid-template-columns:1fr 110px auto;gap:6px;margin-bottom:6px;align-items:center">
+      <input type="text" placeholder="Descripción" value="${o.desc}" oninput="updateOtro(${o.id},'desc',this.value)" style="padding:5px 8px;font-size:12px">
+      <input type="number" placeholder="RD$" value="${o.monto||''}" oninput="updateOtro(${o.id},'monto',this.value)" style="padding:5px 8px;font-size:12px">
+      <button class="btn btn-icon btn-danger" onclick="removeOtro(${o.id})"><i class="ti ti-trash"></i></button>
+    </div>`).join('');
+  calcPresupuesto();
+}
+
+function updateOtro(id,field,val){
+  const o=otrosCostos.find(x=>x.id===id);
+  if(o){o[field]=field==='monto'?Number(val):val;}
+  calcPresupuesto();
+}
+
+function removeOtro(id){
+  otrosCostos=otrosCostos.filter(x=>x.id!==id);
+  renderOtros();
+}
+
+function getBusSeleccionado(){
+  const sel=document.querySelector('input[name="bus"]:checked');
+  return sel?sel.value:'med';
+}
+
+function getBusCap(tipo){return{mini:15,med:30,grande:50}[tipo]||30;}
+
+function calcPresupuesto(){
+  const tMini=Number(document.getElementById('t-mini').value)||0;
+  const tMed=Number(document.getElementById('t-med').value)||0;
+  const tGrande=Number(document.getElementById('t-grande').value)||0;
+  const cppMini=tMini>0?Math.round(tMini/15):0;
+  const cppMed=tMed>0?Math.round(tMed/30):0;
+  const cppGrande=tGrande>0?Math.round(tGrande/50):0;
+  document.getElementById('cpp-mini').textContent=cppMini>0?fmt(cppMini):'—';
+  document.getElementById('cpp-med').textContent=cppMed>0?fmt(cppMed):'—';
+  document.getElementById('cpp-grande').textContent=cppGrande>0?fmt(cppGrande):'—';
+  const busElegido=getBusSeleccionado();
+  const cppElegido={mini:cppMini,med:cppMed,grande:cppGrande}[busElegido]||0;
+  const refri=Number(document.getElementById('c-refri').value)||0;
+  const entrada=Number(document.getElementById('c-entrada').value)||0;
+  const almuerzo=Number(document.getElementById('c-almuerzo').value)||0;
+  const totalOtros=otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
+  const costoTotal=cppElegido+refri+entrada+almuerzo+totalOtros;
+  const margen=Number(document.getElementById('margen').value)||30;
+  const margenMonto=Math.round(costoTotal*margen/100);
+  const precioSugerido=costoTotal+margenMonto;
+  document.getElementById('r-transporte').textContent=cppElegido>0?fmt(cppElegido):'—';
+  document.getElementById('r-refri').textContent=refri>0?fmt(refri):'—';
+  document.getElementById('r-entrada').textContent=entrada>0?fmt(entrada):'—';
+  document.getElementById('r-almuerzo').textContent=almuerzo>0?fmt(almuerzo):'—';
+  document.getElementById('r-costo-total').textContent=costoTotal>0?fmt(costoTotal):'—';
+  document.getElementById('r-margen').textContent=margenMonto>0?fmt(margenMonto):'—';
+  document.getElementById('r-precio-sug').textContent=precioSugerido>0?fmt(precioSugerido):'—';
+  if(totalOtros>0){document.getElementById('r-otros-row').style.display='';document.getElementById('r-otros').textContent=fmt(totalOtros);}
+  else document.getElementById('r-otros-row').style.display='none';
+  calcSensibilidad();
+}
+
+function usarPrecioSugerido(){
+  const sug=document.getElementById('r-precio-sug').textContent;
+  if(sug==='—')return;
+  const num=Number(sug.replace('RD$','').replace(/,/g,'').replace(/\./g,''));
+  document.getElementById('precio-final').value=num;
+  calcSensibilidad();
+}
+
+function calcSensibilidad(){
+  const busElegido=getBusSeleccionado();
+  const busPrecios={mini:Number(document.getElementById('t-mini').value)||0,med:Number(document.getElementById('t-med').value)||0,grande:Number(document.getElementById('t-grande').value)||0};
+  const precioTransporte=busPrecios[busElegido]||0;
+  const cap=getBusCap(busElegido);
+  const refri=Number(document.getElementById('c-refri').value)||0;
+  const entrada=Number(document.getElementById('c-entrada').value)||0;
+  const almuerzo=Number(document.getElementById('c-almuerzo').value)||0;
+  const totalOtros=otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
+  const costosPorPersona=refri+entrada+almuerzo+totalOtros;
+  const precioVenta=Number(document.getElementById('precio-final').value)||0;
+  if(precioVenta<=0||precioTransporte<=0){
+    document.getElementById('tbody-sensibilidad').innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Ingresa el precio de transporte y el precio final</td></tr>';
+    return;
+  }
+  const pasos=[];
+  const inicio=Math.ceil(cap*0.5);
+  const step=Math.max(1,Math.floor(cap*0.1));
+  for(let p=inicio;p<=cap;p+=step){pasos.push(p);}
+  if(pasos[pasos.length-1]!==cap)pasos.push(cap);
+  const rows=pasos.map(p=>{
+    const ingresos=p*precioVenta;
+    const costoTotal=precioTransporte+(p*costosPorPersona);
+    const ganancia=ingresos-costoTotal;
+    const margenReal=ingresos>0?Math.round(ganancia/ingresos*100):0;
+    const color=ganancia<0?'var(--red)':ganancia===0?'var(--orange)':'var(--teal)';
+    return`<tr style="${p===cap?'background:var(--teal-lt);font-weight:600':''}"><td>${p}${p===cap?' ★':''}</td><td>${fmt(ingresos)}</td><td>${fmt(precioTransporte)}</td><td>${fmt(p*costosPorPersona)}</td><td style="color:${color};font-weight:600">${ganancia>=0?'+':''}${fmt(ganancia)}</td><td style="color:${color}">${margenReal}%</td></tr>`;
+  });
+  document.getElementById('tbody-sensibilidad').innerHTML=rows.join('');
+}
+
+function abrirCrearViaje(){
+  const precio=Number(document.getElementById('precio-final').value)||0;
+  if(precio<=0){toast('Define el precio final primero','error');return;}
+  const busElegido=getBusSeleccionado();
+  const cap=getBusCap(busElegido);
+  nav('viajes');
+  editingPickups=[];renderPickupList();
+  document.getElementById('v-id').value='';
+  document.getElementById('v-precio').value=precio;
+  document.getElementById('v-capacidad').value=cap;
+  document.getElementById('v-estado').value='Abierto';
+  ['v-destino','v-fecha','v-desc'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('modal-viaje-title').textContent='Nuevo viaje — desde presupuesto';
+  document.getElementById('modal-viaje').classList.add('open');
+  toast('Precio y capacidad cargados desde el presupuesto ✓');
 }
 
 loadAll();
