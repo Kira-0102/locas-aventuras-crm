@@ -11,16 +11,11 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--navy:#1B2A4A;--teal:#048A81;--teal-lt:#D4F1EE;--orange:#F4831F;--white:#fff;--gray-lt:#F5F6FA;--gray-md:#DDE2EE;--gray-dk:#8A93A8;--red:#E63946;--red-lt:#FDECEA;--yellow-lt:#FFF8E1;--green:#06D6A0;--green-lt:#E8FAF5;--text:#1A1A2E;--border:#DDE2EE;--radius:8px;--sidebar-w:220px}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--gray-lt);color:var(--text);height:100vh;overflow:hidden}
-
-/* ── LAYOUT ── */
 .app{display:flex;height:100vh;position:relative}
-
-/* ── SIDEBAR ── */
 .sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;transition:width .25s ease,min-width .25s ease;overflow:hidden;z-index:50;position:relative}
 .sidebar.collapsed{width:56px;min-width:56px}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40}
 .sidebar-overlay.show{display:block}
-
 .logo{padding:16px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between;min-height:64px}
 .logo-info{display:flex;align-items:center;gap:10px;overflow:hidden}
 .logo-icon{font-size:20px;flex-shrink:0}
@@ -29,10 +24,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .logo-sub{font-size:11px;color:rgba(255,255,255,.45);white-space:nowrap}
 .sidebar.collapsed .logo-text-wrap{opacity:0;width:0}
 .sidebar.collapsed .logo-info{gap:0}
-
 .toggle-btn{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;padding:4px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;font-size:18px;transition:color .15s}
 .toggle-btn:hover{color:#fff;background:rgba(255,255,255,.1)}
-
 .nav{padding:8px 0;flex:1;overflow-y:auto}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;font-size:13px;color:rgba(255,255,255,.6);border-left:3px solid transparent;transition:all .15s;white-space:nowrap;overflow:hidden}
 .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
@@ -41,8 +34,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-label{transition:opacity .2s,width .2s;overflow:hidden}
 .sidebar.collapsed .nav-label{opacity:0;width:0}
 .sidebar.collapsed .nav-item{padding:11px 18px}
-
-/* ── MAIN ── */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .topbar{padding:0 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fff;height:56px;flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px}
@@ -53,33 +44,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .db-dot{width:7px;height:7px;border-radius:50%;background:#FFD166;flex-shrink:0}
 .db-dot.connected{background:var(--green)}
 .db-dot.error{background:var(--red)}
-
-/* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--text);font-size:13px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
 .btn:hover{background:var(--gray-lt)}
 .btn-primary{background:var(--teal);color:#fff;border-color:var(--teal)}
 .btn-primary:hover{background:#036b64}
 .btn-danger{color:var(--red);border-color:#fcc}
 .btn-danger:hover{background:var(--red-lt)}
+.btn-success{background:var(--green);color:#fff;border-color:var(--green)}
 .btn-icon{padding:5px 8px;font-size:12px}
 .btn-sm{padding:5px 10px;font-size:12px}
-
-/* ── CONTENT ── */
 .content{flex:1;overflow-y:auto;padding:20px;background:var(--gray-lt)}
 .page{display:none}.page.active{display:block}
-
-/* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .kpi{background:#fff;border-radius:12px;padding:16px;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .kpi-label{font-size:11px;color:var(--gray-dk);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
 .kpi-val{font-size:24px;font-weight:600}
 .kpi-val.green{color:var(--teal)}.kpi-val.red{color:var(--red)}.kpi-val.accent{color:var(--navy)}
-
-/* ── CARD ── */
 .card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .card-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:14px}
-
-/* ── TABLE ── */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:500px}
 th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:var(--gray-dk);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);background:var(--gray-lt);white-space:nowrap}
@@ -87,20 +69,17 @@ td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);ver
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#FAFBFF}
 .actions-cell{display:flex;gap:6px;justify-content:flex-end}
-
-/* ── BADGE ── */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
 .badge-green{background:var(--green-lt);color:#027a5f}
 .badge-yellow{background:var(--yellow-lt);color:#966800}
 .badge-red{background:var(--red-lt);color:var(--red)}
 .badge-blue{background:#EEF3FF;color:#3451d1}
 .badge-gray{background:var(--gray-lt);color:var(--gray-dk)}
-
-/* ── MODAL ── */
+.badge-orange{background:#FFF0E6;color:#c45f00}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
 .modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:540px;margin:auto;box-shadow:0 8px 32px rgba(0,0,0,.12)}
-.modal-wide{max-width:620px}
+.modal{background:#fff;border-radius:16px;border:1px solid var(--border);padding:24px;width:100%;max-width:560px;margin:auto;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.modal-wide{max-width:640px}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .modal-title{font-size:16px;font-weight:600;color:var(--navy)}
 .form-group{margin-bottom:14px}
@@ -109,8 +88,6 @@ input,select,textarea{width:100%;padding:9px 12px;border-radius:var(--radius);bo
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-lt)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
-
-/* ── MISC ── */
 .search-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
 .search-bar input{max-width:300px;padding:8px 12px}
 .progress-bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:5px}
@@ -125,37 +102,27 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 .pago-resumen{background:var(--gray-lt);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;font-size:13px;border:1px solid var(--border)}
 .pago-resumen-row{display:flex;justify-content:space-between;margin-bottom:5px}
 .pago-resumen-row:last-child{margin:0;font-weight:600;padding-top:8px;border-top:1px solid var(--border)}
+.saldo-box{background:var(--green-lt);border:1px solid var(--green);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:13px;color:#027a5f;display:none}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0}
 .error-banner{background:var(--red-lt);border:1px solid #fcc;border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--red);display:none}
 .toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-width:calc(100vw - 48px)}
 .toast.show{display:flex}
 .toast.success{border-color:#9be0cc;color:#027a5f}
 .toast.error{border-color:#fcc;color:var(--red)}
-
-/* ── RESPONSIVE ── */
 @media(max-width:768px){
   body{overflow:auto}
   .app{height:auto;min-height:100vh;flex-direction:column}
-  .sidebar{position:fixed;top:0;left:0;height:100vh;width:var(--sidebar-w)!important;min-width:var(--sidebar-w)!important;transform:translateX(-100%);transition:transform .25s ease;z-index:50}
+  .sidebar{position:fixed;top:0;left:0;height:100vh;width:var(--sidebar-w)!important;min-width:var(--sidebar-w)!important;transform:translateX(-100%);transition:transform .25s ease}
   .sidebar.mobile-open{transform:translateX(0)}
-  .sidebar.collapsed{width:var(--sidebar-w)!important;min-width:var(--sidebar-w)!important}
   .sidebar .toggle-btn{display:none}
   .sidebar .logo-text-wrap{opacity:1!important;width:auto!important}
   .sidebar .nav-label{opacity:1!important;width:auto!important}
   .sidebar .nav-item{padding:11px 16px!important}
-  .main{width:100%;height:100vh;flex-direction:column}
   .mobile-menu-btn{display:flex}
-  .db-label-text{display:none}
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .form-row{grid-template-columns:1fr}
-  .pickup-add{grid-template-columns:1fr auto}
-  .pickup-add input[type=time]{display:none}
   .content{padding:12px}
   .topbar{padding:0 12px}
-  .btn span{display:none}
-  .btn i{margin:0}
-  .btn-primary span,.btn.keep-label span{display:inline}
-  .modal{padding:16px}
-  .modal-actions{flex-wrap:wrap}
 }
 @media(min-width:769px) and (max-width:1100px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
@@ -164,9 +131,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 </head>
 <body>
 <div class="app">
-  <!-- SIDEBAR OVERLAY (mobile) -->
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
-
   <div class="sidebar" id="sidebar">
     <div class="logo">
       <div class="logo-info">
@@ -176,7 +141,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
           <div class="logo-sub">CRM · Supabase</div>
         </div>
       </div>
-      <button class="toggle-btn" onclick="toggleSidebar()" title="Colapsar menú"><i class="ti ti-layout-sidebar-left-collapse" id="toggle-icon"></i></button>
+      <button class="toggle-btn" onclick="toggleSidebar()"><i class="ti ti-layout-sidebar-left-collapse" id="toggle-icon"></i></button>
     </div>
     <nav class="nav">
       <div class="nav-item active" onclick="nav('dashboard')"><i class="ti ti-layout-dashboard"></i><span class="nav-label">Dashboard</span></div>
@@ -195,9 +160,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
         <span class="topbar-title" id="topbar-title">Dashboard</span>
       </div>
       <div class="topbar-right">
-        <div class="db-status"><div class="db-dot" id="db-dot"></div><span id="db-label" class="db-label-text">Conectando...</span></div>
-        <button class="btn" onclick="exportExcel()"><i class="ti ti-download"></i><span>Excel</span></button>
-        <button class="btn btn-primary keep-label" id="btn-add" onclick="openAdd()" style="display:none"><i class="ti ti-plus"></i><span id="btn-add-label">Agregar</span></button>
+        <div class="db-status"><div class="db-dot" id="db-dot"></div><span id="db-label">Conectando...</span></div>
+        <button class="btn" onclick="exportExcel()"><i class="ti ti-download"></i> Excel</button>
+        <button class="btn btn-primary" id="btn-add" onclick="openAdd()" style="display:none"><i class="ti ti-plus"></i> <span id="btn-add-label">Agregar</span></button>
       </div>
     </div>
 
@@ -212,14 +177,18 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
           <div class="kpi"><div class="kpi-label">Ingresos recibidos</div><div class="kpi-val green" id="kpi-ingresos">—</div></div>
           <div class="kpi"><div class="kpi-label">Balance pendiente</div><div class="kpi-val red" id="kpi-pendiente">—</div></div>
           <div class="kpi"><div class="kpi-label">Total gastos</div><div class="kpi-val red" id="kpi-gastos">—</div></div>
-          <div class="kpi"><div class="kpi-label">Ganancia estimada</div><div class="kpi-val green" id="kpi-ganancia">—</div></div>
+          <div class="kpi"><div class="kpi-label">Ganancia proyectada</div><div class="kpi-val green" id="kpi-ganancia">—</div></div>
           <div class="kpi"><div class="kpi-label">Reservas activas</div><div class="kpi-val accent" id="kpi-reservas">—</div></div>
           <div class="kpi"><div class="kpi-label">Pasajeros totales</div><div class="kpi-val" id="kpi-pasajeros">—</div></div>
         </div>
-        <div class="card"><div class="card-title">Próximos viajes</div>
-          <div class="table-wrap"><table><thead><tr><th>Destino</th><th>Fecha</th><th>Puntos</th><th>Pasajeros</th><th>% Ocupado</th><th>Estado</th></tr></thead><tbody id="dash-viajes"></tbody></table></div></div>
-        <div class="card"><div class="card-title">Últimas reservas</div>
-          <div class="table-wrap"><table><thead><tr><th>Reserva</th><th>Cliente</th><th>Viaje</th><th>Punto recogida</th><th>Total</th><th>Pagado</th><th>Balance</th><th>Estado</th></tr></thead><tbody id="dash-reservas"></tbody></table></div></div>
+        <div class="card">
+          <div class="card-title">Próximos viajes</div>
+          <div class="table-wrap"><table><thead><tr><th>Destino</th><th>Fecha</th><th>Puntos</th><th>Pasajeros</th><th>% Ocupado</th><th>Estado</th></tr></thead><tbody id="dash-viajes"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Últimas reservas</div>
+          <div class="table-wrap"><table><thead><tr><th>Reserva</th><th>Cliente</th><th>Viaje</th><th>Punto recogida</th><th>Total</th><th>Pagado</th><th>Balance</th><th>Estado</th></tr></thead><tbody id="dash-reservas"></tbody></table></div>
+        </div>
       </div>
 
       <!-- VIAJES -->
@@ -231,7 +200,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       <!-- CLIENTES -->
       <div class="page" id="page-clientes">
         <div class="search-bar"><i class="ti ti-search" style="color:var(--gray-dk)"></i><input type="text" placeholder="Buscar cliente..." oninput="renderClientes(this.value)"></div>
-        <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Teléfono/WhatsApp</th><th>Instagram</th><th>Correo</th><th>Viajes</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-clientes"></tbody></table></div></div>
+        <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Teléfono/WhatsApp</th><th>Instagram</th><th>Correo</th><th>Saldo a favor</th><th>Viajes</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-clientes"></tbody></table></div></div>
       </div>
 
       <!-- RESERVAS -->
@@ -243,7 +212,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       <!-- PAGOS -->
       <div class="page" id="page-pagos">
         <div class="search-bar"><i class="ti ti-search" style="color:var(--gray-dk)"></i><input type="text" placeholder="Buscar pago..." oninput="renderPagos(this.value)"></div>
-        <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Reserva</th><th>Cliente</th><th>Fecha</th><th>Monto</th><th>Método</th><th>Banco</th><th>Referencia</th><th>Comentario</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-pagos"></tbody></table></div></div>
+        <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Reserva</th><th>Cliente</th><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Método</th><th>Banco</th><th>Referencia</th><th>Comentario</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-pagos"></tbody></table></div></div>
       </div>
 
       <!-- GASTOS -->
@@ -270,15 +239,24 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   <div class="modal modal-wide">
     <div class="modal-head"><span class="modal-title" id="modal-viaje-title">Nuevo viaje</span><button class="btn" onclick="closeModal('modal-viaje')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="v-id">
-    <div class="form-row"><div class="form-group"><label class="form-label">Destino</label><input id="v-destino"></div><div class="form-group"><label class="form-label">Fecha</label><input id="v-fecha" type="date"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Precio base (RD$)</label><input id="v-precio" type="number"></div><div class="form-group"><label class="form-label">Capacidad total</label><input id="v-capacidad" type="number"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Estado</label><select id="v-estado"><option>Abierto</option><option>Completo</option><option>Finalizado</option><option>Cancelado</option></select></div><div class="form-group"><label class="form-label">Descripción</label><input id="v-desc"></div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Destino</label><input id="v-destino"></div>
+      <div class="form-group"><label class="form-label">Fecha</label><input id="v-fecha" type="date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Precio base (RD$)</label><input id="v-precio" type="number"></div>
+      <div class="form-group"><label class="form-label">Capacidad total</label><input id="v-capacidad" type="number"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Estado</label><select id="v-estado"><option>Abierto</option><option>Completo</option><option>Finalizado</option><option>Cancelado</option></select></div>
+      <div class="form-group"><label class="form-label">Descripción</label><input id="v-desc"></div>
+    </div>
     <div class="section-label"><i class="ti ti-map-pin"></i> Puntos de recogida</div>
     <div id="pickup-list"></div>
     <div class="pickup-add">
       <div class="form-group" style="margin:0"><label class="form-label">Lugar</label><input id="np-lugar" placeholder="ej. Parque Independencia"></div>
       <div class="form-group" style="margin:0"><label class="form-label">Hora</label><input id="np-hora" type="time"></div>
-      <button class="btn btn-primary btn-sm keep-label" onclick="addPickup()" style="white-space:nowrap;margin-top:20px"><i class="ti ti-plus"></i><span>Agregar</span></button>
+      <button class="btn btn-primary btn-sm" onclick="addPickup()" style="white-space:nowrap;margin-top:20px"><i class="ti ti-plus"></i> Agregar</button>
     </div>
     <p style="font-size:11px;color:var(--gray-dk);margin-top:6px">El primer punto es el principal.</p>
     <div class="modal-actions"><button class="btn" onclick="closeModal('modal-viaje')">Cancelar</button><button class="btn btn-primary" onclick="saveViaje()">Guardar viaje</button></div>
@@ -290,41 +268,82 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   <div class="modal">
     <div class="modal-head"><span class="modal-title" id="modal-cliente-title">Nuevo cliente</span><button class="btn" onclick="closeModal('modal-cliente')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="c-id">
-    <div class="form-row"><div class="form-group"><label class="form-label">Nombre</label><input id="c-nombre"></div><div class="form-group"><label class="form-label">Apellido</label><input id="c-apellido"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Teléfono / WhatsApp</label><input id="c-tel"></div><div class="form-group"><label class="form-label">Instagram</label><input id="c-ig" placeholder="@usuario"></div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Nombre</label><input id="c-nombre"></div>
+      <div class="form-group"><label class="form-label">Apellido</label><input id="c-apellido"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Teléfono / WhatsApp</label><input id="c-tel"></div>
+      <div class="form-group"><label class="form-label">Instagram</label><input id="c-ig" placeholder="@usuario"></div>
+    </div>
     <div class="form-group"><label class="form-label">Correo</label><input id="c-email"></div>
     <div class="form-group"><label class="form-label">Notas</label><textarea id="c-notas" rows="2"></textarea></div>
     <div class="modal-actions"><button class="btn" onclick="closeModal('modal-cliente')">Cancelar</button><button class="btn btn-primary" onclick="saveCliente()">Guardar</button></div>
   </div>
 </div>
 
-<!-- MODAL RESERVA -->
+<!-- MODAL RESERVA — incluye pago inicial -->
 <div class="modal-overlay" id="modal-reserva">
-  <div class="modal">
+  <div class="modal modal-wide">
     <div class="modal-head"><span class="modal-title" id="modal-reserva-title">Nueva reserva</span><button class="btn" onclick="closeModal('modal-reserva')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="r-id">
-    <div class="form-row"><div class="form-group"><label class="form-label">Viaje</label><select id="r-viaje" onchange="onViajeChange()"></select></div><div class="form-group"><label class="form-label">Cliente</label><select id="r-cliente"></select></div></div>
-    <div class="form-group"><label class="form-label">Punto de recogida</label><select id="r-pickup"></select></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Precio negociado (RD$)</label><input id="r-precio" type="number"></div><div class="form-group"><label class="form-label">Pasajeros</label><input id="r-pasajeros" type="number" value="1" min="1"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Fecha reserva</label><input id="r-fecha" type="date"></div><div class="form-group"><label class="form-label">Estado</label><select id="r-estado"><option>Reservado</option><option>Pagado</option><option>Cancelado</option><option>Lista de espera</option><option>No asistió</option><option>Completó viaje</option></select></div></div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-reserva')">Cancelar</button><button class="btn btn-primary" onclick="saveReserva()">Guardar</button></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Viaje</label><select id="r-viaje" onchange="onViajeChange()"><option value="">— Selecciona un viaje —</option></select></div>
+      <div class="form-group"><label class="form-label">Cliente</label><select id="r-cliente" onchange="onClienteChange()"><option value="">— Selecciona un cliente —</option></select></div>
+    </div>
+    <div id="saldo-box" class="saldo-box"><i class="ti ti-coins"></i> Este cliente tiene un saldo a favor de <strong id="saldo-monto">RD$0</strong> que se aplicará automáticamente.</div>
+    <div class="form-group"><label class="form-label">Punto de recogida</label><select id="r-pickup"><option value="">— Selecciona un punto —</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Precio negociado (RD$)</label><input id="r-precio" type="number" oninput="calcTotalReserva()"></div>
+      <div class="form-group"><label class="form-label">Pasajeros</label><input id="r-pasajeros" type="number" value="1" min="1" oninput="calcTotalReserva()"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Fecha reserva</label><input id="r-fecha" type="date"></div>
+
+    <hr class="divider">
+    <div class="section-label"><i class="ti ti-credit-card"></i> Pago inicial</div>
+    <div class="pago-resumen" id="resumen-reserva" style="display:none">
+      <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Total reserva</span><span id="rr-total">—</span></div>
+      <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Saldo a favor aplicado</span><span id="rr-saldo">RD$0</span></div>
+      <div class="pago-resumen-row"><span>Balance a pagar</span><span id="rr-balance">—</span></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Monto inicial (RD$)</label><input id="r-pago-monto" type="number" placeholder="0" oninput="calcTotalReserva()"></div>
+      <div class="form-group"><label class="form-label">Método de pago</label><select id="r-pago-metodo"><option value="">— Selecciona —</option><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Banco</label><input id="r-pago-banco"></div>
+      <div class="form-group"><label class="form-label">Referencia / Comprobante</label><input id="r-pago-ref"></div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-reserva')">Cancelar</button><button class="btn btn-primary" onclick="saveReserva()">Guardar reserva</button></div>
   </div>
 </div>
 
-<!-- MODAL PAGO -->
+<!-- MODAL PAGO adicional -->
 <div class="modal-overlay" id="modal-pago">
   <div class="modal">
     <div class="modal-head"><span class="modal-title" id="modal-pago-title">Registrar pago</span><button class="btn" onclick="closeModal('modal-pago')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="p-id">
-    <div class="form-row"><div class="form-group"><label class="form-label">Reserva</label><select id="p-reserva" onchange="onReservaChange()"></select></div><div class="form-group"><label class="form-label">Fecha</label><input id="p-fecha" type="date"></div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Reserva</label><select id="p-reserva" onchange="onReservaChange()"><option value="">— Selecciona una reserva —</option></select></div>
+      <div class="form-group"><label class="form-label">Tipo</label><select id="p-tipo"><option value="Pago">Pago</option><option value="Devolucion">Devolución</option></select></div>
+    </div>
     <div id="pago-resumen-box" style="display:none" class="pago-resumen">
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Total reserva</span><span id="pr-total">—</span></div>
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Ya pagado</span><span id="pr-pagado">—</span></div>
       <div class="pago-resumen-row"><span>Balance pendiente</span><span id="pr-balance">—</span></div>
     </div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Monto (RD$)</label><input id="p-monto" type="number" oninput="onReservaChange()"></div><div class="form-group"><label class="form-label">Método</label><select id="p-metodo"><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Banco</label><input id="p-banco"></div><div class="form-group"><label class="form-label">Referencia / Comprobante</label><input id="p-ref"></div></div>
-    <div class="form-group"><label class="form-label">Comentario</label><input id="p-comment"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha</label><input id="p-fecha" type="date"></div>
+      <div class="form-group"><label class="form-label">Monto (RD$)</label><input id="p-monto" type="number" oninput="onReservaChange()"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Método</label><select id="p-metodo"><option value="">— Selecciona —</option><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div>
+      <div class="form-group"><label class="form-label">Banco</label><input id="p-banco"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Referencia / Comprobante</label><input id="p-ref"></div>
+      <div class="form-group"><label class="form-label">Comentario</label><input id="p-comment"></div>
+    </div>
     <div class="modal-actions"><button class="btn" onclick="closeModal('modal-pago')">Cancelar</button><button class="btn btn-primary" onclick="savePago()">Guardar pago</button></div>
   </div>
 </div>
@@ -333,10 +352,40 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 <div class="modal-overlay" id="modal-gasto">
   <div class="modal">
     <div class="modal-head"><span class="modal-title">Registrar gasto</span><button class="btn" onclick="closeModal('modal-gasto')"><i class="ti ti-x"></i></button></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Viaje</label><select id="g-viaje"></select></div><div class="form-group"><label class="form-label">Categoría</label><select id="g-cat"><option>Transporte</option><option>Entradas</option><option>Alimentación</option><option>Alojamiento</option><option>Guía</option><option>Marketing</option><option>Otro</option></select></div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Viaje</label><select id="g-viaje"><option value="">— Selecciona un viaje —</option></select></div>
+      <div class="form-group"><label class="form-label">Categoría</label><select id="g-cat"><option>Transporte</option><option>Entradas</option><option>Alimentación</option><option>Alojamiento</option><option>Guía</option><option>Marketing</option><option>Otro</option></select></div>
+    </div>
     <div class="form-group"><label class="form-label">Descripción</label><input id="g-desc"></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Fecha</label><input id="g-fecha" type="date"></div><div class="form-group"><label class="form-label">Monto (RD$)</label><input id="g-monto" type="number"></div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha</label><input id="g-fecha" type="date"></div>
+      <div class="form-group"><label class="form-label">Monto (RD$)</label><input id="g-monto" type="number"></div>
+    </div>
     <div class="modal-actions"><button class="btn" onclick="closeModal('modal-gasto')">Cancelar</button><button class="btn btn-primary" onclick="saveGasto()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- MODAL CANCELACION -->
+<div class="modal-overlay" id="modal-cancelacion">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title">Cancelar reserva</span><button class="btn" onclick="closeModal('modal-cancelacion')"><i class="ti ti-x"></i></button></div>
+    <input type="hidden" id="cancel-id">
+    <p style="font-size:13px;color:var(--gray-dk);margin-bottom:16px">¿Cómo manejar el dinero pagado por el cliente?</p>
+    <div class="form-group"><label class="form-label">El cliente pagó</label><div style="font-size:16px;font-weight:600;color:var(--navy)" id="cancel-pagado">—</div></div>
+    <div class="form-group">
+      <label class="form-label">Acción</label>
+      <select id="cancel-accion" onchange="onCancelAccionChange()">
+        <option value="">— Selecciona —</option>
+        <option value="devolucion">Devolución de dinero</option>
+        <option value="credito">Crédito para próximo viaje</option>
+        <option value="ninguna">Sin devolución (menos de 10 días)</option>
+      </select>
+    </div>
+    <div id="cancel-info" style="display:none;font-size:12px;color:var(--gray-dk);margin-top:8px;padding:10px;background:var(--gray-lt);border-radius:var(--radius)"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-cancelacion')">Cancelar</button>
+      <button class="btn btn-danger" onclick="confirmarCancelacion()">Confirmar cancelación</button>
+    </div>
   </div>
 </div>
 
@@ -357,18 +406,19 @@ function toggleSidebar(){
   s.classList.toggle('collapsed',sidebarCollapsed);
   icon.className=sidebarCollapsed?'ti ti-layout-sidebar-left-expand':'ti ti-layout-sidebar-left-collapse';
 }
-function openMobileSidebar(){
-  document.getElementById('sidebar').classList.add('mobile-open');
-  document.getElementById('sidebar-overlay').classList.add('show');
-}
-function closeMobileSidebar(){
-  document.getElementById('sidebar').classList.remove('mobile-open');
-  document.getElementById('sidebar-overlay').classList.remove('show');
-}
+function openMobileSidebar(){document.getElementById('sidebar').classList.add('mobile-open');document.getElementById('sidebar-overlay').classList.add('show');}
+function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('mobile-open');document.getElementById('sidebar-overlay').classList.remove('show');}
 
 // ── TOAST & STATUS ─────────────────────────────────────────────────────────
 function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show ${type}`;setTimeout(()=>t.className='toast',3000);}
-function setDbStatus(s,msg=''){const dot=document.getElementById('db-dot');const lbl=document.getElementById('db-label');if(s==='connected'){dot.className='db-dot connected';lbl.textContent='Conectado';}else if(s==='error'){dot.className='db-dot error';lbl.textContent='Error';const b=document.getElementById('error-banner');b.textContent='⚠ Error al conectar: '+msg;b.style.display='block';}else{dot.className='db-dot';lbl.textContent='Conectando...';}}
+function setDbStatus(s,msg=''){const dot=document.getElementById('db-dot');const lbl=document.getElementById('db-label');if(s==='connected'){dot.className='db-dot connected';lbl.textContent='Conectado';}else if(s==='error'){dot.className='db-dot error';lbl.textContent='Error';const b=document.getElementById('error-banner');b.textContent='⚠ Error: '+msg;b.style.display='block';}else{dot.className='db-dot';lbl.textContent='Conectando...';}}
+
+// ── DATE FORMAT ────────────────────────────────────────────────────────────
+function fmtDate(d){
+  if(!d)return'—';
+  const [y,m,day]=d.split('-');
+  return`${day}-${m}-${y}`;
+}
 
 // ── LOAD ───────────────────────────────────────────────────────────────────
 async function loadAll(){
@@ -392,10 +442,38 @@ async function loadAll(){
 const fmt=n=>'RD$'+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:0});
 const getViaje=id=>DB.viajes.find(v=>v.id===id)||{};
 const getCliente=id=>DB.clientes.find(c=>c.id===id)||{};
-const getPagado=(rid,excl=null)=>DB.pagos.filter(p=>p.reserva_id===rid&&p.id!==excl).reduce((s,p)=>s+Number(p.monto),0);
+
+// Pagos: solo los de tipo Pago suman, devoluciones restan
+const getPagado=(rid,excl=null)=>{
+  return DB.pagos.filter(p=>p.reserva_id===rid&&p.id!==excl).reduce((s,p)=>{
+    return p.tipo==='Devolucion'?s-Number(p.monto):s+Number(p.monto);
+  },0);
+};
+
 const getPasajeros=vid=>DB.reservas.filter(r=>r.viaje_id===vid&&r.estado!=='Cancelado').reduce((s,r)=>s+Number(r.pasajeros),0);
+
+// Estado automático basado en balance
+const estadoAuto=rid=>{
+  const r=DB.reservas.find(x=>x.id===rid);
+  if(!r)return'Reservado';
+  const tot=r.precio*r.pasajeros;
+  const pag=getPagado(rid);
+  const bal=tot-pag;
+  if(bal<=0)return'Pagado';
+  return'Reservado';
+};
+
 const badgeV=e=>({Abierto:'badge-blue',Completo:'badge-yellow',Finalizado:'badge-green',Cancelado:'badge-red'}[e]||'badge-gray');
-const badgeR=e=>({Reservado:'badge-blue',Pagado:'badge-green',Cancelado:'badge-red','Lista de espera':'badge-yellow','No asistió':'badge-gray','Completó viaje':'badge-green'}[e]||'badge-gray');
+const badgeR=e=>({
+  Reservado:'badge-blue',
+  Pagado:'badge-green',
+  Cancelado:'badge-red',
+  'Lista de espera':'badge-yellow',
+  'No asistió':'badge-gray',
+  'Completó viaje':'badge-green'
+}[e]||'badge-gray');
+const badgeTipo=t=>t==='Devolucion'?'<span class="badge badge-red">Devolución</span>':'<span class="badge badge-green">Pago</span>';
+
 const empty=cols=>`<tr><td colspan="${cols}" style="text-align:center;padding:32px;color:var(--gray-dk)">Sin registros</td></tr>`;
 const acBtns=(ef,df)=>`<div class="actions-cell"><button class="btn btn-icon" onclick="${ef}" title="Editar"><i class="ti ti-edit"></i></button><button class="btn btn-icon btn-danger" onclick="${df}" title="Eliminar"><i class="ti ti-trash"></i></button></div>`;
 function nextId(arr,prefix){const nums=arr.map(x=>parseInt(x.id.replace(/\D/g,''))||0);return prefix+'-'+String((Math.max(0,...nums)+1)).padStart(3,'0');}
@@ -416,79 +494,432 @@ function nav(page){
 
 function renderAll(){renderDashboard();renderViajes();renderClientes();renderReservas();renderPagos();renderGastos();}
 
+// ── DASHBOARD ──────────────────────────────────────────────────────────────
 function renderDashboard(){
-  const ingresos=DB.pagos.reduce((s,p)=>s+Number(p.monto),0);
-  const pendiente=DB.reservas.reduce((s,r)=>s+Math.max(r.precio*r.pasajeros-getPagado(r.id),0),0);
+  const ingresos=DB.pagos.filter(p=>p.tipo!=='Devolucion').reduce((s,p)=>s+Number(p.monto),0);
+  const devoluciones=DB.pagos.filter(p=>p.tipo==='Devolucion').reduce((s,p)=>s+Number(p.monto),0);
+  const ingresosNetos=ingresos-devoluciones;
+
+  const pendiente=DB.reservas.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>{
+    const bal=r.precio*r.pasajeros-getPagado(r.id);
+    return s+Math.max(bal,0);
+  },0);
+
   const gastos=DB.gastos.reduce((s,g)=>s+Number(g.monto),0);
+
+  // Ganancia proyectada = total de todas las reservas activas - gastos
+  const totalReservas=DB.reservas.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>s+r.precio*r.pasajeros,0);
+  const gananciaProyectada=totalReservas-gastos;
+
   document.getElementById('kpi-viajes').textContent=DB.viajes.filter(v=>v.estado==='Abierto').length;
   document.getElementById('kpi-clientes').textContent=DB.clientes.length;
-  document.getElementById('kpi-ingresos').textContent=fmt(ingresos);
+  document.getElementById('kpi-ingresos').textContent=fmt(ingresosNetos);
   document.getElementById('kpi-pendiente').textContent=fmt(pendiente);
   document.getElementById('kpi-gastos').textContent=fmt(gastos);
-  document.getElementById('kpi-ganancia').textContent=fmt(ingresos-gastos);
+  document.getElementById('kpi-ganancia').textContent=fmt(gananciaProyectada);
+  document.getElementById('kpi-ganancia').className='kpi-val '+(gananciaProyectada>=0?'green':'red');
   document.getElementById('kpi-reservas').textContent=DB.reservas.filter(r=>r.estado!=='Cancelado').length;
   document.getElementById('kpi-pasajeros').textContent=DB.reservas.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>s+Number(r.pasajeros),0);
+
   document.getElementById('dash-viajes').innerHTML=DB.viajes.slice(0,5).map(v=>{
-    const p=getPasajeros(v.id);const pct=v.capacidad?Math.round(p/v.capacidad*100):0;const fc=pct>=100?'danger':pct>=80?'warning':'';const pts=(v.pickups||[]).length;
-    return`<tr><td>${v.destino}</td><td>${v.fecha}</td><td style="color:var(--gray-dk);font-size:12px">${pts} punto${pts!==1?'s':''}</td><td>${p}/${v.capacidad}</td><td><div class="progress-bar"><div class="progress-fill ${fc}" style="width:${Math.min(pct,100)}%"></div></div><span style="font-size:11px;color:var(--gray-dk)">${pct}%</span></td><td><span class="badge ${badgeV(v.estado)}">${v.estado}</span></td></tr>`;
+    const p=getPasajeros(v.id);const pct=v.capacidad?Math.round(p/v.capacidad*100):0;
+    const fc=pct>=100?'danger':pct>=80?'warning':'';const pts=(v.pickups||[]).length;
+    return`<tr><td>${v.destino}</td><td>${fmtDate(v.fecha)}</td><td style="color:var(--gray-dk);font-size:12px">${pts} punto${pts!==1?'s':''}</td><td>${p}/${v.capacidad}</td><td><div class="progress-bar"><div class="progress-fill ${fc}" style="width:${Math.min(pct,100)}%"></div></div><span style="font-size:11px;color:var(--gray-dk)">${pct}%</span></td><td><span class="badge ${badgeV(v.estado)}">${v.estado}</span></td></tr>`;
   }).join('')||empty(6);
+
   document.getElementById('dash-reservas').innerHTML=DB.reservas.slice(0,5).map(r=>{
-    const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);const bal=Math.max(tot-pag,0);
-    return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(r.estado)}">${r.estado}</span></td></tr>`;
+    const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
+    const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);const bal=Math.max(tot-pag,0);
+    const estado=r.estado==='Cancelado'||r.estado==='No asistió'||r.estado==='Completó viaje'?r.estado:estadoAuto(r.id);
+    return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td></tr>`;
   }).join('')||empty(8);
 }
 
-function renderViajes(q=''){document.getElementById('table-viajes').innerHTML=DB.viajes.filter(v=>!q||v.destino.toLowerCase().includes(q.toLowerCase())).map(v=>{const p=getPasajeros(v.id);const pct=v.capacidad?Math.round(p/v.capacidad*100):0;const pts=(v.pickups||[]).length;return`<tr><td>${v.id}</td><td><strong>${v.destino}</strong></td><td>${v.fecha}</td><td>${fmt(v.precio)}</td><td>${v.capacidad}</td><td style="font-size:12px;color:var(--gray-dk)">${pts} punto${pts!==1?'s':''}</td><td>${p}</td><td>${pct}%</td><td><span class="badge ${badgeV(v.estado)}">${v.estado}</span></td><td>${acBtns(`editViaje('${v.id}')`,`deleteViaje('${v.id}')`)}</td></tr>`;}).join('')||empty(10);}
+// ── RENDERS ────────────────────────────────────────────────────────────────
+function renderViajes(q=''){
+  document.getElementById('table-viajes').innerHTML=DB.viajes.filter(v=>!q||v.destino.toLowerCase().includes(q.toLowerCase())).map(v=>{
+    const p=getPasajeros(v.id);const pct=v.capacidad?Math.round(p/v.capacidad*100):0;const pts=(v.pickups||[]).length;
+    return`<tr><td>${v.id}</td><td><strong>${v.destino}</strong></td><td>${fmtDate(v.fecha)}</td><td>${fmt(v.precio)}</td><td>${v.capacidad}</td><td style="font-size:12px;color:var(--gray-dk)">${pts} punto${pts!==1?'s':''}</td><td>${p}</td><td>${pct}%</td><td><span class="badge ${badgeV(v.estado)}">${v.estado}</span></td><td>${acBtns(`editViaje('${v.id}')`,`deleteViaje('${v.id}')`)}</td></tr>`;
+  }).join('')||empty(10);
+}
 
-function renderClientes(q=''){document.getElementById('table-clientes').innerHTML=DB.clientes.filter(c=>!q||(c.nombre+' '+c.apellido).toLowerCase().includes(q.toLowerCase())).map(c=>{const viajes=DB.reservas.filter(r=>r.cliente_id===c.id&&r.estado==='Completó viaje').length;return`<tr><td>${c.id}</td><td><strong>${c.nombre} ${c.apellido}</strong></td><td>${c.tel}</td><td>${c.ig||'—'}</td><td>${c.email||'—'}</td><td>${viajes}</td><td>${acBtns(`editCliente('${c.id}')`,`deleteCliente('${c.id}')`)}</td></tr>`;}).join('')||empty(7);}
+function renderClientes(q=''){
+  document.getElementById('table-clientes').innerHTML=DB.clientes.filter(c=>!q||(c.nombre+' '+c.apellido).toLowerCase().includes(q.toLowerCase())).map(c=>{
+    const viajes=DB.reservas.filter(r=>r.cliente_id===c.id&&r.estado==='Completó viaje').length;
+    const saldo=Number(c.saldo_favor||0);
+    return`<tr><td>${c.id}</td><td><strong>${c.nombre} ${c.apellido}</strong></td><td>${c.tel}</td><td>${c.ig||'—'}</td><td>${c.email||'—'}</td><td style="color:${saldo>0?'var(--teal)':'var(--gray-dk)'};font-weight:${saldo>0?'600':'400'}">${saldo>0?fmt(saldo):'—'}</td><td>${viajes}</td><td>${acBtns(`editCliente('${c.id}')`,`deleteCliente('${c.id}')`)}</td></tr>`;
+  }).join('')||empty(8);
+}
 
-function renderReservas(q=''){document.getElementById('table-reservas').innerHTML=DB.reservas.filter(r=>{if(!q)return true;const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);return(cl.nombre+cl.apellido+vj.destino+r.id+(r.pickup||'')).toLowerCase().includes(q.toLowerCase());}).map(r=>{const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);const bal=Math.max(tot-pag,0);const hora=(vj.pickups||[]).find(p=>p.lugar===r.pickup)?.hora||'—';return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${hora}</td><td>${fmt(r.precio)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(r.estado)}">${r.estado}</span></td><td>${acBtns(`editReserva('${r.id}')`,`deleteReserva('${r.id}')`)}</td></tr>`;}).join('')||empty(12);}
+function renderReservas(q=''){
+  document.getElementById('table-reservas').innerHTML=DB.reservas.filter(r=>{
+    if(!q)return true;const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
+    return(cl.nombre+cl.apellido+vj.destino+r.id+(r.pickup||'')).toLowerCase().includes(q.toLowerCase());
+  }).map(r=>{
+    const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
+    const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);const bal=Math.max(tot-pag,0);
+    const hora=(vj.pickups||[]).find(p=>p.lugar===r.pickup)?.hora||'—';
+    const estado=r.estado==='Cancelado'||r.estado==='No asistió'||r.estado==='Completó viaje'?r.estado:estadoAuto(r.id);
+    const cancelBtn=r.estado!=='Cancelado'?`<button class="btn btn-icon btn-danger" onclick="abrirCancelacion('${r.id}')" title="Cancelar"><i class="ti ti-x"></i></button>`:'';
+    return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${hora}</td><td>${fmt(r.precio)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td><td><div class="actions-cell"><button class="btn btn-icon" onclick="editReserva('${r.id}')" title="Editar"><i class="ti ti-edit"></i></button>${cancelBtn}<button class="btn btn-icon btn-danger" onclick="deleteReserva('${r.id}')" title="Eliminar"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')||empty(12);
+}
 
-function renderPagos(q=''){document.getElementById('table-pagos').innerHTML=DB.pagos.filter(p=>{if(!q)return true;const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);return(p.reserva_id+(cl.nombre||'')+(cl.apellido||'')+p.metodo+(p.ref||'')).toLowerCase().includes(q.toLowerCase());}).map(p=>{const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);return`<tr><td>${p.id}</td><td>${p.reserva_id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${p.fecha}</td><td><strong>${fmt(p.monto)}</strong></td><td>${p.metodo}</td><td>${p.banco||'—'}</td><td>${p.ref||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${p.comment||'—'}</td><td>${acBtns(`editPago('${p.id}')`,`deletePago('${p.id}')`)}</td></tr>`;}).join('')||empty(10);}
+function renderPagos(q=''){
+  // Ordenar: primero reservas con balance > 0
+  const sorted=[...DB.pagos].sort((a,b)=>{
+    const balA=Math.max((getCliente(DB.reservas.find(r=>r.id===a.reserva_id)?.cliente_id||'')?.saldo_favor||0),0);
+    return 0;
+  });
+  document.getElementById('table-pagos').innerHTML=DB.pagos.filter(p=>{
+    if(!q)return true;const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);
+    return(p.reserva_id+(cl.nombre||'')+(cl.apellido||'')+p.metodo+(p.ref||'')).toLowerCase().includes(q.toLowerCase());
+  }).map(p=>{
+    const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);
+    return`<tr><td>${p.id}</td><td>${p.reserva_id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${fmtDate(p.fecha)}</td><td>${badgeTipo(p.tipo)}</td><td style="color:${p.tipo==='Devolucion'?'var(--red)':'var(--teal)'};font-weight:600">${p.tipo==='Devolucion'?'-':''}${fmt(p.monto)}</td><td>${p.metodo||'—'}</td><td>${p.banco||'—'}</td><td>${p.ref||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${p.comment||'—'}</td><td>${acBtns(`editPago('${p.id}')`,`deletePago('${p.id}')`)}</td></tr>`;
+  }).join('')||empty(11);
+}
 
-function renderGastos(){document.getElementById('table-gastos').innerHTML=DB.gastos.map(g=>{const vj=getViaje(g.viaje_id);return`<tr><td>${g.id}</td><td>${vj.destino||g.viaje_id}</td><td>${g.cat}</td><td>${g.descripcion}</td><td>${g.fecha}</td><td><strong>${fmt(g.monto)}</strong></td><td><div class="actions-cell"><button class="btn btn-icon btn-danger" onclick="deleteGasto('${g.id}')"><i class="ti ti-trash"></i></button></div></td></tr>`;}).join('')||empty(7);}
+function renderGastos(){
+  document.getElementById('table-gastos').innerHTML=DB.gastos.map(g=>{
+    const vj=getViaje(g.viaje_id);
+    return`<tr><td>${g.id}</td><td>${vj.destino||g.viaje_id}</td><td>${g.cat}</td><td>${g.descripcion}</td><td>${fmtDate(g.fecha)}</td><td><strong>${fmt(g.monto)}</strong></td><td><div class="actions-cell"><button class="btn btn-icon btn-danger" onclick="deleteGasto('${g.id}')"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')||empty(7);
+}
 
-function renderPickupList(){const el=document.getElementById('pickup-list');if(!editingPickups.length){el.innerHTML='<p style="font-size:12px;color:var(--gray-dk);margin-bottom:8px">Sin puntos aún.</p>';return;}el.innerHTML=editingPickups.map((p,i)=>`<div class="pickup-row"><div style="font-size:13px;font-weight:500"><i class="ti ti-map-pin" style="color:var(--teal);margin-right:4px"></i>${p.lugar}${i===0?' <span style="font-size:10px;background:var(--teal-lt);color:var(--teal);padding:1px 7px;border-radius:10px;margin-left:4px;font-weight:600">Principal</span>':''}</div><div style="font-size:12px;color:var(--gray-dk)"><i class="ti ti-clock"></i> ${p.hora}</div><button class="btn btn-icon btn-danger" onclick="removePickup(${i})"><i class="ti ti-trash"></i></button></div>`).join('');}
+// ── PICKUP ─────────────────────────────────────────────────────────────────
+function renderPickupList(){
+  const el=document.getElementById('pickup-list');
+  if(!editingPickups.length){el.innerHTML='<p style="font-size:12px;color:var(--gray-dk);margin-bottom:8px">Sin puntos aún.</p>';return;}
+  el.innerHTML=editingPickups.map((p,i)=>`<div class="pickup-row"><div style="font-size:13px;font-weight:500"><i class="ti ti-map-pin" style="color:var(--teal);margin-right:4px"></i>${p.lugar}${i===0?' <span style="font-size:10px;background:var(--teal-lt);color:var(--teal);padding:1px 7px;border-radius:10px;margin-left:4px;font-weight:600">Principal</span>':''}</div><div style="font-size:12px;color:var(--gray-dk)"><i class="ti ti-clock"></i> ${p.hora}</div><button class="btn btn-icon btn-danger" onclick="removePickup(${i})"><i class="ti ti-trash"></i></button></div>`).join('');
+}
 function addPickup(){const lugar=document.getElementById('np-lugar').value.trim();const hora=document.getElementById('np-hora').value;if(!lugar){alert('Escribe el lugar.');return;}editingPickups.push({lugar,hora:hora||'--:--'});document.getElementById('np-lugar').value='';document.getElementById('np-hora').value='';renderPickupList();}
 function removePickup(i){editingPickups.splice(i,1);renderPickupList();}
 
+// ── OPEN ADD ───────────────────────────────────────────────────────────────
 const today=()=>new Date().toISOString().split('T')[0];
 function openAdd(){
   const modals={viajes:'modal-viaje',clientes:'modal-cliente',reservas:'modal-reserva',pagos:'modal-pago',gastos:'modal-gasto'};
   const m=modals[currentPage];if(!m)return;
   if(currentPage==='viajes'){editingPickups=[];renderPickupList();document.getElementById('v-id').value='';['v-destino','v-fecha','v-precio','v-capacidad','v-desc'].forEach(f=>document.getElementById(f).value='');document.getElementById('v-estado').value='Abierto';document.getElementById('modal-viaje-title').textContent='Nuevo viaje';}
-  if(currentPage==='reservas'){populateSelects();document.getElementById('r-id').value='';document.getElementById('r-fecha').value=today();document.getElementById('modal-reserva-title').textContent='Nueva reserva';}
-  if(currentPage==='pagos'){document.getElementById('p-id').value='';populateReservaSelect();document.getElementById('p-fecha').value=today();['p-monto','p-banco','p-ref','p-comment'].forEach(f=>document.getElementById(f).value='');document.getElementById('pago-resumen-box').style.display='none';document.getElementById('modal-pago-title').textContent='Registrar pago';onReservaChange();}
+  if(currentPage==='reservas'){
+    populateReservaSelects();
+    document.getElementById('r-id').value='';
+    document.getElementById('r-fecha').value=today();
+    ['r-precio','r-pasajeros','r-pago-monto','r-pago-banco','r-pago-ref'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('r-pasajeros').value='1';
+    document.getElementById('r-pago-metodo').value='';
+    document.getElementById('r-pickup').innerHTML='<option value="">— Selecciona un punto —</option>';
+    document.getElementById('resumen-reserva').style.display='none';
+    document.getElementById('saldo-box').style.display='none';
+    document.getElementById('modal-reserva-title').textContent='Nueva reserva';
+  }
+  if(currentPage==='pagos'){
+    document.getElementById('p-id').value='';
+    populateReservaSelectPagos();
+    document.getElementById('p-fecha').value=today();
+    ['p-monto','p-banco','p-ref','p-comment'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('p-metodo').value='';
+    document.getElementById('p-tipo').value='Pago';
+    document.getElementById('pago-resumen-box').style.display='none';
+    document.getElementById('modal-pago-title').textContent='Registrar pago';
+  }
   if(currentPage==='gastos'){populateViajeSelect();document.getElementById('g-fecha').value=today();['g-desc','g-monto'].forEach(f=>document.getElementById(f).value='');}
   document.getElementById(m).classList.add('open');
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-async function saveViaje(){const id=document.getElementById('v-id').value||nextId(DB.viajes,'V');const obj={id,destino:document.getElementById('v-destino').value,fecha:document.getElementById('v-fecha').value,precio:Number(document.getElementById('v-precio').value),capacidad:Number(document.getElementById('v-capacidad').value),estado:document.getElementById('v-estado').value,descripcion:document.getElementById('v-desc').value,pickups:editingPickups};const{error}=await sb.from('viajes').upsert(obj);if(error){toast('Error: '+error.message,'error');return;}toast('Viaje guardado ✓');closeModal('modal-viaje');await loadAll();}
-function editViaje(id){const v=DB.viajes.find(x=>x.id===id);if(!v)return;document.getElementById('v-id').value=v.id;document.getElementById('v-destino').value=v.destino;document.getElementById('v-fecha').value=v.fecha;document.getElementById('v-precio').value=v.precio;document.getElementById('v-capacidad').value=v.capacidad;document.getElementById('v-estado').value=v.estado;document.getElementById('v-desc').value=v.descripcion||'';editingPickups=[...(v.pickups||[])];renderPickupList();document.getElementById('modal-viaje-title').textContent='Editar viaje';document.getElementById('modal-viaje').classList.add('open');}
+// ── VIAJE CRUD ─────────────────────────────────────────────────────────────
+async function saveViaje(){
+  const id=document.getElementById('v-id').value||nextId(DB.viajes,'V');
+  const obj={id,destino:document.getElementById('v-destino').value,fecha:document.getElementById('v-fecha').value,precio:Number(document.getElementById('v-precio').value),capacidad:Number(document.getElementById('v-capacidad').value),estado:document.getElementById('v-estado').value,descripcion:document.getElementById('v-desc').value,pickups:editingPickups};
+  const{error}=await sb.from('viajes').upsert(obj);
+  if(error){toast('Error: '+error.message,'error');return;}
+  toast('Viaje guardado ✓');closeModal('modal-viaje');await loadAll();
+}
+function editViaje(id){
+  const v=DB.viajes.find(x=>x.id===id);if(!v)return;
+  document.getElementById('v-id').value=v.id;document.getElementById('v-destino').value=v.destino;document.getElementById('v-fecha').value=v.fecha;
+  document.getElementById('v-precio').value=v.precio;document.getElementById('v-capacidad').value=v.capacidad;document.getElementById('v-estado').value=v.estado;document.getElementById('v-desc').value=v.descripcion||'';
+  editingPickups=[...(v.pickups||[])];renderPickupList();
+  document.getElementById('modal-viaje-title').textContent='Editar viaje';document.getElementById('modal-viaje').classList.add('open');
+}
 async function deleteViaje(id){const v=getViaje(id);confirm_(`¿Eliminar el viaje "${v.destino}"?`,async()=>{await sb.from('viajes').delete().eq('id',id);toast('Viaje eliminado');await loadAll();});}
 
-async function saveCliente(){const id=document.getElementById('c-id').value||nextId(DB.clientes,'C');const obj={id,nombre:document.getElementById('c-nombre').value,apellido:document.getElementById('c-apellido').value,tel:document.getElementById('c-tel').value,ig:document.getElementById('c-ig').value,email:document.getElementById('c-email').value,notas:document.getElementById('c-notas').value};const{error}=await sb.from('clientes').upsert(obj);if(error){toast('Error: '+error.message,'error');return;}toast('Cliente guardado ✓');closeModal('modal-cliente');await loadAll();}
-function editCliente(id){const c=DB.clientes.find(x=>x.id===id);if(!c)return;document.getElementById('c-id').value=c.id;document.getElementById('c-nombre').value=c.nombre;document.getElementById('c-apellido').value=c.apellido;document.getElementById('c-tel').value=c.tel;document.getElementById('c-ig').value=c.ig||'';document.getElementById('c-email').value=c.email||'';document.getElementById('c-notas').value=c.notas||'';document.getElementById('modal-cliente-title').textContent='Editar cliente';document.getElementById('modal-cliente').classList.add('open');}
+// ── CLIENTE CRUD ───────────────────────────────────────────────────────────
+async function saveCliente(){
+  const id=document.getElementById('c-id').value||nextId(DB.clientes,'C');
+  const obj={id,nombre:document.getElementById('c-nombre').value,apellido:document.getElementById('c-apellido').value,tel:document.getElementById('c-tel').value,ig:document.getElementById('c-ig').value,email:document.getElementById('c-email').value,notas:document.getElementById('c-notas').value};
+  const{error}=await sb.from('clientes').upsert(obj);
+  if(error){toast('Error: '+error.message,'error');return;}
+  toast('Cliente guardado ✓');closeModal('modal-cliente');await loadAll();
+}
+function editCliente(id){
+  const c=DB.clientes.find(x=>x.id===id);if(!c)return;
+  document.getElementById('c-id').value=c.id;document.getElementById('c-nombre').value=c.nombre;document.getElementById('c-apellido').value=c.apellido;
+  document.getElementById('c-tel').value=c.tel;document.getElementById('c-ig').value=c.ig||'';document.getElementById('c-email').value=c.email||'';document.getElementById('c-notas').value=c.notas||'';
+  document.getElementById('modal-cliente-title').textContent='Editar cliente';document.getElementById('modal-cliente').classList.add('open');
+}
 async function deleteCliente(id){const c=getCliente(id);confirm_(`¿Eliminar a ${c.nombre} ${c.apellido}?`,async()=>{await sb.from('clientes').delete().eq('id',id);toast('Cliente eliminado');await loadAll();});}
 
-function populateSelects(){document.getElementById('r-viaje').innerHTML=DB.viajes.map(v=>`<option value="${v.id}">${v.destino} (${v.fecha})</option>`).join('');document.getElementById('r-cliente').innerHTML=DB.clientes.map(c=>`<option value="${c.id}">${c.nombre} ${c.apellido}</option>`).join('');onViajeChange();}
-function onViajeChange(){const v=getViaje(document.getElementById('r-viaje').value);const sel=document.getElementById('r-pickup');sel.innerHTML=v.pickups&&v.pickups.length?v.pickups.map(p=>`<option value="${p.lugar}">${p.lugar} — ${p.hora}</option>`).join(''):'<option value="">Sin puntos definidos</option>';if(v.precio)document.getElementById('r-precio').value=v.precio;}
-async function saveReserva(){const id=document.getElementById('r-id').value||nextId(DB.reservas,'R');const obj={id,viaje_id:document.getElementById('r-viaje').value,cliente_id:document.getElementById('r-cliente').value,pickup:document.getElementById('r-pickup').value,precio:Number(document.getElementById('r-precio').value),pasajeros:Number(document.getElementById('r-pasajeros').value),fecha:document.getElementById('r-fecha').value,estado:document.getElementById('r-estado').value};const{error}=await sb.from('reservas').upsert(obj);if(error){toast('Error: '+error.message,'error');return;}toast('Reserva guardada ✓');closeModal('modal-reserva');await loadAll();}
-function editReserva(id){const r=DB.reservas.find(x=>x.id===id);if(!r)return;populateSelects();document.getElementById('r-id').value=r.id;document.getElementById('r-viaje').value=r.viaje_id;onViajeChange();document.getElementById('r-pickup').value=r.pickup||'';document.getElementById('r-cliente').value=r.cliente_id;document.getElementById('r-precio').value=r.precio;document.getElementById('r-pasajeros').value=r.pasajeros;document.getElementById('r-fecha').value=r.fecha;document.getElementById('r-estado').value=r.estado;document.getElementById('modal-reserva-title').textContent='Editar reserva';document.getElementById('modal-reserva').classList.add('open');}
+// ── RESERVA CRUD ───────────────────────────────────────────────────────────
+function populateReservaSelects(){
+  document.getElementById('r-viaje').innerHTML='<option value="">— Selecciona un viaje —</option>'+DB.viajes.filter(v=>v.estado==='Abierto').map(v=>`<option value="${v.id}">${v.destino} (${fmtDate(v.fecha)})</option>`).join('');
+  document.getElementById('r-cliente').innerHTML='<option value="">— Selecciona un cliente —</option>'+DB.clientes.map(c=>`<option value="${c.id}">${c.nombre} ${c.apellido}</option>`).join('');
+}
+
+function onViajeChange(){
+  const v=getViaje(document.getElementById('r-viaje').value);
+  const sel=document.getElementById('r-pickup');
+  sel.innerHTML='<option value="">— Selecciona un punto —</option>'+(v.pickups&&v.pickups.length?v.pickups.map(p=>`<option value="${p.lugar}">${p.lugar} — ${p.hora}</option>`).join(''):'');
+  if(v.precio)document.getElementById('r-precio').value=v.precio;
+  calcTotalReserva();
+}
+
+function onClienteChange(){
+  const cid=document.getElementById('r-cliente').value;
+  const c=getCliente(cid);
+  const saldo=Number(c.saldo_favor||0);
+  const box=document.getElementById('saldo-box');
+  if(saldo>0){box.style.display='block';document.getElementById('saldo-monto').textContent=fmt(saldo);}
+  else box.style.display='none';
+  calcTotalReserva();
+}
+
+function calcTotalReserva(){
+  const precio=Number(document.getElementById('r-precio').value)||0;
+  const pasajeros=Number(document.getElementById('r-pasajeros').value)||0;
+  const cid=document.getElementById('r-cliente').value;
+  const c=getCliente(cid);
+  const saldo=Math.min(Number(c.saldo_favor||0),precio*pasajeros);
+  const total=precio*pasajeros;
+  const balance=total-saldo;
+  if(total>0){
+    document.getElementById('resumen-reserva').style.display='block';
+    document.getElementById('rr-total').textContent=fmt(total);
+    document.getElementById('rr-saldo').textContent=fmt(saldo);
+    document.getElementById('rr-balance').textContent=fmt(balance);
+  } else {
+    document.getElementById('resumen-reserva').style.display='none';
+  }
+}
+
+async function saveReserva(){
+  const vid=document.getElementById('r-viaje').value;
+  const cid=document.getElementById('r-cliente').value;
+  if(!vid||!cid){toast('Selecciona un viaje y un cliente','error');return;}
+  const precio=Number(document.getElementById('r-precio').value);
+  const pasajeros=Number(document.getElementById('r-pasajeros').value);
+  const pagoMonto=Number(document.getElementById('r-pago-monto').value)||0;
+  const pagoMetodo=document.getElementById('r-pago-metodo').value;
+  if(pagoMonto<=0){toast('Ingresa el monto del pago inicial','error');return;}
+  if(!pagoMetodo){toast('Selecciona el método de pago','error');return;}
+
+  const c=getCliente(cid);
+  const saldo=Math.min(Number(c.saldo_favor||0),precio*pasajeros);
+  const id=document.getElementById('r-id').value||nextId(DB.reservas,'R');
+
+  // Guardar reserva
+  const rObj={id,viaje_id:vid,cliente_id:cid,pickup:document.getElementById('r-pickup').value,precio,pasajeros,fecha:document.getElementById('r-fecha').value,estado:'Reservado'};
+  const{error:rErr}=await sb.from('reservas').upsert(rObj);
+  if(rErr){toast('Error al guardar reserva: '+rErr.message,'error');return;}
+
+  // Guardar pago inicial
+  const pId=nextId(DB.pagos,'PA');
+  const pObj={id:pId,reserva_id:id,fecha:document.getElementById('r-fecha').value,monto:pagoMonto,metodo:pagoMetodo,banco:document.getElementById('r-pago-banco').value,ref:document.getElementById('r-pago-ref').value,comment:'Pago inicial',tipo:'Pago'};
+  const{error:pErr}=await sb.from('pagos').upsert(pObj);
+  if(pErr){toast('Error al guardar pago: '+pErr.message,'error');return;}
+
+  // Aplicar saldo a favor si existe
+  if(saldo>0){
+    const nuevoSaldo=Number(c.saldo_favor||0)-saldo;
+    await sb.from('clientes').update({saldo_favor:nuevoSaldo}).eq('id',cid);
+    // Registrar aplicación de saldo como pago
+    const sId=nextId([...DB.pagos,{id:pId}],'PA');
+    await sb.from('pagos').upsert({id:sId,reserva_id:id,fecha:today(),monto:saldo,metodo:'Saldo a favor',banco:'',ref:'',comment:'Saldo a favor aplicado',tipo:'Pago'});
+  }
+
+  // Actualizar estado automático
+  await actualizarEstadoReserva(id,precio*pasajeros,pagoMonto+saldo);
+
+  toast('Reserva guardada ✓');closeModal('modal-reserva');await loadAll();
+}
+
+async function actualizarEstadoReserva(rid,total,pagado){
+  const bal=total-pagado;
+  const estado=bal<=0?'Pagado':'Reservado';
+  await sb.from('reservas').update({estado}).eq('id',rid);
+}
+
+function editReserva(id){
+  const r=DB.reservas.find(x=>x.id===id);if(!r)return;
+  populateReservaSelects();
+  document.getElementById('r-id').value=r.id;
+  document.getElementById('r-viaje').value=r.viaje_id;onViajeChange();
+  document.getElementById('r-pickup').value=r.pickup||'';
+  document.getElementById('r-cliente').value=r.cliente_id;onClienteChange();
+  document.getElementById('r-precio').value=r.precio;
+  document.getElementById('r-pasajeros').value=r.pasajeros;
+  document.getElementById('r-fecha').value=r.fecha;
+  // En edición no mostramos sección de pago inicial
+  document.getElementById('resumen-reserva').style.display='none';
+  document.getElementById('modal-reserva-title').textContent='Editar reserva';
+  document.getElementById('modal-reserva').classList.add('open');
+}
+
 async function deleteReserva(id){confirm_(`¿Eliminar la reserva ${id}?`,async()=>{await sb.from('reservas').delete().eq('id',id);toast('Reserva eliminada');await loadAll();});}
 
-function populateReservaSelect(){document.getElementById('p-reserva').innerHTML=DB.reservas.map(r=>{const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);return`<option value="${r.id}">${r.id} — ${cl.nombre||''} ${cl.apellido||''} — ${vj.destino||''}</option>`;}).join('');}
-function onReservaChange(){const rid=document.getElementById('p-reserva').value;const editId=document.getElementById('p-id').value;const r=DB.reservas.find(x=>x.id===rid);if(!r){document.getElementById('pago-resumen-box').style.display='none';return;}const tot=r.precio*r.pasajeros;const pagado=getPagado(rid,editId||null);const bal=Math.max(tot-pagado,0);document.getElementById('pr-total').textContent=fmt(tot);document.getElementById('pr-pagado').textContent=fmt(pagado);document.getElementById('pr-balance').textContent=fmt(bal);document.getElementById('pr-balance').style.color=bal>0?'var(--red)':'var(--teal)';document.getElementById('pago-resumen-box').style.display='block';}
-async function savePago(){const id=document.getElementById('p-id').value||nextId(DB.pagos,'PA');const obj={id,reserva_id:document.getElementById('p-reserva').value,fecha:document.getElementById('p-fecha').value,monto:Number(document.getElementById('p-monto').value),metodo:document.getElementById('p-metodo').value,banco:document.getElementById('p-banco').value,ref:document.getElementById('p-ref').value,comment:document.getElementById('p-comment').value};const{error}=await sb.from('pagos').upsert(obj);if(error){toast('Error: '+error.message,'error');return;}toast('Pago guardado ✓');closeModal('modal-pago');await loadAll();}
-function editPago(id){const p=DB.pagos.find(x=>x.id===id);if(!p)return;populateReservaSelect();document.getElementById('p-id').value=p.id;document.getElementById('p-reserva').value=p.reserva_id;document.getElementById('p-fecha').value=p.fecha;document.getElementById('p-monto').value=p.monto;document.getElementById('p-metodo').value=p.metodo;document.getElementById('p-banco').value=p.banco||'';document.getElementById('p-ref').value=p.ref||'';document.getElementById('p-comment').value=p.comment||'';document.getElementById('modal-pago-title').textContent='Editar pago';onReservaChange();document.getElementById('modal-pago').classList.add('open');}
-async function deletePago(id){confirm_(`¿Eliminar el pago ${id}?`,async()=>{await sb.from('pagos').delete().eq('id',id);toast('Pago eliminado');await loadAll();});}
+// ── CANCELACION ────────────────────────────────────────────────────────────
+function abrirCancelacion(rid){
+  const r=DB.reservas.find(x=>x.id===rid);if(!r)return;
+  const pag=getPagado(rid);
+  document.getElementById('cancel-id').value=rid;
+  document.getElementById('cancel-pagado').textContent=fmt(pag);
+  document.getElementById('cancel-accion').value='';
+  document.getElementById('cancel-info').style.display='none';
+  document.getElementById('modal-cancelacion').classList.add('open');
+}
 
-function populateViajeSelect(){document.getElementById('g-viaje').innerHTML=DB.viajes.map(v=>`<option value="${v.id}">${v.destino} (${v.fecha})</option>`).join('');}
-async function saveGasto(){const id=nextId(DB.gastos,'G');const obj={id,viaje_id:document.getElementById('g-viaje').value,cat:document.getElementById('g-cat').value,descripcion:document.getElementById('g-desc').value,fecha:document.getElementById('g-fecha').value,monto:Number(document.getElementById('g-monto').value)};const{error}=await sb.from('gastos').upsert(obj);if(error){toast('Error: '+error.message,'error');return;}toast('Gasto guardado ✓');closeModal('modal-gasto');await loadAll();}
+function onCancelAccionChange(){
+  const accion=document.getElementById('cancel-accion').value;
+  const info=document.getElementById('cancel-info');
+  const rid=document.getElementById('cancel-id').value;
+  const pag=getPagado(rid);
+  if(accion==='devolucion'){info.textContent=`Se registrará una devolución de ${fmt(pag)} al cliente.`;info.style.display='block';}
+  else if(accion==='credito'){info.textContent=`Se acreditarán ${fmt(pag)} al perfil del cliente para uso en próximo viaje.`;info.style.display='block';}
+  else if(accion==='ninguna'){info.textContent='El dinero queda a favor de Locas Aventuras. No hay devolución.';info.style.display='block';}
+  else info.style.display='none';
+}
+
+async function confirmarCancelacion(){
+  const rid=document.getElementById('cancel-id').value;
+  const accion=document.getElementById('cancel-accion').value;
+  if(!accion){toast('Selecciona una acción','error');return;}
+  const r=DB.reservas.find(x=>x.id===rid);if(!r)return;
+  const pag=getPagado(rid);
+
+  // Cancelar reserva
+  await sb.from('reservas').update({estado:'Cancelado'}).eq('id',rid);
+
+  if(accion==='devolucion'&&pag>0){
+    // Registrar devolución
+    const dId=nextId(DB.pagos,'PA');
+    await sb.from('pagos').upsert({id:dId,reserva_id:rid,fecha:today(),monto:pag,metodo:'Devolución',banco:'',ref:'',comment:'Cancelación — devolución',tipo:'Devolucion'});
+  } else if(accion==='credito'&&pag>0){
+    // Acreditar saldo a favor al cliente
+    const c=getCliente(r.cliente_id);
+    const nuevoSaldo=Number(c.saldo_favor||0)+pag;
+    await sb.from('clientes').update({saldo_favor:nuevoSaldo}).eq('id',r.cliente_id);
+  }
+
+  toast('Reserva cancelada');closeModal('modal-cancelacion');await loadAll();
+}
+
+// ── PAGO CRUD ──────────────────────────────────────────────────────────────
+function populateReservaSelectPagos(){
+  // Ordenar: primero las que tienen balance > 0
+  const conBalance=DB.reservas.filter(r=>r.estado!=='Cancelado').map(r=>{
+    const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
+    const bal=r.precio*r.pasajeros-getPagado(r.id);
+    return{...r,bal,label:`${r.id} — ${cl.nombre||''} ${cl.apellido||''} — ${vj.destino||''} ${bal>0?'(debe '+fmt(bal)+')':'✓ Pagado'}`};
+  }).sort((a,b)=>b.bal-a.bal);
+  document.getElementById('p-reserva').innerHTML='<option value="">— Selecciona una reserva —</option>'+conBalance.map(r=>`<option value="${r.id}">${r.label}</option>`).join('');
+}
+
+function onReservaChange(){
+  const rid=document.getElementById('p-reserva').value;
+  const editId=document.getElementById('p-id').value;
+  const r=DB.reservas.find(x=>x.id===rid);
+  if(!r){document.getElementById('pago-resumen-box').style.display='none';return;}
+  const tot=r.precio*r.pasajeros;
+  const pagado=getPagado(rid,editId||null);
+  const bal=Math.max(tot-pagado,0);
+  document.getElementById('pr-total').textContent=fmt(tot);
+  document.getElementById('pr-pagado').textContent=fmt(pagado);
+  document.getElementById('pr-balance').textContent=fmt(bal);
+  document.getElementById('pr-balance').style.color=bal>0?'var(--red)':'var(--teal)';
+  document.getElementById('pago-resumen-box').style.display='block';
+}
+
+async function savePago(){
+  const rid=document.getElementById('p-reserva').value;
+  if(!rid){toast('Selecciona una reserva','error');return;}
+  const id=document.getElementById('p-id').value||nextId(DB.pagos,'PA');
+  const tipo=document.getElementById('p-tipo').value;
+  const monto=Number(document.getElementById('p-monto').value);
+  const obj={id,reserva_id:rid,fecha:document.getElementById('p-fecha').value,monto,tipo,metodo:document.getElementById('p-metodo').value,banco:document.getElementById('p-banco').value,ref:document.getElementById('p-ref').value,comment:document.getElementById('p-comment').value};
+  const{error}=await sb.from('pagos').upsert(obj);
+  if(error){toast('Error: '+error.message,'error');return;}
+
+  // Actualizar estado automático de la reserva
+  const r=DB.reservas.find(x=>x.id===rid);
+  if(r&&r.estado!=='Cancelado'&&r.estado!=='No asistió'&&r.estado!=='Completó viaje'){
+    const allPagos=await sb.from('pagos').select('*').eq('reserva_id',rid);
+    const totalPag=(allPagos.data||[]).reduce((s,p)=>p.tipo==='Devolucion'?s-Number(p.monto):s+Number(p.monto),0);
+    const total=r.precio*r.pasajeros;
+    const estado=totalPag>=total?'Pagado':'Reservado';
+    await sb.from('reservas').update({estado}).eq('id',rid);
+  }
+
+  toast('Pago guardado ✓');closeModal('modal-pago');await loadAll();
+}
+
+function editPago(id){
+  const p=DB.pagos.find(x=>x.id===id);if(!p)return;
+  populateReservaSelectPagos();
+  document.getElementById('p-id').value=p.id;
+  document.getElementById('p-reserva').value=p.reserva_id;
+  document.getElementById('p-tipo').value=p.tipo||'Pago';
+  document.getElementById('p-fecha').value=p.fecha;
+  document.getElementById('p-monto').value=p.monto;
+  document.getElementById('p-metodo').value=p.metodo||'';
+  document.getElementById('p-banco').value=p.banco||'';
+  document.getElementById('p-ref').value=p.ref||'';
+  document.getElementById('p-comment').value=p.comment||'';
+  document.getElementById('modal-pago-title').textContent='Editar pago';
+  onReservaChange();
+  document.getElementById('modal-pago').classList.add('open');
+}
+
+async function deletePago(id){confirm_(`¿Eliminar el pago ${id}?`,async()=>{
+  const p=DB.pagos.find(x=>x.id===id);
+  await sb.from('pagos').delete().eq('id',id);
+  // Recalcular estado de reserva
+  if(p){
+    const r=DB.reservas.find(x=>x.id===p.reserva_id);
+    if(r&&r.estado!=='Cancelado'&&r.estado!=='No asistió'&&r.estado!=='Completó viaje'){
+      const allPagos=await sb.from('pagos').select('*').eq('reserva_id',p.reserva_id);
+      const totalPag=(allPagos.data||[]).reduce((s,x)=>x.tipo==='Devolucion'?s-Number(x.monto):s+Number(x.monto),0);
+      const total=r.precio*r.pasajeros;
+      await sb.from('reservas').update({estado:totalPag>=total?'Pagado':'Reservado'}).eq('id',p.reserva_id);
+    }
+  }
+  toast('Pago eliminado');await loadAll();
+});}
+
+// ── GASTO CRUD ─────────────────────────────────────────────────────────────
+function populateViajeSelect(){document.getElementById('g-viaje').innerHTML='<option value="">— Selecciona un viaje —</option>'+DB.viajes.map(v=>`<option value="${v.id}">${v.destino} (${fmtDate(v.fecha)})</option>`).join('');}
+async function saveGasto(){
+  const id=nextId(DB.gastos,'G');
+  const vid=document.getElementById('g-viaje').value;
+  if(!vid){toast('Selecciona un viaje','error');return;}
+  const obj={id,viaje_id:vid,cat:document.getElementById('g-cat').value,descripcion:document.getElementById('g-desc').value,fecha:document.getElementById('g-fecha').value,monto:Number(document.getElementById('g-monto').value)};
+  const{error}=await sb.from('gastos').upsert(obj);
+  if(error){toast('Error: '+error.message,'error');return;}
+  toast('Gasto guardado ✓');closeModal('modal-gasto');await loadAll();
+}
 async function deleteGasto(id){confirm_('¿Eliminar este gasto?',async()=>{await sb.from('gastos').delete().eq('id',id);toast('Gasto eliminado');await loadAll();});}
 
-function exportExcel(){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.viajes.map(v=>({ID:v.id,Destino:v.destino,Fecha:v.fecha,Precio:v.precio,Capacidad:v.capacidad,Estado:v.estado,Puntos:(v.pickups||[]).map(p=>`${p.lugar}(${p.hora})`).join('|')}))),'Viajes');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.clientes.map(c=>({ID:c.id,Nombre:c.nombre,Apellido:c.apellido,Tel:c.tel,Instagram:c.ig,Correo:c.email,Notas:c.notas}))),'Clientes');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.reservas.map(r=>{const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);return{ID:r.id,Viaje:vj.destino,Cliente:`${cl.nombre||''} ${cl.apellido||''}`,Punto:r.pickup,Precio:r.precio,Pasajeros:r.pasajeros,Total:tot,Pagado:pag,Balance:Math.max(tot-pag,0),Fecha:r.fecha,Estado:r.estado};})),'Reservas');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.pagos.map(p=>({ID:p.id,Reserva:p.reserva_id,Fecha:p.fecha,Monto:p.monto,Metodo:p.metodo,Banco:p.banco,Ref:p.ref,Comentario:p.comment}))),'Pagos');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.gastos.map(g=>({ID:g.id,Viaje:g.viaje_id,Cat:g.cat,Descripcion:g.descripcion,Fecha:g.fecha,Monto:g.monto}))),'Gastos');XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');}
+// ── EXPORT ─────────────────────────────────────────────────────────────────
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.viajes.map(v=>({ID:v.id,Destino:v.destino,Fecha:fmtDate(v.fecha),Precio:v.precio,Capacidad:v.capacidad,Estado:v.estado,Puntos:(v.pickups||[]).map(p=>`${p.lugar}(${p.hora})`).join('|')}))),'Viajes');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.clientes.map(c=>({ID:c.id,Nombre:c.nombre,Apellido:c.apellido,Tel:c.tel,Instagram:c.ig,Correo:c.email,'Saldo a favor':c.saldo_favor||0,Notas:c.notas}))),'Clientes');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.reservas.map(r=>{const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);return{ID:r.id,Viaje:vj.destino,Cliente:`${cl.nombre||''} ${cl.apellido||''}`,Punto:r.pickup,Precio:r.precio,Pasajeros:r.pasajeros,Total:tot,Pagado:pag,Balance:Math.max(tot-pag,0),Fecha:fmtDate(r.fecha),Estado:r.estado};})),'Reservas');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.pagos.map(p=>({ID:p.id,Reserva:p.reserva_id,Fecha:fmtDate(p.fecha),Tipo:p.tipo||'Pago',Monto:p.monto,Metodo:p.metodo,Banco:p.banco,Ref:p.ref,Comentario:p.comment}))),'Pagos');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.gastos.map(g=>({ID:g.id,Viaje:g.viaje_id,Cat:g.cat,Descripcion:g.descripcion,Fecha:fmtDate(g.fecha),Monto:g.monto}))),'Gastos');
+  XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');
+}
 
 loadAll();
 </script>
