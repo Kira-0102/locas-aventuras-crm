@@ -708,6 +708,22 @@ async function saveReserva(){
   const vid=document.getElementById('r-viaje').value;
   const cid=document.getElementById('r-cliente').value;
   if(!vid||!cid){toast('Selecciona un viaje y un cliente','error');return;}
+
+  // ── VALIDACIÓN DUPLICADO ──────────────────────────────────────
+  const esNueva=!document.getElementById('r-id').value;
+  if(esNueva){
+    const duplicado=DB.reservas.find(r=>
+      r.viaje_id===vid &&
+      r.cliente_id===cid &&
+      r.estado!=='Cancelado'
+    );
+    if(duplicado){
+      toast(`Este cliente ya tiene una reserva activa en este viaje (${duplicado.id})`, 'error');
+      return;
+    }
+  }
+  // ─────────────────────────────────────────────────────────────
+
   const precio=Number(document.getElementById('r-precio').value);
   const pasajeros=Number(document.getElementById('r-pasajeros').value);
   const pagoMonto=Number(document.getElementById('r-pago-monto').value)||0;
