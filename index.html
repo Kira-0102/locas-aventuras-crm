@@ -398,6 +398,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       <div class="form-group"><label class="form-label">Cliente</label><select id="r-cliente" onchange="onClienteChange()"><option value="">— Selecciona un cliente —</option></select></div>
     </div>
     <div id="saldo-box" class="saldo-box"><i class="ti ti-coins"></i> Este cliente tiene un saldo a favor de <strong id="saldo-monto">RD$0</strong> que se aplicará automáticamente.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tipo de reserva</label>
+        <select id="r-tipo" onchange="onTipoReservaChange()">
+          <option value="Normal">Normal</option>
+          <option value="Promotor">Promotor (pase libre)</option>
+        </select>
+      </div>
+      <div class="form-group" id="r-referido-box" style="display:none"><label class="form-label">Referido por</label>
+        <select id="r-referido"><option value="">— Ninguno —</option></select>
+      </div>
+    </div>
     <div class="form-group"><label class="form-label">Punto de recogida</label><select id="r-pickup"><option value="">— Selecciona un punto —</option></select></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Precio negociado (RD$)</label><input id="r-precio" type="number" oninput="calcTotalReserva()"></div>
@@ -405,22 +416,43 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
     </div>
     <div class="form-group"><label class="form-label">Fecha reserva</label><input id="r-fecha" type="date"></div>
 
+    <!-- REFERIDOS (solo promotores) -->
+    <div id="referidos-section" style="display:none">
+      <hr class="divider">
+      <div class="section-label"><i class="ti ti-users"></i> Personas que trae el promotor</div>
+      <div id="referidos-lista"></div>
+      <button class="btn btn-sm" onclick="agregarReferido()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar persona</button>
+      <p style="font-size:11px;color:var(--gray-dk);margin-top:6px">Cada persona que traiga el promotor debe registrar su propia reserva y pagar directamente.</p>
+    </div>
+
     <hr class="divider">
-    <div class="section-label"><i class="ti ti-credit-card"></i> Pago inicial</div>
+    <div class="section-label" id="pago-section-label"><i class="ti ti-credit-card"></i> Pago inicial</div>
     <div class="pago-resumen" id="resumen-reserva" style="display:none">
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Total reserva</span><span id="rr-total">—</span></div>
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Saldo a favor aplicado</span><span id="rr-saldo">RD$0</span></div>
       <div class="pago-resumen-row"><span>Balance a pagar</span><span id="rr-balance">—</span></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Monto inicial (RD$)</label><input id="r-pago-monto" type="number" placeholder="0" oninput="calcTotalReserva()"></div>
-      <div class="form-group"><label class="form-label">Método de pago</label><select id="r-pago-metodo"><option value="">— Selecciona —</option><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div>
+    <div id="pago-inicial-fields">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Monto inicial (RD$)</label><input id="r-pago-monto" type="number" placeholder="0" oninput="calcTotalReserva()"></div>
+        <div class="form-group"><label class="form-label">Método de pago</label><select id="r-pago-metodo"><option value="">— Selecciona —</option><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Banco</label><input id="r-pago-banco"></div>
+        <div class="form-group"><label class="form-label">Referencia / Comprobante</label><input id="r-pago-ref"></div>
+      </div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Banco</label><input id="r-pago-banco"></div>
-      <div class="form-group"><label class="form-label">Referencia / Comprobante</label><input id="r-pago-ref"></div>
-    </div>
+    <div id="promotor-pase-info" style="display:none" class="saldo-box"><i class="ti ti-star"></i> Este cliente es promotor — su pasaje es <strong>gratis</strong>. No se requiere pago.</div>
     <div class="modal-actions"><button class="btn" onclick="closeModal('modal-reserva')">Cancelar</button><button class="btn btn-primary" onclick="saveReserva()">Guardar reserva</button></div>
+  </div>
+</div>
+
+<!-- MODAL VER REFERIDOS -->
+<div class="modal-overlay" id="modal-referidos">
+  <div class="modal">
+    <div class="modal-head"><span class="modal-title" id="modal-ref-title">Referidos del promotor</span><button class="btn" onclick="closeModal('modal-referidos')"><i class="ti ti-x"></i></button></div>
+    <div id="modal-ref-content"></div>
+    <div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('modal-referidos')">Cerrar</button></div>
   </div>
 </div>
 
@@ -658,7 +690,8 @@ function renderClientes(q=''){
 }
 
 function renderReservas(q=''){
-  document.getElementById('table-reservas').innerHTML=DB.reservas.filter(r=>{
+  const reservasOrdenadas=[...DB.reservas].sort((a,b)=>{const nA=parseInt(a.id.replace(/\D/g,''))||0;const nB=parseInt(b.id.replace(/\D/g,''))||0;return nA-nB;});
+  document.getElementById('table-reservas').innerHTML=reservasOrdenadas.filter(r=>{
     if(!q)return true;const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
     return(cl.nombre+cl.apellido+vj.destino+r.id+(r.pickup||'')).toLowerCase().includes(q.toLowerCase());
   }).map(r=>{
@@ -666,18 +699,21 @@ function renderReservas(q=''){
     const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);const bal=Math.max(tot-pag,0);
     const hora=(vj.pickups||[]).find(p=>p.lugar===r.pickup)?.hora||'—';
     const estado=r.estado==='Cancelado'||r.estado==='No asistió'||r.estado==='Completó viaje'?r.estado:estadoAuto(r.id);
+    const esPromotor=r.tipo==='Promotor';
     const cancelBtn=r.estado!=='Cancelado'?`<button class="btn btn-icon btn-danger" onclick="abrirCancelacion('${r.id}')" title="Cancelar"><i class="ti ti-x"></i></button>`:'';
-    return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${hora}</td><td>${fmt(r.precio)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td><td><div class="actions-cell"><button class="btn btn-icon" onclick="editReserva('${r.id}')" title="Editar"><i class="ti ti-edit"></i></button>${cancelBtn}<button class="btn btn-icon btn-danger" onclick="deleteReserva('${r.id}')" title="Eliminar"><i class="ti ti-trash"></i></button></div></td></tr>`;
+    const refBtn=esPromotor?`<button class="btn btn-icon" onclick="verReferidos('${r.id}')" title="Ver referidos" style="color:var(--orange)"><i class="ti ti-users"></i></button>`:'';
+    const promotorBadge=esPromotor?' <span class="badge badge-orange" style="font-size:10px">&#9733; Promotor</span>':'';
+    return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}${promotorBadge}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${hora}</td><td>${fmt(r.precio)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td><td><div class="actions-cell"><button class="btn btn-icon" onclick="editReserva('${r.id}')" title="Editar"><i class="ti ti-edit"></i></button>${refBtn}${cancelBtn}<button class="btn btn-icon btn-danger" onclick="deleteReserva('${r.id}')" title="Eliminar"><i class="ti ti-trash"></i></button></div></td></tr>`;
   }).join('')||empty(12);
 }
 
 function renderPagos(q=''){
-  const pagosOrdenados=[...DB.pagos].sort((a,b)=>{
-    const numA=parseInt(a.id.replace(/\D/g,''))||0;
-    const numB=parseInt(b.id.replace(/\D/g,''))||0;
-    return numA-numB;
+  // Ordenar: primero reservas con balance > 0
+  const sorted=[...DB.pagos].sort((a,b)=>{
+    const balA=Math.max((getCliente(DB.reservas.find(r=>r.id===a.reserva_id)?.cliente_id||'')?.saldo_favor||0),0);
+    return 0;
   });
-  document.getElementById('table-pagos').innerHTML=pagosOrdenados.filter(p=>{
+  document.getElementById('table-pagos').innerHTML=DB.pagos.filter(p=>{
     if(!q)return true;const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);
     return(p.reserva_id+(cl.nombre||'')+(cl.apellido||'')+p.metodo+(p.ref||'')).toLowerCase().includes(q.toLowerCase());
   }).map(p=>{
@@ -718,6 +754,12 @@ function openAdd(){
     document.getElementById('r-pickup').innerHTML='<option value="">— Selecciona un punto —</option>';
     document.getElementById('resumen-reserva').style.display='none';
     document.getElementById('saldo-box').style.display='none';
+    document.getElementById('r-tipo').value='Normal';
+    document.getElementById('referidos-section').style.display='none';
+    document.getElementById('r-referido-box').style.display='none';
+    document.getElementById('pago-inicial-fields').style.display='block';
+    document.getElementById('promotor-pase-info').style.display='none';
+    referidosTmp=[];renderReferidosTmp();
     document.getElementById('modal-reserva-title').textContent='Nueva reserva';
   }
   if(currentPage==='pagos'){
@@ -779,6 +821,7 @@ function onViajeChange(){
   const sel=document.getElementById('r-pickup');
   sel.innerHTML='<option value="">— Selecciona un punto —</option>'+(v.pickups&&v.pickups.length?v.pickups.map(p=>`<option value="${p.lugar}">${p.lugar} — ${p.hora}</option>`).join(''):'');
   if(v.precio)document.getElementById('r-precio').value=v.precio;
+  populateReferidoSelect();
   calcTotalReserva();
 }
 
@@ -814,27 +857,39 @@ async function saveReserva(){
   const vid=document.getElementById('r-viaje').value;
   const cid=document.getElementById('r-cliente').value;
   if(!vid||!cid){toast('Selecciona un viaje y un cliente','error');return;}
-  const precio=Number(document.getElementById('r-precio').value);
+  const tipo=document.getElementById('r-tipo').value;
+  const esPromotor=tipo==='Promotor';
+  const precio=esPromotor?0:Number(document.getElementById('r-precio').value);
   const pasajeros=Number(document.getElementById('r-pasajeros').value);
-  const pagoMonto=Number(document.getElementById('r-pago-monto').value)||0;
-  const pagoMetodo=document.getElementById('r-pago-metodo').value;
-  if(pagoMonto<=0){toast('Ingresa el monto del pago inicial','error');return;}
-  if(!pagoMetodo){toast('Selecciona el método de pago','error');return;}
+  const pagoMonto=esPromotor?0:(Number(document.getElementById('r-pago-monto').value)||0);
+  const pagoMetodo=esPromotor?'Pase libre':document.getElementById('r-pago-metodo').value;
+  if(!esPromotor&&pagoMonto<=0){toast('Ingresa el monto del pago inicial','error');return;}
+  if(!esPromotor&&!pagoMetodo){toast('Selecciona el método de pago','error');return;}
 
   const c=getCliente(cid);
   const saldo=Math.min(Number(c.saldo_favor||0),precio*pasajeros);
   const id=document.getElementById('r-id').value||nextId(DB.reservas,'R');
 
   // Guardar reserva
-  const rObj={id,viaje_id:vid,cliente_id:cid,pickup:document.getElementById('r-pickup').value,precio,pasajeros,fecha:document.getElementById('r-fecha').value,estado:'Reservado'};
+  const referidoPor=document.getElementById('r-referido').value||null;
+  const rObj={id,viaje_id:vid,cliente_id:cid,pickup:document.getElementById('r-pickup').value,precio,pasajeros,fecha:document.getElementById('r-fecha').value,estado:esPromotor?'Pagado':'Reservado',tipo,referido_por:referidoPor};
   const{error:rErr}=await sb.from('reservas').upsert(rObj);
   if(rErr){toast('Error al guardar reserva: '+rErr.message,'error');return;}
 
-  // Guardar pago inicial
-  const pId=nextId(DB.pagos,'PA');
-  const pObj={id:pId,reserva_id:id,fecha:document.getElementById('r-fecha').value,monto:pagoMonto,metodo:pagoMetodo,banco:document.getElementById('r-pago-banco').value,ref:document.getElementById('r-pago-ref').value,comment:'Pago inicial',tipo:'Pago'};
-  const{error:pErr}=await sb.from('pagos').upsert(pObj);
-  if(pErr){toast('Error al guardar pago: '+pErr.message,'error');return;}
+  // Guardar pago inicial (solo si no es promotor)
+  if(!esPromotor&&pagoMonto>0){
+    const pId=nextId(DB.pagos,'PA');
+    const pObj={id:pId,reserva_id:id,fecha:document.getElementById('r-fecha').value,monto:pagoMonto,metodo:pagoMetodo,banco:document.getElementById('r-pago-banco').value,ref:document.getElementById('r-pago-ref').value,comment:'Pago inicial',tipo:'Pago'};
+    const{error:pErr}=await sb.from('pagos').upsert(pObj);
+    if(pErr){toast('Error al guardar pago: '+pErr.message,'error');return;}
+  }
+  // Guardar referidos del promotor
+  if(esPromotor&&referidosTmp.length>0){
+    for(const ref of referidosTmp){
+      await sb.from('referidos').upsert({id:ref.id,reserva_id:id,nombre:ref.nombre,telefono:ref.telefono,estado:'Pendiente'});
+    }
+  }
+  referidosTmp=[];
 
   // Aplicar saldo a favor si existe
   if(saldo>0){
@@ -1025,6 +1080,97 @@ function exportExcel(){
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.pagos.map(p=>({ID:p.id,Reserva:p.reserva_id,Fecha:fmtDate(p.fecha),Tipo:p.tipo||'Pago',Monto:p.monto,Metodo:p.metodo,Banco:p.banco,Ref:p.ref,Comentario:p.comment}))),'Pagos');
   XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.gastos.map(g=>({ID:g.id,Viaje:g.viaje_id,Cat:g.cat,Descripcion:g.descripcion,Fecha:fmtDate(g.fecha),Monto:g.monto}))),'Gastos');
   XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');
+}
+
+
+// ── PROMOTOR ────────────────────────────────────────────────────────────────
+let referidosTmp=[];
+
+function onTipoReservaChange(){
+  const esPromotor=document.getElementById('r-tipo').value==='Promotor';
+  // Mostrar/ocultar sección de referidos
+  document.getElementById('referidos-section').style.display=esPromotor?'block':'none';
+  // Mostrar/ocultar campo "referido por"
+  document.getElementById('r-referido-box').style.display=esPromotor?'none':'block';
+  // Mostrar/ocultar sección de pago
+  document.getElementById('pago-inicial-fields').style.display=esPromotor?'none':'block';
+  document.getElementById('promotor-pase-info').style.display=esPromotor?'block':'none';
+  if(esPromotor){
+    document.getElementById('r-precio').value='0';
+    calcTotalReserva();
+  }
+}
+
+function agregarReferido(){
+  const id='REF-'+Date.now();
+  referidosTmp.push({id,nombre:'',telefono:''});
+  renderReferidosTmp();
+}
+
+function renderReferidosTmp(){
+  document.getElementById('referidos-lista').innerHTML=referidosTmp.map((r,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 140px auto;gap:8px;margin-bottom:8px;align-items:center">
+      <input type="text" placeholder="Nombre completo" value="${r.nombre}" oninput="updateReferido('${r.id}','nombre',this.value)" style="padding:6px 10px;font-size:13px">
+      <input type="text" placeholder="Teléfono" value="${r.telefono}" oninput="updateReferido('${r.id}','telefono',this.value)" style="padding:6px 10px;font-size:13px">
+      <button class="btn btn-icon btn-danger" onclick="removeReferido('${r.id}')"><i class="ti ti-trash"></i></button>
+    </div>`).join('')||'<p style="font-size:12px;color:var(--gray-dk)">Sin personas agregadas aún.</p>';
+}
+
+function updateReferido(id,field,val){
+  const r=referidosTmp.find(x=>x.id===id);
+  if(r)r[field]=val;
+}
+
+function removeReferido(id){
+  referidosTmp=referidosTmp.filter(x=>x.id!==id);
+  renderReferidosTmp();
+}
+
+function populateReferidoSelect(){
+  // Llenar dropdown "Referido por" con promotores activos del mismo viaje
+  const vid=document.getElementById('r-viaje').value;
+  const promotores=DB.reservas.filter(r=>r.tipo==='Promotor'&&r.viaje_id===vid&&r.estado!=='Cancelado');
+  const sel=document.getElementById('r-referido');
+  sel.innerHTML='<option value="">— Ninguno —</option>'+promotores.map(r=>{
+    const cl=getCliente(r.cliente_id);
+    return`<option value="${r.id}">${cl.nombre||''} ${cl.apellido||''} (${r.id})</option>`;
+  }).join('');
+}
+
+async function verReferidos(rid){
+  const r=DB.reservas.find(x=>x.id===rid);
+  if(!r)return;
+  const cl=getCliente(r.cliente_id);
+  document.getElementById('modal-ref-title').textContent=`Referidos de ${cl.nombre} ${cl.apellido}`;
+  
+  // Cargar referidos de Supabase
+  const{data:refs}=await sb.from('referidos').select('*').eq('reserva_id',rid);
+  
+  // Contar reservas reales referidas
+  const reservasRef=DB.reservas.filter(x=>x.referido_por===rid&&x.estado!=='Cancelado');
+  
+  let html=`<div style="margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div class="kpi" style="padding:12px"><div class="kpi-label">Prometidos</div><div class="kpi-val accent">${(refs||[]).length}</div></div>
+      <div class="kpi" style="padding:12px"><div class="kpi-label">Confirmados</div><div class="kpi-val green">${reservasRef.length}</div></div>
+      <div class="kpi" style="padding:12px"><div class="kpi-label">Pendientes</div><div class="kpi-val red">${Math.max((refs||[]).length-reservasRef.length,0)}</div></div>
+    </div>`;
+  
+  if(refs&&refs.length>0){
+    html+=`<div style="font-size:12px;font-weight:600;color:var(--gray-dk);text-transform:uppercase;margin-bottom:8px">Personas prometidas</div>
+    <table style="min-width:unset"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Estado</th></tr></thead><tbody>`;
+    refs.forEach(ref=>{
+      const confirmado=reservasRef.find(rx=>{const c=getCliente(rx.cliente_id);return(c.nombre+' '+c.apellido).toLowerCase()===ref.nombre.toLowerCase();});
+      html+=`<tr><td>${ref.nombre}</td><td>${ref.telefono||'—'}</td><td><span class="badge ${confirmado?'badge-green':'badge-yellow'}">${confirmado?'✓ Reservó':'Pendiente'}</span></td></tr>`;
+    });
+    html+=`</tbody></table>`;
+  } else {
+    html+=`<p style="font-size:13px;color:var(--gray-dk)">No hay personas registradas aún.</p>`;
+  }
+  html+=`</div>`;
+  
+  document.getElementById('modal-ref-content').innerHTML=html;
+  document.getElementById('modal-referidos').classList.add('open');
 }
 
 // ── PRESUPUESTO ────────────────────────────────────────────────────────────
