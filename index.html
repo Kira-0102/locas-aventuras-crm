@@ -1324,33 +1324,48 @@ async function verReferidos(rid){
   const cl=getCliente(r.cliente_id);
   document.getElementById('modal-ref-title').textContent=`Referidos de ${cl.nombre} ${cl.apellido}`;
   
-  // Cargar referidos de Supabase
   const{data:refs}=await sb.from('referidos').select('*').eq('reserva_id',rid);
-  
-  // Contar reservas reales referidas
   const reservasRef=DB.reservas.filter(x=>x.referido_por===rid&&x.estado!=='Cancelado');
   
-  let html=`<div style="margin-bottom:14px">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-      <div class="kpi" style="padding:12px"><div class="kpi-label">Prometidos</div><div class="kpi-val accent">${(refs||[]).length}</div></div>
-      <div class="kpi" style="padding:12px"><div class="kpi-label">Confirmados</div><div class="kpi-val green">${reservasRef.length}</div></div>
-    </div>`;
+  let html=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Prometidos</div><div class="kpi-val accent">${(refs||[]).length}</div></div>
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Confirmados</div><div class="kpi-val green">${reservasRef.length}</div></div>
+  </div>`;
   
   if(refs&&refs.length>0){
-    html+=`<div style="font-size:12px;font-weight:600;color:var(--gray-dk);text-transform:uppercase;margin-bottom:8px">Personas prometidas</div>
-    <table style="min-width:unset"><thead><tr><th>Nombre</th><th>Teléfono</th><th>Estado</th></tr></thead><tbody>`;
+    html+=`<div style="font-size:12px;font-weight:600;color:var(--gray-dk);text-transform:uppercase;margin-bottom:8px">Personas prometidas</div>`;
     refs.forEach(ref=>{
-      const confirmado=reservasRef.find(rx=>{const c=getCliente(rx.cliente_id);return(c.nombre+' '+c.apellido).toLowerCase()===ref.nombre.toLowerCase();});
-      html+=`<tr><td>${ref.nombre}</td><td>${ref.telefono||'—'}</td><td><span class="badge ${confirmado?'badge-green':'badge-yellow'}">${confirmado?'✓ Reservó':'Pendiente'}</span></td></tr>`;
+      const confirmado=reservasRef.find(rx=>{const c2=getCliente(rx.cliente_id);return(c2.nombre+' '+c2.apellido).toLowerCase()===ref.nombre.toLowerCase();});
+      html+=`<div style="display:grid;grid-template-columns:1fr 130px 90px auto;gap:6px;margin-bottom:6px;align-items:center">
+        <input type="text" value="${ref.nombre||''}" onchange="updateRefDB('${ref.id}','nombre',this.value)" style="padding:6px 10px;font-size:13px" placeholder="Nombre">
+        <input type="text" value="${ref.telefono||''}" onchange="updateRefDB('${ref.id}','telefono',this.value)" style="padding:6px 10px;font-size:13px" placeholder="Teléfono">
+        <span class="badge ${confirmado?'badge-green':'badge-yellow'}">${confirmado?'✓ Reservó':'Pendiente'}</span>
+        <button class="btn btn-icon btn-danger" onclick="deleteRefDB('${ref.id}','${rid}')"><i class="ti ti-trash"></i></button>
+      </div>`;
     });
-    html+=`</tbody></table>`;
   } else {
     html+=`<p style="font-size:13px;color:var(--gray-dk)">No hay personas registradas aún.</p>`;
   }
-  html+=`</div>`;
+  
+  html+=`<button class="btn btn-sm" onclick="addRefDB('${rid}')" style="margin-top:8px"><i class="ti ti-plus"></i> Agregar persona</button>`;
   
   document.getElementById('modal-ref-content').innerHTML=html;
   document.getElementById('modal-referidos').classList.add('open');
+}
+
+async function updateRefDB(id,field,val){
+  await sb.from('referidos').update({[field]:val}).eq('id',id);
+}
+
+async function deleteRefDB(id,rid){
+  await sb.from('referidos').delete().eq('id',id);
+  await verReferidos(rid);
+}
+
+async function addRefDB(rid){
+  const id='REF-'+Date.now();
+  await sb.from('referidos').upsert({id,reserva_id:rid,nombre:'',telefono:'',estado:'Pendiente'});
+  await verReferidos(rid);
 }
 
 // ── PRESUPUESTO ────────────────────────────────────────────────────────────
