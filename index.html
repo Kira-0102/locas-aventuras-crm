@@ -447,6 +447,16 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   </div>
 </div>
 
+
+<!-- MODAL HISTORIAL CLIENTE -->
+<div class="modal-overlay" id="modal-historial">
+  <div class="modal modal-wide">
+    <div class="modal-head"><span class="modal-title" id="hist-title">Historial del cliente</span><button class="btn" onclick="closeModal('modal-historial')"><i class="ti ti-x"></i></button></div>
+    <div id="hist-content"></div>
+    <div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('modal-historial')">Cerrar</button></div>
+  </div>
+</div>
+
 <!-- MODAL VER REFERIDOS -->
 <div class="modal-overlay" id="modal-referidos">
   <div class="modal">
@@ -489,15 +499,29 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 <!-- MODAL GASTO -->
 <div class="modal-overlay" id="modal-gasto">
   <div class="modal">
-    <div class="modal-head"><span class="modal-title">Registrar gasto</span><button class="btn" onclick="closeModal('modal-gasto')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-head"><span class="modal-title" id="modal-gasto-title">Registrar gasto</span><button class="btn" onclick="closeModal('modal-gasto')"><i class="ti ti-x"></i></button></div>
+    <input type="hidden" id="g-id">
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Viaje</label><select id="g-viaje"><option value="">— Selecciona un viaje —</option></select></div>
+      <div class="form-group"><label class="form-label">Viaje</label><select id="g-viaje" onchange="onGastoViajeChange()"><option value="">— Selecciona un viaje —</option></select></div>
       <div class="form-group"><label class="form-label">Categoría</label><select id="g-cat"><option>Transporte</option><option>Entradas</option><option>Alimentación</option><option>Alojamiento</option><option>Guía</option><option>Marketing</option><option>Otro</option></select></div>
     </div>
+    <div class="form-group">
+      <label class="form-label">Tipo de costo</label>
+      <select id="g-modo" onchange="onGastoModoChange()">
+        <option value="fijo">Monto fijo (total del gasto)</option>
+        <option value="persona">Por persona (se multiplica × pasajeros)</option>
+      </select>
+    </div>
+    <div id="g-info-pax" class="saldo-box" style="display:none"><i class="ti ti-users"></i> Este viaje tiene <strong id="g-pax-count">0</strong> pasajeros activos.</div>
     <div class="form-group"><label class="form-label">Descripción</label><input id="g-desc"></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Fecha</label><input id="g-fecha" type="date"></div>
-      <div class="form-group"><label class="form-label">Monto (RD$)</label><input id="g-monto" type="number"></div>
+      <div class="form-group"><label class="form-label" id="g-monto-label">Monto (RD$)</label><input id="g-monto" type="number" oninput="calcGastoTotal()"></div>
+    </div>
+    <div class="pago-resumen" id="g-resumen" style="display:none">
+      <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Precio por persona</span><span id="g-r-precio">—</span></div>
+      <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Pasajeros del viaje</span><span id="g-r-pax">—</span></div>
+      <div class="pago-resumen-row"><span>Total del gasto</span><span id="g-r-total">—</span></div>
     </div>
     <div class="modal-actions"><button class="btn" onclick="closeModal('modal-gasto')">Cancelar</button><button class="btn btn-primary" onclick="saveGasto()">Guardar</button></div>
   </div>
@@ -685,7 +709,7 @@ function renderClientes(q=''){
   document.getElementById('table-clientes').innerHTML=DB.clientes.filter(c=>!q||(c.nombre+' '+c.apellido).toLowerCase().includes(q.toLowerCase())).map(c=>{
     const viajes=DB.reservas.filter(r=>r.cliente_id===c.id&&r.estado==='Completó viaje').length;
     const saldo=Number(c.saldo_favor||0);
-    return`<tr><td>${c.id}</td><td><strong>${c.nombre} ${c.apellido}</strong></td><td>${c.tel}</td><td>${c.ig||'—'}</td><td>${c.email||'—'}</td><td style="color:${saldo>0?'var(--teal)':'var(--gray-dk)'};font-weight:${saldo>0?'600':'400'}">${saldo>0?fmt(saldo):'—'}</td><td>${viajes}</td><td>${acBtns(`editCliente('${c.id}')`,`deleteCliente('${c.id}')`)}</td></tr>`;
+    return`<tr><td>${c.id}</td><td><strong style="cursor:pointer;color:var(--teal)" onclick="verHistorial('${c.id}')" title="Ver historial">${c.nombre} ${c.apellido}</strong></td><td>${c.tel}</td><td>${c.ig||'—'}</td><td>${c.email||'—'}</td><td style="color:${saldo>0?'var(--teal)':'var(--gray-dk)'};font-weight:${saldo>0?'600':'400'}">${saldo>0?fmt(saldo):'—'}</td><td>${viajes}</td><td>${acBtns(`editCliente('${c.id}')`,`deleteCliente('${c.id}')`)}</td></tr>`;
   }).join('')||empty(8);
 }
 
@@ -723,9 +747,10 @@ function renderPagos(q=''){
 }
 
 function renderGastos(){
-  document.getElementById('table-gastos').innerHTML=DB.gastos.map(g=>{
+  const gastosOrdenados=[...DB.gastos].sort((a,b)=>{const nA=parseInt(a.id.replace(/\D/g,''))||0;const nB=parseInt(b.id.replace(/\D/g,''))||0;return nA-nB;});
+  document.getElementById('table-gastos').innerHTML=gastosOrdenados.map(g=>{
     const vj=getViaje(g.viaje_id);
-    return`<tr><td>${g.id}</td><td>${vj.destino||g.viaje_id}</td><td>${g.cat}</td><td>${g.descripcion}</td><td>${fmtDate(g.fecha)}</td><td><strong>${fmt(g.monto)}</strong></td><td><div class="actions-cell"><button class="btn btn-icon btn-danger" onclick="deleteGasto('${g.id}')"><i class="ti ti-trash"></i></button></div></td></tr>`;
+    return`<tr><td>${g.id}</td><td>${vj.destino||g.viaje_id}</td><td>${g.cat}</td><td>${g.descripcion||'—'}</td><td>${fmtDate(g.fecha)}</td><td><strong>${fmt(g.monto)}</strong></td><td>${acBtns(`editGasto('${g.id}')`,`deleteGasto('${g.id}')`)}</td></tr>`;
   }).join('')||empty(7);
 }
 
@@ -772,7 +797,17 @@ function openAdd(){
     document.getElementById('pago-resumen-box').style.display='none';
     document.getElementById('modal-pago-title').textContent='Registrar pago';
   }
-  if(currentPage==='gastos'){populateViajeSelect();document.getElementById('g-fecha').value=today();['g-desc','g-monto'].forEach(f=>document.getElementById(f).value='');}
+  if(currentPage==='gastos'){
+    populateViajeSelect();
+    document.getElementById('g-id').value='';
+    document.getElementById('g-fecha').value=today();
+    ['g-desc','g-monto'].forEach(f=>document.getElementById(f).value='');
+    document.getElementById('g-modo').value='fijo';
+    document.getElementById('g-resumen').style.display='none';
+    document.getElementById('g-info-pax').style.display='none';
+    document.getElementById('g-monto-label').textContent='Monto total (RD$)';
+    document.getElementById('modal-gasto-title').textContent='Registrar gasto';
+  }
   document.getElementById(m).classList.add('open');
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
@@ -859,12 +894,13 @@ async function saveReserva(){
   if(!vid||!cid){toast('Selecciona un viaje y un cliente','error');return;}
   const tipo=document.getElementById('r-tipo').value;
   const esPromotor=tipo==='Promotor';
-  const precio=esPromotor?0:Number(document.getElementById('r-precio').value);
+  const precio=Number(document.getElementById('r-precio').value)||0;
   const pasajeros=Number(document.getElementById('r-pasajeros').value);
-  const pagoMonto=esPromotor?0:(Number(document.getElementById('r-pago-monto').value)||0);
-  const pagoMetodo=esPromotor?'Pase libre':document.getElementById('r-pago-metodo').value;
+  const pagoMonto=Number(document.getElementById('r-pago-monto').value)||0;
+  const pagoMetodo=document.getElementById('r-pago-metodo').value;
   if(!esPromotor&&pagoMonto<=0){toast('Ingresa el monto del pago inicial','error');return;}
   if(!esPromotor&&!pagoMetodo){toast('Selecciona el método de pago','error');return;}
+  if(esPromotor&&pagoMonto>0&&!pagoMetodo){toast('Selecciona el método de pago','error');return;}
 
   const c=getCliente(cid);
   const saldo=Math.min(Number(c.saldo_favor||0),precio*pasajeros);
@@ -872,7 +908,7 @@ async function saveReserva(){
 
   // Guardar reserva
   const referidoPor=document.getElementById('r-referido').value||null;
-  const rObj={id,viaje_id:vid,cliente_id:cid,pickup:document.getElementById('r-pickup').value,precio,pasajeros,fecha:document.getElementById('r-fecha').value,estado:esPromotor?'Pagado':'Reservado',tipo,referido_por:referidoPor};
+  const rObj={id,viaje_id:vid,cliente_id:cid,pickup:document.getElementById('r-pickup').value,precio,pasajeros,fecha:document.getElementById('r-fecha').value,estado:(precio*pasajeros-pagoMonto<=0)?'Pagado':'Reservado',tipo,referido_por:referidoPor};
   const{error:rErr}=await sb.from('reservas').upsert(rObj);
   if(rErr){toast('Error al guardar reserva: '+rErr.message,'error');return;}
 
@@ -886,7 +922,8 @@ async function saveReserva(){
   // Guardar referidos del promotor
   if(esPromotor&&referidosTmp.length>0){
     for(const ref of referidosTmp){
-      await sb.from('referidos').upsert({id:ref.id,reserva_id:id,nombre:ref.nombre,telefono:ref.telefono,estado:'Pendiente'});
+      if(!ref.nombre||!ref.nombre.trim())continue;
+      await sb.from('referidos').upsert({id:ref.id,reserva_id:id,nombre:ref.nombre.trim(),telefono:ref.telefono||'',estado:'Pendiente'});
     }
   }
   referidosTmp=[];
@@ -1060,14 +1097,73 @@ async function deletePago(id){confirm_(`¿Eliminar el pago ${id}?`,async()=>{
 
 // ── GASTO CRUD ─────────────────────────────────────────────────────────────
 function populateViajeSelect(){document.getElementById('g-viaje').innerHTML='<option value="">— Selecciona un viaje —</option>'+DB.viajes.map(v=>`<option value="${v.id}">${v.destino} (${fmtDate(v.fecha)})</option>`).join('');}
+function onGastoViajeChange(){
+  const vid=document.getElementById('g-viaje').value;
+  const pax=vid?getPasajeros(vid):0;
+  document.getElementById('g-pax-count').textContent=pax;
+  document.getElementById('g-info-pax').style.display=(vid&&document.getElementById('g-modo').value==='persona')?'block':'none';
+  calcGastoTotal();
+}
+
+function onGastoModoChange(){
+  const modo=document.getElementById('g-modo').value;
+  const esPersona=modo==='persona';
+  document.getElementById('g-monto-label').textContent=esPersona?'Precio por persona (RD$)':'Monto total (RD$)';
+  document.getElementById('g-info-pax').style.display=(esPersona&&document.getElementById('g-viaje').value)?'block':'none';
+  document.getElementById('g-resumen').style.display=esPersona?'block':'none';
+  calcGastoTotal();
+}
+
+function calcGastoTotal(){
+  const modo=document.getElementById('g-modo').value;
+  if(modo!=='persona'){document.getElementById('g-resumen').style.display='none';return;}
+  const vid=document.getElementById('g-viaje').value;
+  const pax=vid?getPasajeros(vid):0;
+  const precioPax=Number(document.getElementById('g-monto').value)||0;
+  const total=precioPax*pax;
+  document.getElementById('g-r-precio').textContent=fmt(precioPax);
+  document.getElementById('g-r-pax').textContent=pax+' pasajero'+(pax!==1?'s':'');
+  document.getElementById('g-r-total').textContent=fmt(total);
+  document.getElementById('g-r-total').style.color=total>0?'var(--teal)':'var(--gray-dk)';
+  document.getElementById('g-resumen').style.display='block';
+}
+
 async function saveGasto(){
-  const id=nextId(DB.gastos,'G');
   const vid=document.getElementById('g-viaje').value;
   if(!vid){toast('Selecciona un viaje','error');return;}
-  const obj={id,viaje_id:vid,cat:document.getElementById('g-cat').value,descripcion:document.getElementById('g-desc').value,fecha:document.getElementById('g-fecha').value,monto:Number(document.getElementById('g-monto').value)};
+  const id=document.getElementById('g-id').value||nextId(DB.gastos,'G');
+  const modo=document.getElementById('g-modo').value;
+  const montoIngresado=Number(document.getElementById('g-monto').value)||0;
+  if(montoIngresado<=0){toast('Ingresa el monto','error');return;}
+  let montoFinal=montoIngresado;
+  let desc=document.getElementById('g-desc').value;
+  if(modo==='persona'){
+    const pax=getPasajeros(vid);
+    if(pax<=0){toast('Este viaje no tiene pasajeros registrados','error');return;}
+    montoFinal=montoIngresado*pax;
+    const sufijo=` (${fmt(montoIngresado)} x ${pax} pax)`;
+    desc=(desc||document.getElementById('g-cat').value)+sufijo;
+  }
+  const obj={id,viaje_id:vid,cat:document.getElementById('g-cat').value,descripcion:desc,fecha:document.getElementById('g-fecha').value,monto:montoFinal};
   const{error}=await sb.from('gastos').upsert(obj);
   if(error){toast('Error: '+error.message,'error');return;}
   toast('Gasto guardado ✓');closeModal('modal-gasto');await loadAll();
+}
+
+function editGasto(id){
+  const g=DB.gastos.find(x=>x.id===id);
+  if(!g)return;
+  populateViajeSelect();
+  document.getElementById('g-id').value=g.id;
+  document.getElementById('g-viaje').value=g.viaje_id;
+  document.getElementById('g-cat').value=g.cat;
+  document.getElementById('g-desc').value=g.descripcion||'';
+  document.getElementById('g-fecha').value=g.fecha;
+  document.getElementById('g-monto').value=g.monto;
+  document.getElementById('g-modo').value='fijo';
+  onGastoModoChange();
+  document.getElementById('modal-gasto-title').textContent='Editar gasto';
+  document.getElementById('modal-gasto').classList.add('open');
 }
 async function deleteGasto(id){confirm_('¿Eliminar este gasto?',async()=>{await sb.from('gastos').delete().eq('id',id);toast('Gasto eliminado');await loadAll();});}
 
@@ -1082,6 +1178,80 @@ function exportExcel(){
   XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');
 }
 
+
+
+// ── HISTORIAL DEL CLIENTE ──────────────────────────────────────────────────
+async function verHistorial(cid){
+  const cl=getCliente(cid);
+  if(!cl.id)return;
+  document.getElementById('hist-title').textContent=`Historial de ${cl.nombre} ${cl.apellido}`;
+
+  const reservasCliente=DB.reservas.filter(r=>r.cliente_id===cid);
+  const completados=reservasCliente.filter(r=>r.estado==='Completó viaje').length;
+  const cancelados=reservasCliente.filter(r=>r.estado==='Cancelado').length;
+  const totalPagado=reservasCliente.reduce((s,r)=>s+getPagado(r.id),0);
+  const balanceTotal=reservasCliente.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>{
+    return s+Math.max(r.precio*r.pasajeros-getPagado(r.id),0);
+  },0);
+  const vecesPromotor=reservasCliente.filter(r=>r.tipo==='Promotor').length;
+
+  // Contar referidos totales
+  let totalReferidos=0;
+  const reservasPromotor=reservasCliente.filter(r=>r.tipo==='Promotor');
+  for(const rp of reservasPromotor){
+    totalReferidos+=DB.reservas.filter(x=>x.referido_por===rp.id&&x.estado!=='Cancelado').length;
+  }
+
+  let html=`
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+      <div class="kpi" style="padding:12px"><div class="kpi-label">Total viajes</div><div class="kpi-val accent" style="font-size:20px">${reservasCliente.length}</div></div>
+      <div class="kpi" style="padding:12px"><div class="kpi-label">Completados</div><div class="kpi-val green" style="font-size:20px">${completados}</div></div>
+      <div class="kpi" style="padding:12px"><div class="kpi-label">Total pagado</div><div class="kpi-val green" style="font-size:16px">${fmt(totalPagado)}</div></div>
+      <div class="kpi" style="padding:12px"><div class="kpi-label">Balance</div><div class="kpi-val ${balanceTotal>0?'red':'green'}" style="font-size:16px">${fmt(balanceTotal)}</div></div>
+    </div>`;
+
+  // Datos de contacto
+  html+=`<div style="background:var(--gray-lt);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:13px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><span style="color:var(--gray-dk)">Teléfono:</span> <strong>${cl.tel||'—'}</strong></div>
+      <div><span style="color:var(--gray-dk)">Instagram:</span> <strong>${cl.ig||'—'}</strong></div>
+      <div><span style="color:var(--gray-dk)">Correo:</span> <strong>${cl.email||'—'}</strong></div>
+      <div><span style="color:var(--gray-dk)">Saldo a favor:</span> <strong style="color:${Number(cl.saldo_favor||0)>0?'var(--teal)':'var(--gray-dk)'}">${fmt(cl.saldo_favor||0)}</strong></div>
+    </div>
+  </div>`;
+
+  if(vecesPromotor>0){
+    html+=`<div class="saldo-box" style="display:block;background:#FFF0E6;border-color:var(--orange);color:#c45f00">
+      <i class="ti ti-star"></i> Ha sido promotor <strong>${vecesPromotor}</strong> ${vecesPromotor===1?'vez':'veces'} y ha traído <strong>${totalReferidos}</strong> ${totalReferidos===1?'persona':'personas'}.
+    </div>`;
+  }
+
+  // Tabla de viajes
+  if(reservasCliente.length>0){
+    const ordenadas=[...reservasCliente].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+    html+=`<div class="section-label">Viajes realizados</div>
+    <div class="table-wrap"><table style="min-width:unset"><thead><tr><th>Viaje</th><th>Fecha</th><th>Pas.</th><th>Total</th><th>Pagado</th><th>Balance</th><th>Estado</th></tr></thead><tbody>`;
+    ordenadas.forEach(r=>{
+      const vj=getViaje(r.viaje_id);
+      const tot=r.precio*r.pasajeros;
+      const pag=getPagado(r.id);
+      const bal=Math.max(tot-pag,0);
+      const estado=r.estado==='Cancelado'||r.estado==='No asistió'||r.estado==='Completó viaje'?r.estado:estadoAuto(r.id);
+      const promo=r.tipo==='Promotor'?' <span class="badge badge-orange" style="font-size:9px">Promotor</span>':'';
+      html+=`<tr><td>${vj.destino||'—'}${promo}</td><td>${fmtDate(r.fecha)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td></tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  } else {
+    html+=`<p style="font-size:13px;color:var(--gray-dk);text-align:center;padding:20px">Este cliente aún no tiene viajes registrados.</p>`;
+  }
+
+  if(cl.notas){
+    html+=`<div class="section-label">Notas</div><p style="font-size:13px;color:var(--text)">${cl.notas}</p>`;
+  }
+
+  document.getElementById('hist-content').innerHTML=html;
+  document.getElementById('modal-historial').classList.add('open');
+}
 
 // ── PROMOTOR ────────────────────────────────────────────────────────────────
 let referidosTmp=[];
@@ -1110,8 +1280,8 @@ function agregarReferido(){
 function renderReferidosTmp(){
   document.getElementById('referidos-lista').innerHTML=referidosTmp.map((r,i)=>`
     <div style="display:grid;grid-template-columns:1fr 140px auto;gap:8px;margin-bottom:8px;align-items:center">
-      <input type="text" placeholder="Nombre completo" value="${r.nombre}" oninput="updateReferido('${r.id}','nombre',this.value)" style="padding:6px 10px;font-size:13px">
-      <input type="text" placeholder="Teléfono" value="${r.telefono}" oninput="updateReferido('${r.id}','telefono',this.value)" style="padding:6px 10px;font-size:13px">
+      <input type="text" placeholder="Nombre completo" value="${r.nombre}" onchange="updateReferido('${r.id}','nombre',this.value)" onblur="updateReferido('${r.id}','nombre',this.value)" style="padding:6px 10px;font-size:13px">
+      <input type="text" placeholder="Teléfono" value="${r.telefono}" onchange="updateReferido('${r.id}','telefono',this.value)" onblur="updateReferido('${r.id}','telefono',this.value)" style="padding:6px 10px;font-size:13px">
       <button class="btn btn-icon btn-danger" onclick="removeReferido('${r.id}')"><i class="ti ti-trash"></i></button>
     </div>`).join('')||'<p style="font-size:12px;color:var(--gray-dk)">Sin personas agregadas aún.</p>';
 }
@@ -1150,10 +1320,9 @@ async function verReferidos(rid){
   const reservasRef=DB.reservas.filter(x=>x.referido_por===rid&&x.estado!=='Cancelado');
   
   let html=`<div style="margin-bottom:14px">
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
       <div class="kpi" style="padding:12px"><div class="kpi-label">Prometidos</div><div class="kpi-val accent">${(refs||[]).length}</div></div>
       <div class="kpi" style="padding:12px"><div class="kpi-label">Confirmados</div><div class="kpi-val green">${reservasRef.length}</div></div>
-      <div class="kpi" style="padding:12px"><div class="kpi-label">Pendientes</div><div class="kpi-val red">${Math.max((refs||[]).length-reservasRef.length,0)}</div></div>
     </div>`;
   
   if(refs&&refs.length>0){
