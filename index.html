@@ -1347,7 +1347,15 @@ async function verReferidos(rid){
     html+=`<p style="font-size:13px;color:var(--gray-dk)">No hay personas registradas aún.</p>`;
   }
   
-  html+=`<button class="btn btn-sm" onclick="addRefDB('${rid}')" style="margin-top:8px"><i class="ti ti-plus"></i> Agregar persona</button>`;
+html+=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;align-items:end">
+  <div class="form-group" style="margin:0">
+    <label class="form-label">Agregar desde clientes existentes</label>
+    <select id="ref-cliente-select" style="font-size:13px">
+      <option value="">— Escribir manualmente —</option>${DB.clientes.map(cx=>`<option value="${cx.id}">${cx.nombre} ${cx.apellido} — ${cx.tel||'sin tel'}</option>`).join('')}
+    </select>
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="addRefFromSelect('${rid}')" style="margin-bottom:1px"><i class="ti ti-plus"></i> Agregar</button>
+</div>`;
   
   document.getElementById('modal-ref-content').innerHTML=html;
   document.getElementById('modal-referidos').classList.add('open');
@@ -1366,8 +1374,20 @@ async function addRefDB(rid){
   const id='REF-'+Date.now();
   await sb.from('referidos').upsert({id,reserva_id:rid,nombre:'',telefono:'',estado:'Pendiente'});
   await verReferidos(rid);
+  
 }
-
+async function addRefFromSelect(rid){
+  const sel=document.getElementById('ref-cliente-select');
+  const cid=sel.value;
+  const id='REF-'+Date.now();
+  if(cid){
+    const cl=getCliente(cid);
+    await sb.from('referidos').upsert({id,reserva_id:rid,nombre:(cl.nombre+' '+cl.apellido).trim(),telefono:cl.tel||'',estado:'Pendiente'});
+  } else {
+    await sb.from('referidos').upsert({id,reserva_id:rid,nombre:'',telefono:'',estado:'Pendiente'});
+  }
+  await verReferidos(rid);
+}
 // ── PRESUPUESTO ────────────────────────────────────────────────────────────
 let otrosCostos=[];
 
