@@ -672,12 +672,12 @@ function renderReservas(q=''){
 }
 
 function renderPagos(q=''){
-  // Ordenar: primero reservas con balance > 0
-  const sorted=[...DB.pagos].sort((a,b)=>{
-    const balA=Math.max((getCliente(DB.reservas.find(r=>r.id===a.reserva_id)?.cliente_id||'')?.saldo_favor||0),0);
-    return 0;
+  const pagosOrdenados=[...DB.pagos].sort((a,b)=>{
+    const numA=parseInt(a.id.replace(/\D/g,''))||0;
+    const numB=parseInt(b.id.replace(/\D/g,''))||0;
+    return numA-numB;
   });
-  document.getElementById('table-pagos').innerHTML=DB.pagos.filter(p=>{
+  document.getElementById('table-pagos').innerHTML=pagosOrdenados.filter(p=>{
     if(!q)return true;const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);
     return(p.reserva_id+(cl.nombre||'')+(cl.apellido||'')+p.metodo+(p.ref||'')).toLowerCase().includes(q.toLowerCase());
   }).map(p=>{
