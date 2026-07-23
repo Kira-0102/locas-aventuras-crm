@@ -46,11 +46,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .db-dot.error{background:var(--red)}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--text);font-size:13px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
 .btn:hover{background:var(--gray-lt)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-primary{background:var(--teal);color:#fff;border-color:var(--teal)}
 .btn-primary:hover{background:#0A6E62}
 .btn-danger{color:var(--red);border-color:#fcc}
 .btn-danger:hover{background:var(--red-lt)}
-.btn-success{background:var(--green);color:#fff;border-color:var(--green)}
 .btn-icon{padding:5px 8px;font-size:12px}
 .btn-sm{padding:5px 10px;font-size:12px}
 .content{flex:1;overflow-y:auto;padding:20px;background:linear-gradient(160deg,#FDF9F3 0%,#F7F3EA 45%,#EFF7F6 100%)}
@@ -87,8 +87,10 @@ tr:hover td{background:#F7FCFB}
 .modal-title{font-size:16px;font-weight:600;color:var(--navy)}
 .form-group{margin-bottom:14px}
 .form-label{font-size:12px;font-weight:600;color:var(--gray-dk);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+.form-label .req{color:var(--red)}
 input,select,textarea{width:100%;padding:9px 12px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--text);font-size:13px;font-family:inherit;transition:border .15s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,140,126,.15)}
+input:disabled{background:var(--gray-lt);color:var(--gray-dk);cursor:not-allowed}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 .search-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
@@ -105,7 +107,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 .pago-resumen{background:var(--gray-lt);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;font-size:13px;border:1px solid var(--border)}
 .pago-resumen-row{display:flex;justify-content:space-between;margin-bottom:5px}
 .pago-resumen-row:last-child{margin:0;font-weight:600;padding-top:8px;border-top:1px solid var(--border)}
-.saldo-box{background:var(--green-lt);border:1px solid var(--green);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:13px;color:#027a5f;display:none}
+.info-box{border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:13px;display:none}
+.info-box.show{display:block}
+.info-teal{background:var(--green-lt);border:1px solid var(--green);color:#0A7A69}
+.info-orange{background:var(--orange-lt);border:1px solid var(--orange);color:#C45F00}
+.info-sky{background:var(--sky-lt);border:1px solid var(--sky);color:#1D7F94}
+.info-red{background:var(--red-lt);border:1px solid var(--red);color:var(--red)}
 .divider{border:none;border-top:1px solid var(--border);margin:16px 0}
 .error-banner{background:var(--red-lt);border:1px solid #fcc;border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--red);display:none}
 .toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-width:calc(100vw - 48px)}
@@ -127,9 +134,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   .content{padding:12px}
   .topbar{padding:0 12px}
 }
-@media(min-width:769px) and (max-width:1100px){
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
-}
+@media(min-width:769px) and (max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -173,7 +178,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
     <div class="content">
       <div id="error-banner" class="error-banner"></div>
 
-      <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="kpi-grid">
           <div class="kpi"><div class="kpi-label">Viajes activos</div><div class="kpi-val accent" id="kpi-viajes">—</div></div>
@@ -195,79 +199,64 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
         </div>
       </div>
 
-      <!-- VIAJES -->
       <div class="page" id="page-viajes">
         <div class="search-bar"><i class="ti ti-search" style="color:var(--gray-dk)"></i><input type="text" placeholder="Buscar viaje..." oninput="renderViajes(this.value)"></div>
         <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Destino</th><th>Fecha</th><th>Precio</th><th>Cap.</th><th>Puntos</th><th>Pasajeros</th><th>% Ocupado</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-viajes"></tbody></table></div></div>
       </div>
 
-      <!-- CLIENTES -->
       <div class="page" id="page-clientes">
         <div class="search-bar"><i class="ti ti-search" style="color:var(--gray-dk)"></i><input type="text" placeholder="Buscar cliente..." oninput="renderClientes(this.value)"></div>
         <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Teléfono/WhatsApp</th><th>Instagram</th><th>Correo</th><th>Saldo a favor</th><th>Viajes</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-clientes"></tbody></table></div></div>
       </div>
 
-      <!-- RESERVAS -->
       <div class="page" id="page-reservas">
         <div class="search-bar"><i class="ti ti-search" style="color:var(--gray-dk)"></i><input type="text" placeholder="Buscar reserva..." oninput="renderReservas(this.value)"></div>
         <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Cliente</th><th>Viaje</th><th>Punto recogida</th><th>Hora</th><th>Precio</th><th>Pas.</th><th>Total</th><th>Pagado</th><th>Balance</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-reservas"></tbody></table></div></div>
       </div>
 
-      <!-- PAGOS -->
       <div class="page" id="page-pagos">
         <div class="search-bar"><i class="ti ti-search" style="color:var(--gray-dk)"></i><input type="text" placeholder="Buscar pago..." oninput="renderPagos(this.value)"></div>
         <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Reserva</th><th>Cliente</th><th>Fecha</th><th>Tipo</th><th>Monto</th><th>Método</th><th>Banco</th><th>Referencia</th><th>Comentario</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-pagos"></tbody></table></div></div>
       </div>
 
-      <!-- GASTOS -->
-      <!-- PRESUPUESTO -->
+      <div class="page" id="page-gastos">
+        <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Viaje</th><th>Categoría</th><th>Descripción</th><th>Fecha</th><th>Monto</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-gastos"></tbody></table></div></div>
+      </div>
+
       <div class="page" id="page-presupuesto">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-
-          <!-- TRANSPORTE -->
           <div class="card">
             <div class="card-title">🚌 Cotización de transporte</div>
             <table style="min-width:unset">
-              <thead><tr><th>Tipo</th><th>Capacidad</th><th>Precio chofer (RD$)</th><th>Costo/persona</th><th></th></tr></thead>
+              <thead><tr><th>Tipo</th><th>Cap.</th><th>Precio chofer</th><th>Costo/persona</th><th></th></tr></thead>
               <tbody>
-                <tr>
-                  <td>Minibús</td><td>15</td>
+                <tr><td>Minibús</td><td>15</td>
                   <td><input type="number" id="t-mini" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
                   <td id="cpp-mini" style="font-weight:600;color:var(--teal)">—</td>
-                  <td><input type="radio" name="bus" value="mini" onchange="calcPresupuesto()"></td>
-                </tr>
-                <tr style="background:var(--gray-lt)">
-                  <td>Autobús mediano</td><td>30</td>
+                  <td><input type="radio" name="bus" value="mini" onchange="calcPresupuesto()" style="width:auto"></td></tr>
+                <tr style="background:var(--gray-lt)"><td>Autobús mediano</td><td>30</td>
                   <td><input type="number" id="t-med" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
                   <td id="cpp-med" style="font-weight:600;color:var(--teal)">—</td>
-                  <td><input type="radio" name="bus" value="med" onchange="calcPresupuesto()" checked></td>
-                </tr>
-                <tr>
-                  <td>Autobús grande</td><td>50</td>
+                  <td><input type="radio" name="bus" value="med" onchange="calcPresupuesto()" checked style="width:auto"></td></tr>
+                <tr><td>Autobús grande</td><td>50</td>
                   <td><input type="number" id="t-grande" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
                   <td id="cpp-grande" style="font-weight:600;color:var(--teal)">—</td>
-                  <td><input type="radio" name="bus" value="grande" onchange="calcPresupuesto()"></td>
-                </tr>
+                  <td><input type="radio" name="bus" value="grande" onchange="calcPresupuesto()" style="width:auto"></td></tr>
               </tbody>
             </table>
+            <div class="form-group" style="margin-top:12px">
+              <label class="form-label">Coordinadores que no pagan</label>
+              <input type="number" id="coordinadores" value="4" min="0" oninput="calcPresupuesto()">
+              <p style="font-size:11px;color:var(--gray-dk);margin-top:4px">Se restan de la capacidad vendible.</p>
+            </div>
           </div>
 
-          <!-- COSTOS POR PERSONA -->
           <div class="card">
             <div class="card-title">👤 Costos por persona</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-              <div class="form-group" style="margin:0">
-                <label class="form-label">Refrigerio (RD$) <span style="color:var(--teal);font-size:10px">siempre</span></label>
-                <input type="number" id="c-refri" placeholder="0" oninput="calcPresupuesto()">
-              </div>
-              <div class="form-group" style="margin:0">
-                <label class="form-label">Entrada al lugar (RD$)</label>
-                <input type="number" id="c-entrada" placeholder="0" oninput="calcPresupuesto()">
-              </div>
-              <div class="form-group" style="margin:0">
-                <label class="form-label">Almuerzo (RD$)</label>
-                <input type="number" id="c-almuerzo" placeholder="0" oninput="calcPresupuesto()">
-              </div>
+              <div class="form-group" style="margin:0"><label class="form-label">Refrigerio <span style="color:var(--teal);font-size:10px">siempre</span></label><input type="number" id="c-refri" placeholder="0" oninput="calcPresupuesto()"></div>
+              <div class="form-group" style="margin:0"><label class="form-label">Entrada al lugar</label><input type="number" id="c-entrada" placeholder="0" oninput="calcPresupuesto()"></div>
+              <div class="form-group" style="margin:0"><label class="form-label">Almuerzo</label><input type="number" id="c-almuerzo" placeholder="0" oninput="calcPresupuesto()"></div>
             </div>
             <div class="section-label" style="margin-top:8px">Otros costos</div>
             <div id="otros-lista"></div>
@@ -275,58 +264,35 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
           </div>
         </div>
 
-        <!-- RESULTADO -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
           <div class="card">
             <div class="card-title">📊 Resultado del presupuesto</div>
-            <table style="min-width:unset">
-              <tbody>
-                <tr><td style="color:var(--gray-dk)">Transporte por persona</td><td id="r-transporte" style="font-weight:600;text-align:right">—</td></tr>
-                <tr><td style="color:var(--gray-dk)">Refrigerio</td><td id="r-refri" style="font-weight:600;text-align:right">—</td></tr>
-                <tr><td style="color:var(--gray-dk)">Entrada</td><td id="r-entrada" style="font-weight:600;text-align:right">—</td></tr>
-                <tr><td style="color:var(--gray-dk)">Almuerzo</td><td id="r-almuerzo" style="font-weight:600;text-align:right">—</td></tr>
-                <tr id="r-otros-row" style="display:none"><td style="color:var(--gray-dk)">Otros</td><td id="r-otros" style="font-weight:600;text-align:right">—</td></tr>
-                <tr style="border-top:2px solid var(--border)">
-                  <td style="font-weight:700;color:var(--navy)">Costo total/persona</td>
-                  <td id="r-costo-total" style="font-weight:700;color:var(--navy);text-align:right;font-size:16px">—</td>
-                </tr>
-                <tr>
-                  <td style="color:var(--gray-dk)">
-                    Margen de ganancia
-                    <input type="number" id="margen" value="30" min="0" max="100" oninput="calcPresupuesto()" style="width:55px;padding:3px 6px;font-size:12px;display:inline-block;margin-left:6px">%
-                  </td>
-                  <td id="r-margen" style="font-weight:600;color:var(--orange);text-align:right">—</td>
-                </tr>
-                <tr style="background:var(--teal-lt)">
-                  <td style="font-weight:700;color:var(--teal);font-size:14px">Precio sugerido</td>
-                  <td id="r-precio-sug" style="font-weight:700;color:var(--teal);text-align:right;font-size:18px">—</td>
-                </tr>
-                <tr>
-                  <td style="color:var(--gray-dk)">Precio final (editable)</td>
-                  <td><input type="number" id="precio-final" placeholder="0" oninput="calcSensibilidad()" style="text-align:right;font-weight:600;font-size:14px"></td>
-                </tr>
-              </tbody>
-            </table>
-            <div style="margin-top:14px;display:flex;gap:8px">
+            <table style="min-width:unset"><tbody>
+              <tr><td style="color:var(--gray-dk)">Transporte por persona</td><td id="r-transporte" style="font-weight:600;text-align:right">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Refrigerio</td><td id="r-refri" style="font-weight:600;text-align:right">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Entrada</td><td id="r-entrada" style="font-weight:600;text-align:right">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Almuerzo</td><td id="r-almuerzo" style="font-weight:600;text-align:right">—</td></tr>
+              <tr id="r-otros-row" style="display:none"><td style="color:var(--gray-dk)">Otros</td><td id="r-otros" style="font-weight:600;text-align:right">—</td></tr>
+              <tr style="border-top:2px solid var(--border)"><td style="font-weight:700;color:var(--navy)">Costo total/persona</td><td id="r-costo-total" style="font-weight:700;color:var(--navy);text-align:right;font-size:16px">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Margen<input type="number" id="margen" value="30" min="0" max="200" oninput="calcPresupuesto()" style="width:55px;padding:3px 6px;font-size:12px;display:inline-block;margin-left:6px">%</td><td id="r-margen" style="font-weight:600;color:var(--orange);text-align:right">—</td></tr>
+              <tr style="background:var(--teal-lt)"><td style="font-weight:700;color:var(--teal);font-size:14px">Precio sugerido</td><td id="r-precio-sug" style="font-weight:700;color:var(--teal);text-align:right;font-size:18px">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Precio final (editable)</td><td><input type="number" id="precio-final" placeholder="0" oninput="calcSensibilidad()" style="text-align:right;font-weight:600;font-size:14px"></td></tr>
+            </tbody></table>
+            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-sm" onclick="usarPrecioSugerido()"><i class="ti ti-wand"></i> Usar precio sugerido</button>
-              <button class="btn btn-primary btn-sm" onclick="abrirCrearViaje()"><i class="ti ti-map-pin"></i> Crear viaje con este precio</button>
+              <button class="btn btn-primary btn-sm" onclick="abrirCrearViaje()"><i class="ti ti-map-pin"></i> Crear viaje</button>
             </div>
           </div>
 
-          <!-- TABLA SENSIBILIDAD -->
           <div class="card">
             <div class="card-title">📈 Tabla de sensibilidad</div>
-            <p style="font-size:12px;color:var(--gray-dk);margin-bottom:10px">Ganancia según número de pasajeros que lleves</p>
-            <div class="table-wrap"><table id="tabla-sensibilidad" style="min-width:unset">
-              <thead><tr><th>Pasajeros</th><th>Ingresos</th><th>Costo transporte</th><th>Otros costos</th><th>Ganancia</th><th>Margen</th></tr></thead>
+            <p style="font-size:12px;color:var(--gray-dk);margin-bottom:10px">Ganancia según pasajeros que paguen</p>
+            <div class="table-wrap"><table style="min-width:unset">
+              <thead><tr><th>Pasajeros</th><th>Ingresos</th><th>Transporte</th><th>Otros</th><th>Ganancia</th><th>Margen</th></tr></thead>
               <tbody id="tbody-sensibilidad"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Ingresa los datos para ver la tabla</td></tr></tbody>
             </table></div>
           </div>
         </div>
-      </div>
-
-      <div class="page" id="page-gastos">
-        <div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Viaje</th><th>Categoría</th><th>Descripción</th><th>Fecha</th><th>Monto</th><th style="text-align:right">Acciones</th></tr></thead><tbody id="table-gastos"></tbody></table></div></div>
       </div>
     </div>
   </div>
@@ -334,27 +300,25 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
 
 <div class="toast" id="toast"></div>
 
-<!-- CONFIRM -->
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal confirm-modal">
-    <div class="modal-head"><span class="modal-title">Confirmar eliminación</span></div>
+    <div class="modal-head"><span class="modal-title" id="confirm-title">Confirmar</span></div>
     <p class="confirm-msg" id="confirm-msg"></p>
     <div class="modal-actions"><button class="btn" onclick="closeModal('modal-confirm')">Cancelar</button><button class="btn btn-danger" id="confirm-ok">Eliminar</button></div>
   </div>
 </div>
 
-<!-- MODAL VIAJE -->
 <div class="modal-overlay" id="modal-viaje">
   <div class="modal modal-wide">
     <div class="modal-head"><span class="modal-title" id="modal-viaje-title">Nuevo viaje</span><button class="btn" onclick="closeModal('modal-viaje')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="v-id">
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Destino</label><input id="v-destino"></div>
-      <div class="form-group"><label class="form-label">Fecha</label><input id="v-fecha" type="date"></div>
+      <div class="form-group"><label class="form-label">Destino <span class="req">*</span></label><input id="v-destino"></div>
+      <div class="form-group"><label class="form-label">Fecha <span class="req">*</span></label><input id="v-fecha" type="date"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Precio base (RD$)</label><input id="v-precio" type="number"></div>
-      <div class="form-group"><label class="form-label">Capacidad total</label><input id="v-capacidad" type="number"></div>
+      <div class="form-group"><label class="form-label">Precio base (RD$) <span class="req">*</span></label><input id="v-precio" type="number"></div>
+      <div class="form-group"><label class="form-label">Capacidad total <span class="req">*</span></label><input id="v-capacidad" type="number"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Estado</label><select id="v-estado"><option>Abierto</option><option>Completo</option><option>Finalizado</option><option>Cancelado</option></select></div>
@@ -368,48 +332,47 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       <button class="btn btn-primary btn-sm" onclick="addPickup()" style="white-space:nowrap;margin-top:20px"><i class="ti ti-plus"></i> Agregar</button>
     </div>
     <p style="font-size:11px;color:var(--gray-dk);margin-top:6px">El primer punto es el principal.</p>
-    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-viaje')">Cancelar</button><button class="btn btn-primary" onclick="saveViaje()">Guardar viaje</button></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-viaje')">Cancelar</button><button class="btn btn-primary" id="btn-save-viaje" onclick="saveViaje()">Guardar viaje</button></div>
   </div>
 </div>
 
-<!-- MODAL CLIENTE -->
 <div class="modal-overlay" id="modal-cliente">
   <div class="modal">
     <div class="modal-head"><span class="modal-title" id="modal-cliente-title">Nuevo cliente</span><button class="btn" onclick="closeModal('modal-cliente')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="c-id">
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Nombre</label><input id="c-nombre"></div>
+      <div class="form-group"><label class="form-label">Nombre <span class="req">*</span></label><input id="c-nombre"></div>
       <div class="form-group"><label class="form-label">Apellido</label><input id="c-apellido"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Teléfono / WhatsApp</label><input id="c-tel"></div>
+      <div class="form-group"><label class="form-label">Teléfono / WhatsApp <span class="req">*</span></label><input id="c-tel"></div>
       <div class="form-group"><label class="form-label">Instagram</label><input id="c-ig" placeholder="@usuario"></div>
     </div>
     <div class="form-group"><label class="form-label">Correo</label><input id="c-email"></div>
     <div class="form-group"><label class="form-label">Notas</label><textarea id="c-notas" rows="2"></textarea></div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-cliente')">Cancelar</button><button class="btn btn-primary" onclick="saveCliente()">Guardar</button></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-cliente')">Cancelar</button><button class="btn btn-primary" id="btn-save-cliente" onclick="saveCliente()">Guardar</button></div>
   </div>
 </div>
 
-<!-- MODAL RESERVA — incluye pago inicial -->
 <div class="modal-overlay" id="modal-reserva">
   <div class="modal modal-wide">
     <div class="modal-head"><span class="modal-title" id="modal-reserva-title">Nueva reserva</span><button class="btn" onclick="closeModal('modal-reserva')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="r-id">
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Viaje</label><select id="r-viaje" onchange="onViajeChange()"><option value="">— Selecciona un viaje —</option></select></div>
-      <div class="form-group"><label class="form-label">Cliente</label><select id="r-cliente" onchange="onClienteChange()"><option value="">— Selecciona un cliente —</option></select></div>
+      <div class="form-group"><label class="form-label">Viaje <span class="req">*</span></label><select id="r-viaje" onchange="onViajeChange()"><option value="">— Selecciona un viaje —</option></select></div>
+      <div class="form-group"><label class="form-label">Cliente <span class="req">*</span></label><select id="r-cliente" onchange="onClienteChange()"><option value="">— Selecciona un cliente —</option></select></div>
     </div>
-    <div id="saldo-box" class="saldo-box"><i class="ti ti-coins"></i> Este cliente tiene un saldo a favor de <strong id="saldo-monto">RD$0</strong> que se aplicará automáticamente.</div>
+    <div id="cupos-box" class="info-box info-sky"><i class="ti ti-armchair"></i> <span id="cupos-texto"></span></div>
+    <div id="saldo-box" class="info-box info-teal"><i class="ti ti-coins"></i> Saldo a favor de <strong id="saldo-monto">RD$0</strong> — se aplicará automáticamente.</div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Tipo de reserva</label>
-        <select id="r-tipo" onchange="onTipoReservaChange()">
-          <option value="Normal">Normal</option>
-          <option value="Promotor">Promotor (pase libre)</option>
-        </select>
+        <select id="r-tipo" onchange="onTipoReservaChange()"><option value="Normal">Normal</option><option value="Promotor">Promotor</option></select>
       </div>
       <div class="form-group" id="r-referido-box" style="display:none"><label class="form-label">Referido por</label>
         <select id="r-referido"><option value="">— Ninguno —</option></select>
+      </div>
+      <div class="form-group" id="r-prometidos-box" style="display:none"><label class="form-label">Referidos prometidos</label>
+        <input id="r-prometidos" type="number" min="0" value="0" placeholder="0">
       </div>
     </div>
     <div class="form-group"><label class="form-label">Punto de recogida</label><select id="r-pickup"><option value="">— Selecciona un punto —</option></select></div>
@@ -418,40 +381,30 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       <div class="form-group"><label class="form-label">Pasajeros</label><input id="r-pasajeros" type="number" value="1" min="1" oninput="calcTotalReserva()"></div>
     </div>
     <div class="form-group"><label class="form-label">Fecha reserva</label><input id="r-fecha" type="date"></div>
+    <div id="promotor-info" class="info-box info-orange"><i class="ti ti-star"></i> El promotor ocupa <strong>1 solo cupo</strong>. Cada persona que traiga debe registrar su propia reserva y marcarte como "Referido por".</div>
 
-    <!-- REFERIDOS (solo promotores) -->
-    <div id="referidos-section" style="display:none">
+    <div id="pago-inicial-wrap">
       <hr class="divider">
-      <div class="section-label"><i class="ti ti-users"></i> Personas que trae el promotor</div>
-      <div id="referidos-lista"></div>
-      <button class="btn btn-sm" onclick="agregarReferido()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar persona</button>
-      <p style="font-size:11px;color:var(--gray-dk);margin-top:6px">Cada persona que traiga el promotor debe registrar su propia reserva y pagar directamente.</p>
-    </div>
-
-    <hr class="divider">
-    <div class="section-label" id="pago-section-label"><i class="ti ti-credit-card"></i> Pago inicial</div>
-    <div class="pago-resumen" id="resumen-reserva" style="display:none">
-      <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Total reserva</span><span id="rr-total">—</span></div>
-      <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Saldo a favor aplicado</span><span id="rr-saldo">RD$0</span></div>
-      <div class="pago-resumen-row"><span>Balance a pagar</span><span id="rr-balance">—</span></div>
-    </div>
-    <div id="pago-inicial-fields">
+      <div class="section-label"><i class="ti ti-credit-card"></i> Pago inicial</div>
+      <div class="pago-resumen" id="resumen-reserva" style="display:none">
+        <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Total reserva</span><span id="rr-total">—</span></div>
+        <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Saldo a favor aplicado</span><span id="rr-saldo">RD$0</span></div>
+        <div class="pago-resumen-row"><span>Balance a pagar</span><span id="rr-balance">—</span></div>
+      </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Monto inicial (RD$)</label><input id="r-pago-monto" type="number" placeholder="0" oninput="calcTotalReserva()"></div>
         <div class="form-group"><label class="form-label">Método de pago</label><select id="r-pago-metodo"><option value="">— Selecciona —</option><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div>
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Banco</label><input id="r-pago-banco"></div>
-        <div class="form-group"><label class="form-label">Referencia / Comprobante</label><input id="r-pago-ref"></div>
+        <div class="form-group"><label class="form-label">Referencia</label><input id="r-pago-ref"></div>
       </div>
     </div>
-    <div id="promotor-pase-info" style="display:none" class="saldo-box"><i class="ti ti-star"></i> Este cliente es promotor — su pasaje es <strong>gratis</strong>. No se requiere pago.</div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-reserva')">Cancelar</button><button class="btn btn-primary" onclick="saveReserva()">Guardar reserva</button></div>
+    <div id="edit-info" class="info-box info-sky"><i class="ti ti-info-circle"></i> Para registrar pagos adicionales usa el módulo <strong>Pagos</strong>.</div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-reserva')">Cancelar</button><button class="btn btn-primary" id="btn-save-reserva" onclick="saveReserva()">Guardar reserva</button></div>
   </div>
 </div>
 
-
-<!-- MODAL HISTORIAL CLIENTE -->
 <div class="modal-overlay" id="modal-historial">
   <div class="modal modal-wide">
     <div class="modal-head"><span class="modal-title" id="hist-title">Historial del cliente</span><button class="btn" onclick="closeModal('modal-historial')"><i class="ti ti-x"></i></button></div>
@@ -460,85 +413,77 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
   </div>
 </div>
 
-<!-- MODAL VER REFERIDOS -->
 <div class="modal-overlay" id="modal-referidos">
-  <div class="modal">
+  <div class="modal modal-wide">
     <div class="modal-head"><span class="modal-title" id="modal-ref-title">Referidos del promotor</span><button class="btn" onclick="closeModal('modal-referidos')"><i class="ti ti-x"></i></button></div>
     <div id="modal-ref-content"></div>
     <div class="modal-actions"><button class="btn btn-primary" onclick="closeModal('modal-referidos')">Cerrar</button></div>
   </div>
 </div>
 
-<!-- MODAL PAGO adicional -->
 <div class="modal-overlay" id="modal-pago">
   <div class="modal">
     <div class="modal-head"><span class="modal-title" id="modal-pago-title">Registrar pago</span><button class="btn" onclick="closeModal('modal-pago')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="p-id">
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Reserva</label><select id="p-reserva" onchange="onReservaChange()"><option value="">— Selecciona una reserva —</option></select></div>
-      <div class="form-group"><label class="form-label">Tipo</label><select id="p-tipo"><option value="Pago">Pago</option><option value="Devolucion">Devolución</option></select></div>
+      <div class="form-group"><label class="form-label">Reserva <span class="req">*</span></label><select id="p-reserva" onchange="onReservaChange()"><option value="">— Selecciona una reserva —</option></select></div>
+      <div class="form-group"><label class="form-label">Tipo</label><select id="p-tipo" onchange="onReservaChange()"><option value="Pago">Pago</option><option value="Devolucion">Devolución</option></select></div>
     </div>
     <div id="pago-resumen-box" style="display:none" class="pago-resumen">
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Total reserva</span><span id="pr-total">—</span></div>
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Ya pagado</span><span id="pr-pagado">—</span></div>
       <div class="pago-resumen-row"><span>Balance pendiente</span><span id="pr-balance">—</span></div>
     </div>
+    <div id="pago-alerta" class="info-box info-red"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Fecha</label><input id="p-fecha" type="date"></div>
-      <div class="form-group"><label class="form-label">Monto (RD$)</label><input id="p-monto" type="number" oninput="onReservaChange()"></div>
+      <div class="form-group"><label class="form-label">Fecha <span class="req">*</span></label><input id="p-fecha" type="date"></div>
+      <div class="form-group"><label class="form-label">Monto (RD$) <span class="req">*</span></label><input id="p-monto" type="number" min="1" oninput="onReservaChange()"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Método</label><select id="p-metodo"><option value="">— Selecciona —</option><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div>
+      <div class="form-group"><label class="form-label">Método <span class="req">*</span></label><select id="p-metodo"><option value="">— Selecciona —</option><option>Efectivo</option><option>Transferencia</option><option>Depósito</option><option>Tarjeta crédito</option><option>Tarjeta débito</option></select></div>
       <div class="form-group"><label class="form-label">Banco</label><input id="p-banco"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Referencia / Comprobante</label><input id="p-ref"></div>
+      <div class="form-group"><label class="form-label">Referencia</label><input id="p-ref"></div>
       <div class="form-group"><label class="form-label">Comentario</label><input id="p-comment"></div>
     </div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-pago')">Cancelar</button><button class="btn btn-primary" onclick="savePago()">Guardar pago</button></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-pago')">Cancelar</button><button class="btn btn-primary" id="btn-save-pago" onclick="savePago()">Guardar pago</button></div>
   </div>
 </div>
 
-<!-- MODAL GASTO -->
 <div class="modal-overlay" id="modal-gasto">
   <div class="modal">
     <div class="modal-head"><span class="modal-title" id="modal-gasto-title">Registrar gasto</span><button class="btn" onclick="closeModal('modal-gasto')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="g-id">
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Viaje</label><select id="g-viaje" onchange="onGastoViajeChange()"><option value="">— Selecciona un viaje —</option></select></div>
+      <div class="form-group"><label class="form-label">Viaje <span class="req">*</span></label><select id="g-viaje" onchange="onGastoViajeChange()"><option value="">— Selecciona un viaje —</option></select></div>
       <div class="form-group"><label class="form-label">Categoría</label><select id="g-cat"><option>Transporte</option><option>Entradas</option><option>Alimentación</option><option>Alojamiento</option><option>Guía</option><option>Marketing</option><option>Otro</option></select></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Tipo de costo</label>
-      <select id="g-modo" onchange="onGastoModoChange()">
-        <option value="fijo">Monto fijo (total del gasto)</option>
-        <option value="persona">Por persona (se multiplica × pasajeros)</option>
-      </select>
+    <div class="form-group"><label class="form-label">Tipo de costo</label>
+      <select id="g-modo" onchange="onGastoModoChange()"><option value="fijo">Monto fijo (total)</option><option value="persona">Por persona (× pasajeros)</option></select>
     </div>
-    <div id="g-info-pax" class="saldo-box" style="display:none"><i class="ti ti-users"></i> Este viaje tiene <strong id="g-pax-count">0</strong> pasajeros activos.</div>
+    <div id="g-info-pax" class="info-box info-sky"><i class="ti ti-users"></i> Este viaje tiene <strong id="g-pax-count">0</strong> pasajeros activos.</div>
     <div class="form-group"><label class="form-label">Descripción</label><input id="g-desc"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Fecha</label><input id="g-fecha" type="date"></div>
-      <div class="form-group"><label class="form-label" id="g-monto-label">Monto (RD$)</label><input id="g-monto" type="number" oninput="calcGastoTotal()"></div>
+      <div class="form-group"><label class="form-label">Fecha <span class="req">*</span></label><input id="g-fecha" type="date"></div>
+      <div class="form-group"><label class="form-label" id="g-monto-label">Monto (RD$) <span class="req">*</span></label><input id="g-monto" type="number" oninput="calcGastoTotal()"></div>
     </div>
     <div class="pago-resumen" id="g-resumen" style="display:none">
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Precio por persona</span><span id="g-r-precio">—</span></div>
       <div class="pago-resumen-row"><span style="color:var(--gray-dk)">Pasajeros del viaje</span><span id="g-r-pax">—</span></div>
       <div class="pago-resumen-row"><span>Total del gasto</span><span id="g-r-total">—</span></div>
     </div>
-    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-gasto')">Cancelar</button><button class="btn btn-primary" onclick="saveGasto()">Guardar</button></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-gasto')">Cancelar</button><button class="btn btn-primary" id="btn-save-gasto" onclick="saveGasto()">Guardar</button></div>
   </div>
 </div>
 
-<!-- MODAL CANCELACION -->
 <div class="modal-overlay" id="modal-cancelacion">
   <div class="modal">
     <div class="modal-head"><span class="modal-title">Cancelar reserva</span><button class="btn" onclick="closeModal('modal-cancelacion')"><i class="ti ti-x"></i></button></div>
     <input type="hidden" id="cancel-id">
     <p style="font-size:13px;color:var(--gray-dk);margin-bottom:16px">¿Cómo manejar el dinero pagado por el cliente?</p>
-    <div class="form-group"><label class="form-label">El cliente pagó</label><div style="font-size:16px;font-weight:600;color:var(--navy)" id="cancel-pagado">—</div></div>
-    <div class="form-group">
-      <label class="form-label">Acción</label>
+    <div class="form-group"><label class="form-label">El cliente pagó</label><div style="font-size:18px;font-weight:600;color:var(--navy)" id="cancel-pagado">—</div></div>
+    <div class="form-group"><label class="form-label">Acción <span class="req">*</span></label>
       <select id="cancel-accion" onchange="onCancelAccionChange()">
         <option value="">— Selecciona —</option>
         <option value="devolucion">Devolución de dinero</option>
@@ -547,13 +492,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);bo
       </select>
     </div>
     <div id="cancel-info" style="display:none;font-size:12px;color:var(--gray-dk);margin-top:8px;padding:10px;background:var(--gray-lt);border-radius:var(--radius)"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-cancelacion')">Cancelar</button>
-      <button class="btn btn-danger" onclick="confirmarCancelacion()">Confirmar cancelación</button>
-    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('modal-cancelacion')">Cancelar</button><button class="btn btn-danger" id="btn-confirm-cancel" onclick="confirmarCancelacion()">Confirmar cancelación</button></div>
   </div>
 </div>
-
 <script>
 const SUPA_URL='https://xkfhkuwvlrjxtdmtcigo.supabase.co';
 const SUPA_KEY='sb_publishable_PZPDmrG0kUHpKS7ARPXnLQ_gRkeSe3B';
@@ -562,523 +503,682 @@ let DB={viajes:[],clientes:[],reservas:[],pagos:[],gastos:[]};
 let currentPage='dashboard';
 let editingPickups=[];
 let sidebarCollapsed=false;
+let saving=false;
 
-// ── SIDEBAR ────────────────────────────────────────────────────────────────
+/* ══ SIDEBAR ══ */
 function toggleSidebar(){
   sidebarCollapsed=!sidebarCollapsed;
-  const s=document.getElementById('sidebar');
-  const icon=document.getElementById('toggle-icon');
-  s.classList.toggle('collapsed',sidebarCollapsed);
-  icon.className=sidebarCollapsed?'ti ti-layout-sidebar-left-expand':'ti ti-layout-sidebar-left-collapse';
+  document.getElementById('sidebar').classList.toggle('collapsed',sidebarCollapsed);
+  document.getElementById('toggle-icon').className=sidebarCollapsed?'ti ti-layout-sidebar-left-expand':'ti ti-layout-sidebar-left-collapse';
 }
 function openMobileSidebar(){document.getElementById('sidebar').classList.add('mobile-open');document.getElementById('sidebar-overlay').classList.add('show');}
 function closeMobileSidebar(){document.getElementById('sidebar').classList.remove('mobile-open');document.getElementById('sidebar-overlay').classList.remove('show');}
 
-// ── TOAST & STATUS ─────────────────────────────────────────────────────────
-function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show ${type}`;setTimeout(()=>t.className='toast',3000);}
-function setDbStatus(s,msg=''){const dot=document.getElementById('db-dot');const lbl=document.getElementById('db-label');if(s==='connected'){dot.className='db-dot connected';lbl.textContent='Conectado';}else if(s==='error'){dot.className='db-dot error';lbl.textContent='Error';const b=document.getElementById('error-banner');b.textContent='⚠ Error: '+msg;b.style.display='block';}else{dot.className='db-dot';lbl.textContent='Conectando...';}}
+/* ══ UI HELPERS ══ */
+function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.className='toast',3500);}
+function setDbStatus(s,msg=''){
+  const dot=document.getElementById('db-dot'),lbl=document.getElementById('db-label');
+  if(s==='connected'){dot.className='db-dot connected';lbl.textContent='Conectado';}
+  else if(s==='error'){dot.className='db-dot error';lbl.textContent='Error';const b=document.getElementById('error-banner');b.textContent='⚠ Error: '+msg;b.style.display='block';}
+  else{dot.className='db-dot';lbl.textContent='Conectando...';}
+}
+function showBox(id,show){const el=document.getElementById(id);if(el)el.classList.toggle('show',!!show);}
+function lockBtn(id,lock){const b=document.getElementById(id);if(b)b.disabled=lock;}
 
-// ── DATE FORMAT ────────────────────────────────────────────────────────────
-function fmtDate(d){
-  if(!d)return'—';
-  const [y,m,day]=d.split('-');
-  return`${day}-${m}-${y}`;
+/* ══ FECHAS ══ */
+function fmtDate(d){if(!d)return'—';const p=String(d).split('-');return p.length===3?`${p[2]}-${p[1]}-${p[0]}`:d;}
+const today=()=>new Date().toISOString().split('T')[0];
+
+/* ══ ID ATOMICO (FIX: colision entre usuarios) ══ */
+async function genId(prefijo,secuencia){
+  const{data,error}=await sb.rpc('next_id',{prefijo,secuencia});
+  if(error||!data)throw new Error('No se pudo generar ID. Ejecuta el SQL de secuencias en Supabase.');
+  return data;
 }
 
-// ── LOAD ───────────────────────────────────────────────────────────────────
+/* ══ CARGA ══ */
 async function loadAll(){
   try{
     const[v,c,r,p,g]=await Promise.all([
-      sb.from('viajes').select('*').order('fecha'),
-      sb.from('clientes').select('*').order('apellido'),
-      sb.from('reservas').select('*').order('fecha',{ascending:false}),
-      sb.from('pagos').select('*').order('fecha',{ascending:false}),
-      sb.from('gastos').select('*').order('fecha',{ascending:false}),
+      sb.from('viajes').select('*'),
+      sb.from('clientes').select('*'),
+      sb.from('reservas').select('*'),
+      sb.from('pagos').select('*'),
+      sb.from('gastos').select('*'),
     ]);
     const err=v.error||c.error||r.error||p.error||g.error;
     if(err)throw err;
-    DB.viajes=v.data||[];DB.clientes=c.data||[];DB.reservas=r.data||[];DB.pagos=p.data||[];DB.gastos=g.data||[];
+    DB.viajes=sortById(v.data||[]);
+    DB.clientes=(c.data||[]).sort((a,b)=>((a.apellido||'')+(a.nombre||'')).localeCompare((b.apellido||'')+(b.nombre||''),'es'));
+    DB.reservas=sortById(r.data||[]);
+    DB.pagos=sortById(p.data||[]);
+    DB.gastos=sortById(g.data||[]);
     document.getElementById('error-banner').style.display='none';
     setDbStatus('connected');renderAll();
   }catch(e){setDbStatus('error',e.message||JSON.stringify(e));renderAll();}
 }
+const idNum=id=>parseInt(String(id||'').replace(/\D/g,''))||0;
+const sortById=arr=>[...arr].sort((a,b)=>idNum(a.id)-idNum(b.id));
 
-// ── HELPERS ────────────────────────────────────────────────────────────────
-const fmt=n=>'RD$'+Number(n||0).toLocaleString('es-DO',{minimumFractionDigits:0});
+/* ══ HELPERS DE DATOS ══ */
+const fmt=n=>'RD$'+Number(n||0).toLocaleString('es-DO',{maximumFractionDigits:0});
 const getViaje=id=>DB.viajes.find(v=>v.id===id)||{};
 const getCliente=id=>DB.clientes.find(c=>c.id===id)||{};
+const nombreCliente=id=>{const c=getCliente(id);return((c.nombre||'')+' '+(c.apellido||'')).trim()||'—';};
+const ESTADOS_MANUALES=['Cancelado','No asistió','Completó viaje'];
+const esManual=e=>ESTADOS_MANUALES.includes(e);
 
-// Pagos: solo los de tipo Pago suman, devoluciones restan
-const getPagado=(rid,excl=null)=>{
-  return DB.pagos.filter(p=>p.reserva_id===rid&&p.id!==excl).reduce((s,p)=>{
-    return p.tipo==='Devolucion'?s-Number(p.monto):s+Number(p.monto);
-  },0);
-};
+const getPagado=(rid,excl=null)=>DB.pagos.filter(p=>p.reserva_id===rid&&p.id!==excl)
+  .reduce((s,p)=>p.tipo==='Devolucion'?s-Number(p.monto||0):s+Number(p.monto||0),0);
 
-const getPasajeros=vid=>DB.reservas.filter(r=>r.viaje_id===vid&&r.estado!=='Cancelado').reduce((s,r)=>s+Number(r.pasajeros),0);
+const totalReserva=r=>Number(r.precio||0)*Number(r.pasajeros||0);
+const balanceReserva=r=>Math.max(totalReserva(r)-getPagado(r.id),0);
 
-// Estado automático basado en balance
-const estadoAuto=rid=>{
-  const r=DB.reservas.find(x=>x.id===rid);
+/* FIX: promotor cuenta 1 solo cupo, no sus referidos */
+const cuposReserva=r=>r.tipo==='Promotor'?1:Number(r.pasajeros||0);
+const getPasajeros=vid=>DB.reservas.filter(r=>r.viaje_id===vid&&r.estado!=='Cancelado').reduce((s,r)=>s+cuposReserva(r),0);
+const cuposLibres=vid=>{const v=getViaje(vid);return Number(v.capacidad||0)-getPasajeros(vid);};
+
+const estadoReserva=r=>{
   if(!r)return'Reservado';
-  const tot=r.precio*r.pasajeros;
-  const pag=getPagado(rid);
-  const bal=tot-pag;
-  if(bal<=0)return'Pagado';
-  return'Reservado';
+  if(esManual(r.estado))return r.estado;
+  return balanceReserva(r)<=0?'Pagado':'Reservado';
 };
 
 const badgeV=e=>({Abierto:'badge-blue',Completo:'badge-yellow',Finalizado:'badge-green',Cancelado:'badge-red'}[e]||'badge-gray');
-const badgeR=e=>({
-  Reservado:'badge-blue',
-  Pagado:'badge-green',
-  Cancelado:'badge-red',
-  'Lista de espera':'badge-yellow',
-  'No asistió':'badge-gray',
-  'Completó viaje':'badge-green'
-}[e]||'badge-gray');
+const badgeR=e=>({Reservado:'badge-blue',Pagado:'badge-green',Cancelado:'badge-red','No asistió':'badge-gray','Completó viaje':'badge-green'}[e]||'badge-gray');
 const badgeTipo=t=>t==='Devolucion'?'<span class="badge badge-red">Devolución</span>':'<span class="badge badge-green">Pago</span>';
-
 const empty=cols=>`<tr><td colspan="${cols}" style="text-align:center;padding:32px;color:var(--gray-dk)">Sin registros</td></tr>`;
 const acBtns=(ef,df)=>`<div class="actions-cell"><button class="btn btn-icon" onclick="${ef}" title="Editar"><i class="ti ti-edit"></i></button><button class="btn btn-icon btn-danger" onclick="${df}" title="Eliminar"><i class="ti ti-trash"></i></button></div>`;
-function nextId(arr,prefix){const nums=arr.map(x=>parseInt(x.id.replace(/\D/g,''))||0);return prefix+'-'+String((Math.max(0,...nums)+1)).padStart(3,'0');}
-function confirm_(msg,onOk){document.getElementById('confirm-msg').textContent=msg;document.getElementById('confirm-ok').onclick=()=>{onOk();closeModal('modal-confirm');};document.getElementById('modal-confirm').classList.add('open');}
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
+function confirm_(msg,onOk,titulo='Confirmar eliminación',btn='Eliminar'){
+  document.getElementById('confirm-title').textContent=titulo;
+  document.getElementById('confirm-msg').textContent=msg;
+  const ok=document.getElementById('confirm-ok');
+  ok.textContent=btn;
+  ok.onclick=()=>{closeModal('modal-confirm');onOk();};
+  document.getElementById('modal-confirm').classList.add('open');
+}
+
+/* ══ NAVEGACION ══ */
+const PAGES=['dashboard','viajes','clientes','reservas','pagos','gastos','presupuesto'];
+const TITULOS={dashboard:'Dashboard',viajes:'Viajes',clientes:'Clientes',reservas:'Reservas',pagos:'Pagos',gastos:'Gastos',presupuesto:'Presupuesto de viaje'};
+const BTN_LABELS={viajes:'Viaje',clientes:'Cliente',reservas:'Reserva',pagos:'Pago',gastos:'Gasto'};
 function nav(page){
   currentPage=page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item')[['dashboard','viajes','clientes','reservas','pagos','gastos','presupuesto'].indexOf(page)].classList.add('active');
-  document.getElementById('topbar-title').textContent={dashboard:'Dashboard',viajes:'Viajes',clientes:'Clientes',reservas:'Reservas',pagos:'Pagos',gastos:'Gastos',presupuesto:'Presupuesto de viaje'}[page];
+  document.querySelectorAll('.nav-item')[PAGES.indexOf(page)].classList.add('active');
+  document.getElementById('topbar-title').textContent=TITULOS[page];
   const btn=document.getElementById('btn-add');
-  if(page!=='dashboard'&&page!=='presupuesto'){btn.style.display='inline-flex';document.getElementById('btn-add-label').textContent={viajes:'Viaje',clientes:'Cliente',reservas:'Reserva',pagos:'Pago',gastos:'Gasto'}[page];}
+  if(BTN_LABELS[page]){btn.style.display='inline-flex';document.getElementById('btn-add-label').textContent=BTN_LABELS[page];}
   else btn.style.display='none';
   closeMobileSidebar();
 }
 
 function renderAll(){renderDashboard();renderViajes();renderClientes();renderReservas();renderPagos();renderGastos();}
 
-// ── DASHBOARD ──────────────────────────────────────────────────────────────
+/* ══ DASHBOARD ══ */
 function renderDashboard(){
-  const ingresos=DB.pagos.filter(p=>p.tipo!=='Devolucion').reduce((s,p)=>s+Number(p.monto),0);
-  const devoluciones=DB.pagos.filter(p=>p.tipo==='Devolucion').reduce((s,p)=>s+Number(p.monto),0);
-  const ingresosNetos=ingresos-devoluciones;
-
-  const pendiente=DB.reservas.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>{
-    const bal=r.precio*r.pasajeros-getPagado(r.id);
-    return s+Math.max(bal,0);
-  },0);
-
-  const gastos=DB.gastos.reduce((s,g)=>s+Number(g.monto),0);
-
-  // Ganancia proyectada = total de todas las reservas activas - gastos
-  const totalReservas=DB.reservas.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>s+r.precio*r.pasajeros,0);
-  const gananciaProyectada=totalReservas-gastos;
+  const activas=DB.reservas.filter(r=>r.estado!=='Cancelado');
+  const ingresosNetos=DB.pagos.reduce((s,p)=>p.tipo==='Devolucion'?s-Number(p.monto||0):s+Number(p.monto||0),0);
+  const pendiente=activas.reduce((s,r)=>s+balanceReserva(r),0);
+  const gastos=DB.gastos.reduce((s,g)=>s+Number(g.monto||0),0);
+  const totalRes=activas.reduce((s,r)=>s+totalReserva(r),0);
+  const ganancia=totalRes-gastos;
 
   document.getElementById('kpi-viajes').textContent=DB.viajes.filter(v=>v.estado==='Abierto').length;
   document.getElementById('kpi-clientes').textContent=DB.clientes.length;
   document.getElementById('kpi-ingresos').textContent=fmt(ingresosNetos);
   document.getElementById('kpi-pendiente').textContent=fmt(pendiente);
   document.getElementById('kpi-gastos').textContent=fmt(gastos);
-  document.getElementById('kpi-ganancia').textContent=fmt(gananciaProyectada);
-  document.getElementById('kpi-ganancia').className='kpi-val '+(gananciaProyectada>=0?'green':'red');
-  document.getElementById('kpi-reservas').textContent=DB.reservas.filter(r=>r.estado!=='Cancelado').length;
-  document.getElementById('kpi-pasajeros').textContent=DB.reservas.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>s+Number(r.pasajeros),0);
+  const kg=document.getElementById('kpi-ganancia');
+  kg.textContent=fmt(ganancia);kg.className='kpi-val '+(ganancia>=0?'green':'red');
+  document.getElementById('kpi-reservas').textContent=activas.length;
+  document.getElementById('kpi-pasajeros').textContent=activas.reduce((s,r)=>s+cuposReserva(r),0);
 
-  document.getElementById('dash-viajes').innerHTML=DB.viajes.slice(0,5).map(v=>{
-    const p=getPasajeros(v.id);const pct=v.capacidad?Math.round(p/v.capacidad*100):0;
-    const fc=pct>=100?'danger':pct>=80?'warning':'';const pts=(v.pickups||[]).length;
-    return`<tr><td>${v.destino}</td><td>${fmtDate(v.fecha)}</td><td style="color:var(--gray-dk);font-size:12px">${pts} punto${pts!==1?'s':''}</td><td>${p}/${v.capacidad}</td><td><div class="progress-bar"><div class="progress-fill ${fc}" style="width:${Math.min(pct,100)}%"></div></div><span style="font-size:11px;color:var(--gray-dk)">${pct}%</span></td><td><span class="badge ${badgeV(v.estado)}">${v.estado}</span></td></tr>`;
+  const proximos=[...DB.viajes].filter(v=>v.estado!=='Cancelado').sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')).slice(0,5);
+  document.getElementById('dash-viajes').innerHTML=proximos.map(v=>{
+    const p=getPasajeros(v.id),pct=v.capacidad?Math.round(p/v.capacidad*100):0;
+    const fc=pct>=100?'danger':pct>=80?'warning':'',pts=(v.pickups||[]).length;
+    return`<tr><td>${esc(v.destino)}</td><td>${fmtDate(v.fecha)}</td><td style="color:var(--gray-dk);font-size:12px">${pts} punto${pts!==1?'s':''}</td><td>${p}/${v.capacidad}</td><td><div class="progress-bar"><div class="progress-fill ${fc}" style="width:${Math.min(pct,100)}%"></div></div><span style="font-size:11px;color:var(--gray-dk)">${pct}%</span></td><td><span class="badge ${badgeV(v.estado)}">${esc(v.estado)}</span></td></tr>`;
   }).join('')||empty(6);
 
-  document.getElementById('dash-reservas').innerHTML=DB.reservas.slice(0,5).map(r=>{
-    const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
-    const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);const bal=Math.max(tot-pag,0);
-    const estado=r.estado==='Cancelado'||r.estado==='No asistió'||r.estado==='Completó viaje'?r.estado:estadoAuto(r.id);
-    return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td></tr>`;
+  /* FIX: ordena por fecha desc + ID desc, no slice del orden crudo */
+  const ultimas=[...DB.reservas].sort((a,b)=>{
+    const f=(b.fecha||'').localeCompare(a.fecha||'');
+    return f!==0?f:idNum(b.id)-idNum(a.id);
+  }).slice(0,5);
+  document.getElementById('dash-reservas').innerHTML=ultimas.map(r=>{
+    const vj=getViaje(r.viaje_id),tot=totalReserva(r),pag=getPagado(r.id),bal=Math.max(tot-pag,0),est=estadoReserva(r);
+    return`<tr><td>${r.id}</td><td>${esc(nombreCliente(r.cliente_id))}</td><td>${esc(vj.destino||'')}</td><td style="font-size:12px">${esc(r.pickup||'—')}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(est)}">${est}</span></td></tr>`;
   }).join('')||empty(8);
 }
 
-// ── RENDERS ────────────────────────────────────────────────────────────────
+/* ══ RENDERS ══ */
 function renderViajes(q=''){
-  document.getElementById('table-viajes').innerHTML=DB.viajes.filter(v=>!q||v.destino.toLowerCase().includes(q.toLowerCase())).map(v=>{
-    const p=getPasajeros(v.id);const pct=v.capacidad?Math.round(p/v.capacidad*100):0;const pts=(v.pickups||[]).length;
-    return`<tr><td>${v.id}</td><td><strong>${v.destino}</strong></td><td>${fmtDate(v.fecha)}</td><td>${fmt(v.precio)}</td><td>${v.capacidad}</td><td style="font-size:12px;color:var(--gray-dk)">${pts} punto${pts!==1?'s':''}</td><td>${p}</td><td>${pct}%</td><td><span class="badge ${badgeV(v.estado)}">${v.estado}</span></td><td>${acBtns(`editViaje('${v.id}')`,`deleteViaje('${v.id}')`)}</td></tr>`;
+  const ql=q.toLowerCase();
+  document.getElementById('table-viajes').innerHTML=DB.viajes.filter(v=>!q||(v.destino||'').toLowerCase().includes(ql)).map(v=>{
+    const p=getPasajeros(v.id),pct=v.capacidad?Math.round(p/v.capacidad*100):0,pts=(v.pickups||[]).length;
+    return`<tr><td>${v.id}</td><td><strong>${esc(v.destino)}</strong></td><td>${fmtDate(v.fecha)}</td><td>${fmt(v.precio)}</td><td>${v.capacidad}</td><td style="font-size:12px;color:var(--gray-dk)">${pts} punto${pts!==1?'s':''}</td><td>${p}</td><td style="color:${pct>=100?'var(--red)':'inherit'}">${pct}%</td><td><span class="badge ${badgeV(v.estado)}">${esc(v.estado)}</span></td><td>${acBtns(`editViaje('${v.id}')`,`deleteViaje('${v.id}')`)}</td></tr>`;
   }).join('')||empty(10);
 }
 
 function renderClientes(q=''){
-  document.getElementById('table-clientes').innerHTML=DB.clientes.filter(c=>!q||(c.nombre+' '+c.apellido).toLowerCase().includes(q.toLowerCase())).map(c=>{
+  const ql=q.toLowerCase();
+  document.getElementById('table-clientes').innerHTML=DB.clientes.filter(c=>!q||nombreCliente(c.id).toLowerCase().includes(ql)||(c.tel||'').includes(q)).map(c=>{
     const viajes=DB.reservas.filter(r=>r.cliente_id===c.id&&r.estado==='Completó viaje').length;
     const saldo=Number(c.saldo_favor||0);
-    return`<tr><td>${c.id}</td><td><strong style="cursor:pointer;color:var(--teal)" onclick="verHistorial('${c.id}')" title="Ver historial">${c.nombre} ${c.apellido}</strong></td><td>${c.tel}</td><td>${c.ig||'—'}</td><td>${c.email||'—'}</td><td style="color:${saldo>0?'var(--teal)':'var(--gray-dk)'};font-weight:${saldo>0?'600':'400'}">${saldo>0?fmt(saldo):'—'}</td><td>${viajes}</td><td>${acBtns(`editCliente('${c.id}')`,`deleteCliente('${c.id}')`)}</td></tr>`;
+    return`<tr><td>${c.id}</td><td><strong style="cursor:pointer;color:var(--teal)" onclick="verHistorial('${c.id}')" title="Ver historial">${esc(nombreCliente(c.id))}</strong></td><td>${esc(c.tel||'—')}</td><td>${esc(c.ig||'—')}</td><td>${esc(c.email||'—')}</td><td style="color:${saldo>0?'var(--teal)':'var(--gray-dk)'};font-weight:${saldo>0?'600':'400'}">${saldo>0?fmt(saldo):'—'}</td><td>${viajes}</td><td>${acBtns(`editCliente('${c.id}')`,`deleteCliente('${c.id}')`)}</td></tr>`;
   }).join('')||empty(8);
 }
 
 function renderReservas(q=''){
-  const reservasOrdenadas=[...DB.reservas].sort((a,b)=>{const nA=parseInt(a.id.replace(/\D/g,''))||0;const nB=parseInt(b.id.replace(/\D/g,''))||0;return nA-nB;});
-  document.getElementById('table-reservas').innerHTML=reservasOrdenadas.filter(r=>{
-    if(!q)return true;const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
-    return(cl.nombre+cl.apellido+vj.destino+r.id+(r.pickup||'')).toLowerCase().includes(q.toLowerCase());
+  const ql=q.toLowerCase();
+  document.getElementById('table-reservas').innerHTML=DB.reservas.filter(r=>{
+    if(!q)return true;
+    const vj=getViaje(r.viaje_id);
+    return(nombreCliente(r.cliente_id)+(vj.destino||'')+r.id+(r.pickup||'')).toLowerCase().includes(ql);
   }).map(r=>{
-    const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
-    const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);const bal=Math.max(tot-pag,0);
+    const vj=getViaje(r.viaje_id),tot=totalReserva(r),pag=getPagado(r.id),bal=Math.max(tot-pag,0);
     const hora=(vj.pickups||[]).find(p=>p.lugar===r.pickup)?.hora||'—';
-    const estado=r.estado==='Cancelado'||r.estado==='No asistió'||r.estado==='Completó viaje'?r.estado:estadoAuto(r.id);
-    const esPromotor=r.tipo==='Promotor';
+    const est=estadoReserva(r),promo=r.tipo==='Promotor';
     const cancelBtn=r.estado!=='Cancelado'?`<button class="btn btn-icon btn-danger" onclick="abrirCancelacion('${r.id}')" title="Cancelar"><i class="ti ti-x"></i></button>`:'';
-    const refBtn=esPromotor?`<button class="btn btn-icon" onclick="verReferidos('${r.id}')" title="Ver referidos" style="color:var(--orange)"><i class="ti ti-users"></i></button>`:'';
-    const promotorBadge=esPromotor?' <span class="badge badge-orange" style="font-size:10px">&#9733; Promotor</span>':'';
-    return`<tr><td>${r.id}</td><td>${cl.nombre||''} ${cl.apellido||''}${promotorBadge}</td><td>${vj.destino||''}</td><td style="font-size:12px">${r.pickup||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${hora}</td><td>${fmt(r.precio)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td><td><div class="actions-cell"><button class="btn btn-icon" onclick="editReserva('${r.id}')" title="Editar"><i class="ti ti-edit"></i></button>${refBtn}${cancelBtn}<button class="btn btn-icon btn-danger" onclick="deleteReserva('${r.id}')" title="Eliminar"><i class="ti ti-trash"></i></button></div></td></tr>`;
+    const refBtn=promo?`<button class="btn btn-icon" onclick="verReferidos('${r.id}')" title="Ver referidos" style="color:var(--orange)"><i class="ti ti-users"></i></button>`:'';
+    const badge=promo?' <span class="badge badge-orange" style="font-size:10px">&#9733; Promotor</span>':'';
+    return`<tr><td>${r.id}</td><td>${esc(nombreCliente(r.cliente_id))}${badge}</td><td>${esc(vj.destino||'')}</td><td style="font-size:12px">${esc(r.pickup||'—')}</td><td style="font-size:12px;color:var(--gray-dk)">${hora}</td><td>${fmt(r.precio)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(est)}">${est}</span></td><td><div class="actions-cell"><button class="btn btn-icon" onclick="editReserva('${r.id}')" title="Editar"><i class="ti ti-edit"></i></button>${refBtn}${cancelBtn}<button class="btn btn-icon btn-danger" onclick="deleteReserva('${r.id}')" title="Eliminar"><i class="ti ti-trash"></i></button></div></td></tr>`;
   }).join('')||empty(12);
 }
 
 function renderPagos(q=''){
-  // Ordenar: primero reservas con balance > 0
-  const sorted=[...DB.pagos].sort((a,b)=>{
-    const balA=Math.max((getCliente(DB.reservas.find(r=>r.id===a.reserva_id)?.cliente_id||'')?.saldo_favor||0),0);
-    return 0;
-  });
+  const ql=q.toLowerCase();
   document.getElementById('table-pagos').innerHTML=DB.pagos.filter(p=>{
-    if(!q)return true;const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);
-    return(p.reserva_id+(cl.nombre||'')+(cl.apellido||'')+p.metodo+(p.ref||'')).toLowerCase().includes(q.toLowerCase());
+    if(!q)return true;
+    const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};
+    return((p.reserva_id||'')+nombreCliente(r.cliente_id)+(p.metodo||'')+(p.ref||'')).toLowerCase().includes(ql);
   }).map(p=>{
-    const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};const cl=getCliente(r.cliente_id);
-    return`<tr><td>${p.id}</td><td>${p.reserva_id}</td><td>${cl.nombre||''} ${cl.apellido||''}</td><td>${fmtDate(p.fecha)}</td><td>${badgeTipo(p.tipo)}</td><td style="color:${p.tipo==='Devolucion'?'var(--red)':'var(--teal)'};font-weight:600">${p.tipo==='Devolucion'?'-':''}${fmt(p.monto)}</td><td>${p.metodo||'—'}</td><td>${p.banco||'—'}</td><td>${p.ref||'—'}</td><td style="font-size:12px;color:var(--gray-dk)">${p.comment||'—'}</td><td>${acBtns(`editPago('${p.id}')`,`deletePago('${p.id}')`)}</td></tr>`;
+    const r=DB.reservas.find(x=>x.id===p.reserva_id)||{},dev=p.tipo==='Devolucion';
+    return`<tr><td>${p.id}</td><td>${esc(p.reserva_id||'—')}</td><td>${esc(nombreCliente(r.cliente_id))}</td><td>${fmtDate(p.fecha)}</td><td>${badgeTipo(p.tipo)}</td><td style="color:${dev?'var(--red)':'var(--teal)'};font-weight:600">${dev?'-':''}${fmt(p.monto)}</td><td>${esc(p.metodo||'—')}</td><td>${esc(p.banco||'—')}</td><td>${esc(p.ref||'—')}</td><td style="font-size:12px;color:var(--gray-dk)">${esc(p.comment||'—')}</td><td>${acBtns(`editPago('${p.id}')`,`deletePago('${p.id}')`)}</td></tr>`;
   }).join('')||empty(11);
 }
 
 function renderGastos(){
-  const gastosOrdenados=[...DB.gastos].sort((a,b)=>{const nA=parseInt(a.id.replace(/\D/g,''))||0;const nB=parseInt(b.id.replace(/\D/g,''))||0;return nA-nB;});
-  document.getElementById('table-gastos').innerHTML=gastosOrdenados.map(g=>{
+  document.getElementById('table-gastos').innerHTML=DB.gastos.map(g=>{
     const vj=getViaje(g.viaje_id);
-    return`<tr><td>${g.id}</td><td>${vj.destino||g.viaje_id}</td><td>${g.cat}</td><td>${g.descripcion||'—'}</td><td>${fmtDate(g.fecha)}</td><td><strong>${fmt(g.monto)}</strong></td><td>${acBtns(`editGasto('${g.id}')`,`deleteGasto('${g.id}')`)}</td></tr>`;
+    return`<tr><td>${g.id}</td><td>${esc(vj.destino||g.viaje_id)}</td><td>${esc(g.cat)}</td><td>${esc(g.descripcion||'—')}</td><td>${fmtDate(g.fecha)}</td><td><strong>${fmt(g.monto)}</strong></td><td>${acBtns(`editGasto('${g.id}')`,`deleteGasto('${g.id}')`)}</td></tr>`;
   }).join('')||empty(7);
 }
 
-// ── PICKUP ─────────────────────────────────────────────────────────────────
+/* ══ PICKUPS ══ */
 function renderPickupList(){
   const el=document.getElementById('pickup-list');
   if(!editingPickups.length){el.innerHTML='<p style="font-size:12px;color:var(--gray-dk);margin-bottom:8px">Sin puntos aún.</p>';return;}
-  el.innerHTML=editingPickups.map((p,i)=>`<div class="pickup-row"><div style="font-size:13px;font-weight:500"><i class="ti ti-map-pin" style="color:var(--teal);margin-right:4px"></i>${p.lugar}${i===0?' <span style="font-size:10px;background:var(--teal-lt);color:var(--teal);padding:1px 7px;border-radius:10px;margin-left:4px;font-weight:600">Principal</span>':''}</div><div style="font-size:12px;color:var(--gray-dk)"><i class="ti ti-clock"></i> ${p.hora}</div><button class="btn btn-icon btn-danger" onclick="removePickup(${i})"><i class="ti ti-trash"></i></button></div>`).join('');
+  el.innerHTML=editingPickups.map((p,i)=>`<div class="pickup-row"><div style="font-size:13px;font-weight:500"><i class="ti ti-map-pin" style="color:var(--teal);margin-right:4px"></i>${esc(p.lugar)}${i===0?' <span style="font-size:10px;background:var(--teal-lt);color:var(--teal);padding:1px 7px;border-radius:10px;margin-left:4px;font-weight:600">Principal</span>':''}</div><div style="font-size:12px;color:var(--gray-dk)"><i class="ti ti-clock"></i> ${esc(p.hora)}</div><button class="btn btn-icon btn-danger" onclick="removePickup(${i})"><i class="ti ti-trash"></i></button></div>`).join('');
 }
-function addPickup(){const lugar=document.getElementById('np-lugar').value.trim();const hora=document.getElementById('np-hora').value;if(!lugar){alert('Escribe el lugar.');return;}editingPickups.push({lugar,hora:hora||'--:--'});document.getElementById('np-lugar').value='';document.getElementById('np-hora').value='';renderPickupList();}
+function addPickup(){
+  const lugar=document.getElementById('np-lugar').value.trim();
+  const hora=document.getElementById('np-hora').value;
+  if(!lugar){toast('Escribe el lugar del punto de recogida','error');return;}
+  editingPickups.push({lugar,hora:hora||'--:--'});
+  document.getElementById('np-lugar').value='';document.getElementById('np-hora').value='';
+  renderPickupList();
+}
 function removePickup(i){editingPickups.splice(i,1);renderPickupList();}
 
-// ── OPEN ADD ───────────────────────────────────────────────────────────────
-const today=()=>new Date().toISOString().split('T')[0];
+/* ══ ABRIR MODALES ══ */
 function openAdd(){
   const modals={viajes:'modal-viaje',clientes:'modal-cliente',reservas:'modal-reserva',pagos:'modal-pago',gastos:'modal-gasto'};
   const m=modals[currentPage];if(!m)return;
-  if(currentPage==='viajes'){editingPickups=[];renderPickupList();document.getElementById('v-id').value='';['v-destino','v-fecha','v-precio','v-capacidad','v-desc'].forEach(f=>document.getElementById(f).value='');document.getElementById('v-estado').value='Abierto';document.getElementById('modal-viaje-title').textContent='Nuevo viaje';}
-  if(currentPage==='reservas'){
-    populateReservaSelects();
-    document.getElementById('r-id').value='';
-    document.getElementById('r-fecha').value=today();
-    ['r-precio','r-pasajeros','r-pago-monto','r-pago-banco','r-pago-ref'].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('r-pasajeros').value='1';
-    document.getElementById('r-pago-metodo').value='';
-    document.getElementById('r-pickup').innerHTML='<option value="">— Selecciona un punto —</option>';
-    document.getElementById('resumen-reserva').style.display='none';
-    document.getElementById('saldo-box').style.display='none';
-    document.getElementById('r-tipo').value='Normal';
-    document.getElementById('referidos-section').style.display='none';
-    document.getElementById('r-referido-box').style.display='none';
-    document.getElementById('pago-inicial-fields').style.display='block';
-    document.getElementById('promotor-pase-info').style.display='none';
-    referidosTmp=[];renderReferidosTmp();
-    document.getElementById('modal-reserva-title').textContent='Nueva reserva';
-  }
-  if(currentPage==='pagos'){
-    document.getElementById('p-id').value='';
-    populateReservaSelectPagos();
-    document.getElementById('p-fecha').value=today();
-    ['p-monto','p-banco','p-ref','p-comment'].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('p-metodo').value='';
-    document.getElementById('p-tipo').value='Pago';
-    document.getElementById('pago-resumen-box').style.display='none';
-    document.getElementById('modal-pago-title').textContent='Registrar pago';
-  }
-  if(currentPage==='gastos'){
-    populateViajeSelect();
-    document.getElementById('g-id').value='';
-    document.getElementById('g-fecha').value=today();
-    ['g-desc','g-monto'].forEach(f=>document.getElementById(f).value='');
-    document.getElementById('g-modo').value='fijo';
-    document.getElementById('g-resumen').style.display='none';
-    document.getElementById('g-info-pax').style.display='none';
-    document.getElementById('g-monto-label').textContent='Monto total (RD$)';
-    document.getElementById('modal-gasto-title').textContent='Registrar gasto';
-  }
+  if(currentPage==='viajes')resetViajeForm();
+  if(currentPage==='clientes')resetClienteForm();
+  if(currentPage==='reservas')resetReservaForm();
+  if(currentPage==='pagos')resetPagoForm();
+  if(currentPage==='gastos')resetGastoForm();
   document.getElementById(m).classList.add('open');
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-// ── VIAJE CRUD ─────────────────────────────────────────────────────────────
+/* ══ VIAJES ══ */
+function resetViajeForm(){
+  editingPickups=[];renderPickupList();
+  document.getElementById('v-id').value='';
+  ['v-destino','v-fecha','v-precio','v-capacidad','v-desc'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('v-estado').value='Abierto';
+  document.getElementById('modal-viaje-title').textContent='Nuevo viaje';
+}
 async function saveViaje(){
-  const id=document.getElementById('v-id').value||nextId(DB.viajes,'V');
-  const obj={id,destino:document.getElementById('v-destino').value,fecha:document.getElementById('v-fecha').value,precio:Number(document.getElementById('v-precio').value),capacidad:Number(document.getElementById('v-capacidad').value),estado:document.getElementById('v-estado').value,descripcion:document.getElementById('v-desc').value,pickups:editingPickups};
-  const{error}=await sb.from('viajes').upsert(obj);
-  if(error){toast('Error: '+error.message,'error');return;}
-  toast('Viaje guardado ✓');closeModal('modal-viaje');await loadAll();
+  if(saving)return;
+  const destino=document.getElementById('v-destino').value.trim();
+  const fecha=document.getElementById('v-fecha').value;
+  const precio=Number(document.getElementById('v-precio').value)||0;
+  const capacidad=Number(document.getElementById('v-capacidad').value)||0;
+  if(!destino){toast('Escribe el destino','error');return;}
+  if(!fecha){toast('Selecciona la fecha','error');return;}
+  if(precio<=0){toast('El precio debe ser mayor a 0','error');return;}
+  if(capacidad<=0){toast('La capacidad debe ser mayor a 0','error');return;}
+  let id=document.getElementById('v-id').value;
+  if(id){
+    const ocupados=getPasajeros(id);
+    if(capacidad<ocupados){toast(`No puedes reducir la capacidad a ${capacidad}: ya hay ${ocupados} pasajeros`,'error');return;}
+  }
+  saving=true;lockBtn('btn-save-viaje',true);
+  try{
+    if(!id)id=await genId('V','seq_viajes');
+    const obj={id,destino,fecha,precio,capacidad,estado:document.getElementById('v-estado').value,descripcion:document.getElementById('v-desc').value.trim(),pickups:editingPickups};
+    const{error}=await sb.from('viajes').upsert(obj);
+    if(error)throw error;
+    toast('Viaje guardado ✓');closeModal('modal-viaje');await loadAll();
+  }catch(e){toast('Error: '+(e.message||e),'error');}
+  finally{saving=false;lockBtn('btn-save-viaje',false);}
 }
 function editViaje(id){
   const v=DB.viajes.find(x=>x.id===id);if(!v)return;
-  document.getElementById('v-id').value=v.id;document.getElementById('v-destino').value=v.destino;document.getElementById('v-fecha').value=v.fecha;
-  document.getElementById('v-precio').value=v.precio;document.getElementById('v-capacidad').value=v.capacidad;document.getElementById('v-estado').value=v.estado;document.getElementById('v-desc').value=v.descripcion||'';
+  document.getElementById('v-id').value=v.id;
+  document.getElementById('v-destino').value=v.destino||'';
+  document.getElementById('v-fecha').value=v.fecha||'';
+  document.getElementById('v-precio').value=v.precio||'';
+  document.getElementById('v-capacidad').value=v.capacidad||'';
+  document.getElementById('v-estado').value=v.estado||'Abierto';
+  document.getElementById('v-desc').value=v.descripcion||'';
   editingPickups=[...(v.pickups||[])];renderPickupList();
-  document.getElementById('modal-viaje-title').textContent='Editar viaje';document.getElementById('modal-viaje').classList.add('open');
+  document.getElementById('modal-viaje-title').textContent='Editar viaje';
+  document.getElementById('modal-viaje').classList.add('open');
 }
-async function deleteViaje(id){const v=getViaje(id);confirm_(`¿Eliminar el viaje "${v.destino}"?`,async()=>{await sb.from('viajes').delete().eq('id',id);toast('Viaje eliminado');await loadAll();});}
+/* FIX: borra en cascada reservas, pagos y gastos */
+async function deleteViaje(id){
+  const v=getViaje(id);
+  const nRes=DB.reservas.filter(r=>r.viaje_id===id).length;
+  const nGas=DB.gastos.filter(g=>g.viaje_id===id).length;
+  let msg=`¿Eliminar el viaje "${v.destino}"?`;
+  if(nRes||nGas)msg+=` Se borrarán también ${nRes} reserva(s), sus pagos y ${nGas} gasto(s).`;
+  confirm_(msg,async()=>{
+    try{
+      const ids=DB.reservas.filter(r=>r.viaje_id===id).map(r=>r.id);
+      if(ids.length){
+        await sb.from('pagos').delete().in('reserva_id',ids);
+        await sb.from('reservas').update({referido_por:null}).in('referido_por',ids);
+        await sb.from('reservas').delete().in('id',ids);
+      }
+      await sb.from('gastos').delete().eq('viaje_id',id);
+      const{error}=await sb.from('viajes').delete().eq('id',id);
+      if(error)throw error;
+      toast('Viaje eliminado');await loadAll();
+    }catch(e){toast('Error: '+(e.message||e),'error');}
+  });
+}
 
-// ── CLIENTE CRUD ───────────────────────────────────────────────────────────
+/* ══ CLIENTES ══ */
+function resetClienteForm(){
+  document.getElementById('c-id').value='';
+  ['c-nombre','c-apellido','c-tel','c-ig','c-email','c-notas'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('modal-cliente-title').textContent='Nuevo cliente';
+}
 async function saveCliente(){
-  const id=document.getElementById('c-id').value||nextId(DB.clientes,'C');
-  const obj={id,nombre:document.getElementById('c-nombre').value,apellido:document.getElementById('c-apellido').value,tel:document.getElementById('c-tel').value,ig:document.getElementById('c-ig').value,email:document.getElementById('c-email').value,notas:document.getElementById('c-notas').value};
-  const{error}=await sb.from('clientes').upsert(obj);
-  if(error){toast('Error: '+error.message,'error');return;}
-  toast('Cliente guardado ✓');closeModal('modal-cliente');await loadAll();
+  if(saving)return;
+  const nombre=document.getElementById('c-nombre').value.trim();
+  const tel=document.getElementById('c-tel').value.trim();
+  if(!nombre){toast('Escribe el nombre','error');return;}
+  if(!tel){toast('Escribe el teléfono','error');return;}
+  const editId=document.getElementById('c-id').value;
+  const dupTel=DB.clientes.find(c=>c.id!==editId&&(c.tel||'').replace(/\D/g,'')===tel.replace(/\D/g,'')&&tel.replace(/\D/g,'').length>=7);
+  if(dupTel){toast(`Ese teléfono ya está registrado con ${nombreCliente(dupTel.id)}`,'error');return;}
+  saving=true;lockBtn('btn-save-cliente',true);
+  try{
+    let id=editId||await genId('C','seq_clientes');
+    const obj={id,nombre,apellido:document.getElementById('c-apellido').value.trim(),tel,ig:document.getElementById('c-ig').value.trim(),email:document.getElementById('c-email').value.trim(),notas:document.getElementById('c-notas').value.trim()};
+    const{error}=await sb.from('clientes').upsert(obj);
+    if(error)throw error;
+    toast('Cliente guardado ✓');closeModal('modal-cliente');await loadAll();
+  }catch(e){toast('Error: '+(e.message||e),'error');}
+  finally{saving=false;lockBtn('btn-save-cliente',false);}
 }
 function editCliente(id){
   const c=DB.clientes.find(x=>x.id===id);if(!c)return;
-  document.getElementById('c-id').value=c.id;document.getElementById('c-nombre').value=c.nombre;document.getElementById('c-apellido').value=c.apellido;
-  document.getElementById('c-tel').value=c.tel;document.getElementById('c-ig').value=c.ig||'';document.getElementById('c-email').value=c.email||'';document.getElementById('c-notas').value=c.notas||'';
-  document.getElementById('modal-cliente-title').textContent='Editar cliente';document.getElementById('modal-cliente').classList.add('open');
+  document.getElementById('c-id').value=c.id;
+  document.getElementById('c-nombre').value=c.nombre||'';
+  document.getElementById('c-apellido').value=c.apellido||'';
+  document.getElementById('c-tel').value=c.tel||'';
+  document.getElementById('c-ig').value=c.ig||'';
+  document.getElementById('c-email').value=c.email||'';
+  document.getElementById('c-notas').value=c.notas||'';
+  document.getElementById('modal-cliente-title').textContent='Editar cliente';
+  document.getElementById('modal-cliente').classList.add('open');
 }
-async function deleteCliente(id){const c=getCliente(id);confirm_(`¿Eliminar a ${c.nombre} ${c.apellido}?`,async()=>{await sb.from('clientes').delete().eq('id',id);toast('Cliente eliminado');await loadAll();});}
+/* FIX: bloquea borrado si tiene reservas */
+async function deleteCliente(id){
+  const nRes=DB.reservas.filter(r=>r.cliente_id===id).length;
+  if(nRes>0){toast(`No se puede eliminar: ${nombreCliente(id)} tiene ${nRes} reserva(s). Elimínalas primero.`,'error');return;}
+  confirm_(`¿Eliminar a ${nombreCliente(id)}?`,async()=>{
+    try{
+      const{error}=await sb.from('clientes').delete().eq('id',id);
+      if(error)throw error;
+      toast('Cliente eliminado');await loadAll();
+    }catch(e){toast('Error: '+(e.message||e),'error');}
+  });
+}
 
-// ── RESERVA CRUD ───────────────────────────────────────────────────────────
+/* ══ RESERVAS ══ */
 function populateReservaSelects(){
-  document.getElementById('r-viaje').innerHTML='<option value="">— Selecciona un viaje —</option>'+DB.viajes.filter(v=>v.estado==='Abierto').map(v=>`<option value="${v.id}">${v.destino} (${fmtDate(v.fecha)})</option>`).join('');
-  document.getElementById('r-cliente').innerHTML='<option value="">— Selecciona un cliente —</option>'+DB.clientes.map(c=>`<option value="${c.id}">${c.nombre} ${c.apellido}</option>`).join('');
+  document.getElementById('r-viaje').innerHTML='<option value="">— Selecciona un viaje —</option>'+
+    DB.viajes.filter(v=>v.estado==='Abierto'||v.estado==='Completo').map(v=>`<option value="${v.id}">${esc(v.destino)} (${fmtDate(v.fecha)})</option>`).join('');
+  document.getElementById('r-cliente').innerHTML='<option value="">— Selecciona un cliente —</option>'+
+    DB.clientes.map(c=>`<option value="${c.id}">${esc(nombreCliente(c.id))}</option>`).join('');
 }
-
+function resetReservaForm(){
+  populateReservaSelects();
+  document.getElementById('r-id').value='';
+  document.getElementById('r-fecha').value=today();
+  ['r-precio','r-pago-monto','r-pago-banco','r-pago-ref'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('r-pasajeros').value='1';
+  document.getElementById('r-pasajeros').disabled=false;
+  document.getElementById('r-prometidos').value='0';
+  document.getElementById('r-pago-metodo').value='';
+  document.getElementById('r-tipo').value='Normal';
+  document.getElementById('r-pickup').innerHTML='<option value="">— Selecciona un punto —</option>';
+  document.getElementById('resumen-reserva').style.display='none';
+  document.getElementById('pago-inicial-wrap').style.display='block';
+  document.getElementById('r-referido-box').style.display='none';
+  document.getElementById('r-prometidos-box').style.display='none';
+  showBox('saldo-box',false);showBox('cupos-box',false);showBox('promotor-info',false);showBox('edit-info',false);
+  document.getElementById('modal-reserva-title').textContent='Nueva reserva';
+}
 function onViajeChange(){
-  const v=getViaje(document.getElementById('r-viaje').value);
+  const vid=document.getElementById('r-viaje').value;
+  const v=getViaje(vid);
   const sel=document.getElementById('r-pickup');
-  sel.innerHTML='<option value="">— Selecciona un punto —</option>'+(v.pickups&&v.pickups.length?v.pickups.map(p=>`<option value="${p.lugar}">${p.lugar} — ${p.hora}</option>`).join(''):'');
-  if(v.precio)document.getElementById('r-precio').value=v.precio;
+  sel.innerHTML='<option value="">— Selecciona un punto —</option>'+((v.pickups||[]).map(p=>`<option value="${esc(p.lugar)}">${esc(p.lugar)} — ${esc(p.hora)}</option>`).join(''));
+  if(v.precio&&!document.getElementById('r-id').value)document.getElementById('r-precio').value=v.precio;
+  /* FIX: muestra cupos disponibles */
+  if(vid){
+    const libres=cuposLibres(vid);
+    const editId=document.getElementById('r-id').value;
+    const propios=editId?cuposReserva(DB.reservas.find(r=>r.id===editId)||{}):0;
+    const disp=libres+propios;
+    const box=document.getElementById('cupos-box');
+    document.getElementById('cupos-texto').innerHTML=disp>0?`Quedan <strong>${disp}</strong> de ${v.capacidad} cupos en ${esc(v.destino)}.`:`<strong>Sin cupos disponibles</strong> en ${esc(v.destino)} (${v.capacidad}/${v.capacidad}).`;
+    box.className='info-box show '+(disp>0?'info-sky':'info-red');
+  }else showBox('cupos-box',false);
   populateReferidoSelect();
   calcTotalReserva();
 }
-
 function onClienteChange(){
-  const cid=document.getElementById('r-cliente').value;
-  const c=getCliente(cid);
+  const c=getCliente(document.getElementById('r-cliente').value);
   const saldo=Number(c.saldo_favor||0);
-  const box=document.getElementById('saldo-box');
-  if(saldo>0){box.style.display='block';document.getElementById('saldo-monto').textContent=fmt(saldo);}
-  else box.style.display='none';
+  if(saldo>0){document.getElementById('saldo-monto').textContent=fmt(saldo);showBox('saldo-box',true);}
+  else showBox('saldo-box',false);
   calcTotalReserva();
 }
-
+/* FIX: promotor fuerza 1 pasajero */
+function onTipoReservaChange(){
+  const esPromotor=document.getElementById('r-tipo').value==='Promotor';
+  const pax=document.getElementById('r-pasajeros');
+  if(esPromotor){pax.value='1';pax.disabled=true;}
+  else pax.disabled=false;
+  document.getElementById('r-prometidos-box').style.display=esPromotor?'block':'none';
+  showBox('promotor-info',esPromotor);
+  if(!esPromotor)populateReferidoSelect();
+  else document.getElementById('r-referido-box').style.display='none';
+  calcTotalReserva();
+}
+function populateReferidoSelect(){
+  const vid=document.getElementById('r-viaje').value;
+  const tipo=document.getElementById('r-tipo').value;
+  const editId=document.getElementById('r-id').value;
+  const promotores=DB.reservas.filter(r=>r.tipo==='Promotor'&&r.viaje_id===vid&&r.estado!=='Cancelado'&&r.id!==editId);
+  const sel=document.getElementById('r-referido');
+  const prev=sel.value;
+  sel.innerHTML='<option value="">— Ninguno —</option>'+promotores.map(r=>`<option value="${r.id}">${esc(nombreCliente(r.cliente_id))} (${r.id})</option>`).join('');
+  if(prev&&promotores.some(p=>p.id===prev))sel.value=prev;
+  document.getElementById('r-referido-box').style.display=(tipo==='Normal'&&promotores.length>0)?'block':'none';
+}
 function calcTotalReserva(){
   const precio=Number(document.getElementById('r-precio').value)||0;
   const pasajeros=Number(document.getElementById('r-pasajeros').value)||0;
-  const cid=document.getElementById('r-cliente').value;
-  const c=getCliente(cid);
-  const saldo=Math.min(Number(c.saldo_favor||0),precio*pasajeros);
+  const c=getCliente(document.getElementById('r-cliente').value);
   const total=precio*pasajeros;
-  const balance=total-saldo;
-  if(total>0){
+  const saldo=Math.min(Number(c.saldo_favor||0),total);
+  if(total>0&&document.getElementById('pago-inicial-wrap').style.display!=='none'){
     document.getElementById('resumen-reserva').style.display='block';
     document.getElementById('rr-total').textContent=fmt(total);
     document.getElementById('rr-saldo').textContent=fmt(saldo);
-    document.getElementById('rr-balance').textContent=fmt(balance);
-  } else {
-    document.getElementById('resumen-reserva').style.display='none';
-  }
+    document.getElementById('rr-balance').textContent=fmt(total-saldo);
+  }else document.getElementById('resumen-reserva').style.display='none';
 }
 
 async function saveReserva(){
+  if(saving)return;
   const vid=document.getElementById('r-viaje').value;
   const cid=document.getElementById('r-cliente').value;
-  if(!vid||!cid){toast('Selecciona un viaje y un cliente','error');return;}
+  if(!vid){toast('Selecciona un viaje','error');return;}
+  if(!cid){toast('Selecciona un cliente','error');return;}
+  const editId=document.getElementById('r-id').value;
+  const esNueva=!editId;
   const tipo=document.getElementById('r-tipo').value;
   const esPromotor=tipo==='Promotor';
   const precio=Number(document.getElementById('r-precio').value)||0;
-  const pasajeros=Number(document.getElementById('r-pasajeros').value);
-  const pagoMonto=Number(document.getElementById('r-pago-monto').value)||0;
-  const pagoMetodo=document.getElementById('r-pago-metodo').value;
-  if(!esPromotor&&pagoMonto<=0){toast('Ingresa el monto del pago inicial','error');return;}
-  if(!esPromotor&&!pagoMetodo){toast('Selecciona el método de pago','error');return;}
-  if(esPromotor&&pagoMonto>0&&!pagoMetodo){toast('Selecciona el método de pago','error');return;}
+  const pasajeros=esPromotor?1:(Number(document.getElementById('r-pasajeros').value)||0);
+  if(pasajeros<1){toast('Debe haber al menos 1 pasajero','error');return;}
 
-  const c=getCliente(cid);
-  const saldo=Math.min(Number(c.saldo_favor||0),precio*pasajeros);
-  const id=document.getElementById('r-id').value||nextId(DB.reservas,'R');
+  /* FIX: valida cliente duplicado en el mismo viaje */
+  const dup=DB.reservas.find(r=>r.id!==editId&&r.viaje_id===vid&&r.cliente_id===cid&&r.estado!=='Cancelado');
+  if(dup){toast(`${nombreCliente(cid)} ya tiene la reserva ${dup.id} en este viaje`,'error');return;}
 
-  // Guardar reserva
-  const referidoPor=document.getElementById('r-referido').value||null;
-  const rObj={id,viaje_id:vid,cliente_id:cid,pickup:document.getElementById('r-pickup').value,precio,pasajeros,fecha:document.getElementById('r-fecha').value,estado:(precio*pasajeros-pagoMonto<=0)?'Pagado':'Reservado',tipo,referido_por:referidoPor};
-  const{error:rErr}=await sb.from('reservas').upsert(rObj);
-  if(rErr){toast('Error al guardar reserva: '+rErr.message,'error');return;}
+  /* FIX: valida capacidad del bus */
+  const cuposNuevos=esPromotor?1:pasajeros;
+  const propios=editId?cuposReserva(DB.reservas.find(r=>r.id===editId)||{}):0;
+  const disp=cuposLibres(vid)+propios;
+  if(cuposNuevos>disp){toast(`Solo quedan ${disp} cupo(s) disponible(s) en este viaje`,'error');return;}
 
-  // Guardar pago inicial (solo si no es promotor)
-  if(!esPromotor&&pagoMonto>0){
-    const pId=nextId(DB.pagos,'PA');
-    const pObj={id:pId,reserva_id:id,fecha:document.getElementById('r-fecha').value,monto:pagoMonto,metodo:pagoMetodo,banco:document.getElementById('r-pago-banco').value,ref:document.getElementById('r-pago-ref').value,comment:'Pago inicial',tipo:'Pago'};
-    const{error:pErr}=await sb.from('pagos').upsert(pObj);
-    if(pErr){toast('Error al guardar pago: '+pErr.message,'error');return;}
+  let pagoMonto=0,pagoMetodo='';
+  if(esNueva){
+    pagoMonto=Number(document.getElementById('r-pago-monto').value)||0;
+    pagoMetodo=document.getElementById('r-pago-metodo').value;
+    if(!esPromotor&&pagoMonto<=0){toast('Ingresa el monto del pago inicial','error');return;}
+    if(pagoMonto>0&&!pagoMetodo){toast('Selecciona el método de pago','error');return;}
   }
-  // Guardar referidos del promotor
-  if(esPromotor&&referidosTmp.length>0){
-    for(const ref of referidosTmp){
-      if(!ref.nombre||!ref.nombre.trim())continue;
-      await sb.from('referidos').upsert({id:ref.id,reserva_id:id,nombre:ref.nombre.trim(),telefono:ref.telefono||'',estado:'Pendiente'});
+
+  saving=true;lockBtn('btn-save-reserva',true);
+  try{
+    const c=getCliente(cid);
+    const total=precio*pasajeros;
+    const saldoDisp=esNueva?Math.min(Number(c.saldo_favor||0),total):0;
+    const id=editId||await genId('R','seq_reservas');
+    const referidoPor=esPromotor?null:(document.getElementById('r-referido').value||null);
+    const prometidos=esPromotor?(Number(document.getElementById('r-prometidos').value)||0):0;
+    const prev=editId?DB.reservas.find(r=>r.id===editId):null;
+    const pagadoPrevio=editId?getPagado(editId):0;
+    const pagadoTotal=esNueva?(pagoMonto+saldoDisp):pagadoPrevio;
+    const estado=(prev&&esManual(prev.estado))?prev.estado:(total-pagadoTotal<=0?'Pagado':'Reservado');
+
+    const rObj={id,viaje_id:vid,cliente_id:cid,pickup:document.getElementById('r-pickup').value,precio,pasajeros,fecha:document.getElementById('r-fecha').value||today(),estado,tipo,referido_por:referidoPor,referidos_prometidos:prometidos};
+    const{error:rErr}=await sb.from('reservas').upsert(rObj);
+    if(rErr)throw rErr;
+
+    /* FIX: el pago inicial SOLO se crea en reservas nuevas */
+    if(esNueva&&pagoMonto>0){
+      const pId=await genId('PA','seq_pagos');
+      const{error:pErr}=await sb.from('pagos').upsert({id:pId,reserva_id:id,fecha:rObj.fecha,monto:pagoMonto,metodo:pagoMetodo,banco:document.getElementById('r-pago-banco').value.trim(),ref:document.getElementById('r-pago-ref').value.trim(),comment:'Pago inicial',tipo:'Pago'});
+      if(pErr)throw pErr;
     }
-  }
-  referidosTmp=[];
-
-  // Aplicar saldo a favor si existe
-  if(saldo>0){
-    const nuevoSaldo=Number(c.saldo_favor||0)-saldo;
-    await sb.from('clientes').update({saldo_favor:nuevoSaldo}).eq('id',cid);
-    // Registrar aplicación de saldo como pago
-    const sId=nextId([...DB.pagos,{id:pId}],'PA');
-    await sb.from('pagos').upsert({id:sId,reserva_id:id,fecha:today(),monto:saldo,metodo:'Saldo a favor',banco:'',ref:'',comment:'Saldo a favor aplicado',tipo:'Pago'});
-  }
-
-  // Actualizar estado automático
-  await actualizarEstadoReserva(id,precio*pasajeros,pagoMonto+saldo);
-
-  toast('Reserva guardada ✓');closeModal('modal-reserva');await loadAll();
+    if(esNueva&&saldoDisp>0){
+      const sId=await genId('PA','seq_pagos');
+      await sb.from('pagos').upsert({id:sId,reserva_id:id,fecha:rObj.fecha,monto:saldoDisp,metodo:'Saldo a favor',banco:'',ref:'',comment:'Saldo a favor aplicado',tipo:'Pago'});
+      await sb.from('clientes').update({saldo_favor:Number(c.saldo_favor||0)-saldoDisp}).eq('id',cid);
+    }
+    toast('Reserva guardada ✓');closeModal('modal-reserva');await loadAll();
+  }catch(e){toast('Error: '+(e.message||e),'error');}
+  finally{saving=false;lockBtn('btn-save-reserva',false);}
 }
 
-async function actualizarEstadoReserva(rid,total,pagado){
-  const bal=total-pagado;
-  const estado=bal<=0?'Pagado':'Reservado';
-  await sb.from('reservas').update({estado}).eq('id',rid);
-}
-
+/* FIX: al editar oculta pago inicial y restaura tipo/referido */
 function editReserva(id){
   const r=DB.reservas.find(x=>x.id===id);if(!r)return;
   populateReservaSelects();
   document.getElementById('r-id').value=r.id;
-  document.getElementById('r-viaje').value=r.viaje_id;onViajeChange();
-  document.getElementById('r-pickup').value=r.pickup||'';
-  document.getElementById('r-cliente').value=r.cliente_id;onClienteChange();
+  document.getElementById('r-viaje').value=r.viaje_id;
+  document.getElementById('r-tipo').value=r.tipo||'Normal';
+  document.getElementById('r-prometidos').value=r.referidos_prometidos||0;
   document.getElementById('r-precio').value=r.precio;
   document.getElementById('r-pasajeros').value=r.pasajeros;
-  document.getElementById('r-fecha').value=r.fecha;
-  // En edición no mostramos sección de pago inicial
+  document.getElementById('r-fecha').value=r.fecha||'';
+  onViajeChange();
+  document.getElementById('r-pickup').value=r.pickup||'';
+  document.getElementById('r-cliente').value=r.cliente_id;
+  onClienteChange();
+  const esPromotor=(r.tipo||'Normal')==='Promotor';
+  document.getElementById('r-pasajeros').disabled=esPromotor;
+  document.getElementById('r-prometidos-box').style.display=esPromotor?'block':'none';
+  showBox('promotor-info',esPromotor);
+  if(!esPromotor){populateReferidoSelect();document.getElementById('r-referido').value=r.referido_por||'';}
+  else document.getElementById('r-referido-box').style.display='none';
+  document.getElementById('pago-inicial-wrap').style.display='none';
   document.getElementById('resumen-reserva').style.display='none';
+  showBox('saldo-box',false);showBox('edit-info',true);
   document.getElementById('modal-reserva-title').textContent='Editar reserva';
   document.getElementById('modal-reserva').classList.add('open');
 }
+async function deleteReserva(id){
+  const r=DB.reservas.find(x=>x.id===id);if(!r)return;
+  const nPagos=DB.pagos.filter(p=>p.reserva_id===id).length;
+  const nRef=DB.reservas.filter(x=>x.referido_por===id).length;
+  let msg=`¿Eliminar la reserva ${id} de ${nombreCliente(r.cliente_id)}?`;
+  if(nPagos)msg+=` Se borrarán ${nPagos} pago(s).`;
+  if(nRef)msg+=` ${nRef} referido(s) quedarán sin promotor.`;
+  confirm_(msg,async()=>{
+    try{
+      await sb.from('pagos').delete().eq('reserva_id',id);
+      await sb.from('reservas').update({referido_por:null}).eq('referido_por',id);
+      const{error}=await sb.from('reservas').delete().eq('id',id);
+      if(error)throw error;
+      toast('Reserva eliminada');await loadAll();
+    }catch(e){toast('Error: '+(e.message||e),'error');}
+  });
+}
 
-async function deleteReserva(id){confirm_(`¿Eliminar la reserva ${id}?`,async()=>{
-  await sb.from('referidos').delete().eq('reserva_id',id);
-  await sb.from('pagos').delete().eq('reserva_id',id);
-  await sb.from('reservas').update({referido_por:null}).eq('referido_por',id);
-  const{error}=await sb.from('reservas').delete().eq('id',id);
-  if(error){toast('Error: '+error.message,'error');return;}
-  toast('Reserva eliminada');await loadAll();
-});}
-
-// ── CANCELACION ────────────────────────────────────────────────────────────
+/* ══ CANCELACION ══ */
 function abrirCancelacion(rid){
   const r=DB.reservas.find(x=>x.id===rid);if(!r)return;
-  const pag=getPagado(rid);
+  if(r.estado==='Cancelado'){toast('Esta reserva ya está cancelada','error');return;}
   document.getElementById('cancel-id').value=rid;
-  document.getElementById('cancel-pagado').textContent=fmt(pag);
+  document.getElementById('cancel-pagado').textContent=fmt(getPagado(rid));
   document.getElementById('cancel-accion').value='';
   document.getElementById('cancel-info').style.display='none';
   document.getElementById('modal-cancelacion').classList.add('open');
 }
-
 function onCancelAccionChange(){
   const accion=document.getElementById('cancel-accion').value;
   const info=document.getElementById('cancel-info');
-  const rid=document.getElementById('cancel-id').value;
-  const pag=getPagado(rid);
-  if(accion==='devolucion'){info.textContent=`Se registrará una devolución de ${fmt(pag)} al cliente.`;info.style.display='block';}
-  else if(accion==='credito'){info.textContent=`Se acreditarán ${fmt(pag)} al perfil del cliente para uso en próximo viaje.`;info.style.display='block';}
-  else if(accion==='ninguna'){info.textContent='El dinero queda a favor de Locas Aventuras. No hay devolución.';info.style.display='block';}
-  else info.style.display='none';
+  const pag=getPagado(document.getElementById('cancel-id').value);
+  const txt={devolucion:`Se registrará una devolución de ${fmt(pag)} al cliente.`,credito:`Se acreditarán ${fmt(pag)} al perfil del cliente para su próximo viaje.`,ninguna:'El dinero queda a favor de Locas Aventuras. No hay devolución.'}[accion];
+  if(txt){info.textContent=txt;info.style.display='block';}else info.style.display='none';
 }
-
 async function confirmarCancelacion(){
+  if(saving)return;
   const rid=document.getElementById('cancel-id').value;
   const accion=document.getElementById('cancel-accion').value;
   if(!accion){toast('Selecciona una acción','error');return;}
   const r=DB.reservas.find(x=>x.id===rid);if(!r)return;
-  const pag=getPagado(rid);
-
-  // Cancelar reserva
-  await sb.from('reservas').update({estado:'Cancelado'}).eq('id',rid);
-
-  if(accion==='devolucion'&&pag>0){
-    // Registrar devolución
-    const dId=nextId(DB.pagos,'PA');
-    await sb.from('pagos').upsert({id:dId,reserva_id:rid,fecha:today(),monto:pag,metodo:'Devolución',banco:'',ref:'',comment:'Cancelación — devolución',tipo:'Devolucion'});
-  } else if(accion==='credito'&&pag>0){
-    // Acreditar saldo a favor al cliente
-    const c=getCliente(r.cliente_id);
-    const nuevoSaldo=Number(c.saldo_favor||0)+pag;
-    await sb.from('clientes').update({saldo_favor:nuevoSaldo}).eq('id',r.cliente_id);
-  }
-
-  toast('Reserva cancelada');closeModal('modal-cancelacion');await loadAll();
+  if(r.estado==='Cancelado'){toast('Esta reserva ya está cancelada','error');closeModal('modal-cancelacion');return;}
+  saving=true;lockBtn('btn-confirm-cancel',true);
+  try{
+    const pag=getPagado(rid);
+    const{error}=await sb.from('reservas').update({estado:'Cancelado'}).eq('id',rid);
+    if(error)throw error;
+    if(accion==='devolucion'&&pag>0){
+      const dId=await genId('PA','seq_pagos');
+      await sb.from('pagos').upsert({id:dId,reserva_id:rid,fecha:today(),monto:pag,metodo:'Devolución',banco:'',ref:'',comment:'Cancelación — devolución',tipo:'Devolucion'});
+    }else if(accion==='credito'&&pag>0){
+      const c=getCliente(r.cliente_id);
+      await sb.from('clientes').update({saldo_favor:Number(c.saldo_favor||0)+pag}).eq('id',r.cliente_id);
+    }
+    toast('Reserva cancelada');closeModal('modal-cancelacion');await loadAll();
+  }catch(e){toast('Error: '+(e.message||e),'error');}
+  finally{saving=false;lockBtn('btn-confirm-cancel',false);}
 }
 
-// ── PAGO CRUD ──────────────────────────────────────────────────────────────
+/* ══ PAGOS ══ */
 function populateReservaSelectPagos(){
-  // Ordenar: primero las que tienen balance > 0
-  const conBalance=DB.reservas.filter(r=>r.estado!=='Cancelado').map(r=>{
-    const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);
-    const bal=r.precio*r.pasajeros-getPagado(r.id);
-    return{...r,bal,label:`${r.id} — ${cl.nombre||''} ${cl.apellido||''} — ${vj.destino||''} ${bal>0?'(debe '+fmt(bal)+')':'✓ Pagado'}`};
-  }).sort((a,b)=>b.bal-a.bal);
-  document.getElementById('p-reserva').innerHTML='<option value="">— Selecciona una reserva —</option>'+conBalance.map(r=>`<option value="${r.id}">${r.label}</option>`).join('');
+  const lista=DB.reservas.filter(r=>r.estado!=='Cancelado').map(r=>{
+    const vj=getViaje(r.viaje_id),bal=balanceReserva(r);
+    return{id:r.id,bal,label:`${r.id} — ${nombreCliente(r.cliente_id)} — ${vj.destino||''} ${bal>0?'(debe '+fmt(bal)+')':'✓ Pagado'}`};
+  }).sort((a,b)=>b.bal-a.bal||idNum(a.id)-idNum(b.id));
+  document.getElementById('p-reserva').innerHTML='<option value="">— Selecciona una reserva —</option>'+lista.map(r=>`<option value="${r.id}">${esc(r.label)}</option>`).join('');
 }
-
+function resetPagoForm(){
+  document.getElementById('p-id').value='';
+  populateReservaSelectPagos();
+  document.getElementById('p-fecha').value=today();
+  ['p-monto','p-banco','p-ref','p-comment'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('p-metodo').value='';
+  document.getElementById('p-tipo').value='Pago';
+  document.getElementById('pago-resumen-box').style.display='none';
+  showBox('pago-alerta',false);
+  document.getElementById('modal-pago-title').textContent='Registrar pago';
+}
 function onReservaChange(){
   const rid=document.getElementById('p-reserva').value;
   const editId=document.getElementById('p-id').value;
   const r=DB.reservas.find(x=>x.id===rid);
-  if(!r){document.getElementById('pago-resumen-box').style.display='none';return;}
-  const tot=r.precio*r.pasajeros;
-  const pagado=getPagado(rid,editId||null);
-  const bal=Math.max(tot-pagado,0);
+  if(!r){document.getElementById('pago-resumen-box').style.display='none';showBox('pago-alerta',false);return;}
+  const tot=totalReserva(r),pagado=getPagado(rid,editId||null),bal=Math.max(tot-pagado,0);
   document.getElementById('pr-total').textContent=fmt(tot);
   document.getElementById('pr-pagado').textContent=fmt(pagado);
-  document.getElementById('pr-balance').textContent=fmt(bal);
-  document.getElementById('pr-balance').style.color=bal>0?'var(--red)':'var(--teal)';
+  const pb=document.getElementById('pr-balance');
+  pb.textContent=fmt(bal);pb.style.color=bal>0?'var(--red)':'var(--teal)';
   document.getElementById('pago-resumen-box').style.display='block';
+  /* FIX: alerta si el monto excede lo debido o lo pagado */
+  const monto=Number(document.getElementById('p-monto').value)||0;
+  const tipo=document.getElementById('p-tipo').value;
+  const al=document.getElementById('pago-alerta');
+  if(tipo==='Devolucion'&&monto>pagado){al.innerHTML='<i class="ti ti-alert-triangle"></i> La devolución excede lo pagado ('+fmt(pagado)+').';al.className='info-box show info-red';}
+  else if(tipo==='Pago'&&monto>bal&&bal>=0){al.innerHTML='<i class="ti ti-alert-triangle"></i> El pago excede el balance pendiente ('+fmt(bal)+'). Quedará saldo a favor.';al.className='info-box show info-orange';}
+  else showBox('pago-alerta',false);
 }
-
 async function savePago(){
+  if(saving)return;
   const rid=document.getElementById('p-reserva').value;
   if(!rid){toast('Selecciona una reserva','error');return;}
-  const id=document.getElementById('p-id').value||nextId(DB.pagos,'PA');
+  const monto=Number(document.getElementById('p-monto').value)||0;
+  if(monto<=0){toast('El monto debe ser mayor a 0','error');return;}
+  const metodo=document.getElementById('p-metodo').value;
+  if(!metodo){toast('Selecciona el método de pago','error');return;}
+  const fecha=document.getElementById('p-fecha').value;
+  if(!fecha){toast('Selecciona la fecha','error');return;}
   const tipo=document.getElementById('p-tipo').value;
-  const monto=Number(document.getElementById('p-monto').value);
-  const obj={id,reserva_id:rid,fecha:document.getElementById('p-fecha').value,monto,tipo,metodo:document.getElementById('p-metodo').value,banco:document.getElementById('p-banco').value,ref:document.getElementById('p-ref').value,comment:document.getElementById('p-comment').value};
-  const{error}=await sb.from('pagos').upsert(obj);
-  if(error){toast('Error: '+error.message,'error');return;}
-
-  // Actualizar estado automático de la reserva
-  const r=DB.reservas.find(x=>x.id===rid);
-  if(r&&r.estado!=='Cancelado'&&r.estado!=='No asistió'&&r.estado!=='Completó viaje'){
-    const allPagos=await sb.from('pagos').select('*').eq('reserva_id',rid);
-    const totalPag=(allPagos.data||[]).reduce((s,p)=>p.tipo==='Devolucion'?s-Number(p.monto):s+Number(p.monto),0);
-    const total=r.precio*r.pasajeros;
-    const estado=totalPag>=total?'Pagado':'Reservado';
-    await sb.from('reservas').update({estado}).eq('id',rid);
+  const editId=document.getElementById('p-id').value;
+  /* FIX: devolución no puede exceder lo pagado */
+  if(tipo==='Devolucion'){
+    const pagado=getPagado(rid,editId||null);
+    if(monto>pagado){toast(`La devolución (${fmt(monto)}) excede lo pagado (${fmt(pagado)})`,'error');return;}
   }
-
-  toast('Pago guardado ✓');closeModal('modal-pago');await loadAll();
+  saving=true;lockBtn('btn-save-pago',true);
+  try{
+    const id=editId||await genId('PA','seq_pagos');
+    const{error}=await sb.from('pagos').upsert({id,reserva_id:rid,fecha,monto,tipo,metodo,banco:document.getElementById('p-banco').value.trim(),ref:document.getElementById('p-ref').value.trim(),comment:document.getElementById('p-comment').value.trim()});
+    if(error)throw error;
+    await sincronizarEstado(rid);
+    toast('Pago guardado ✓');closeModal('modal-pago');await loadAll();
+  }catch(e){toast('Error: '+(e.message||e),'error');}
+  finally{saving=false;lockBtn('btn-save-pago',false);}
 }
-
+/* FIX: una sola función recalcula estado, respetando estados manuales */
+async function sincronizarEstado(rid){
+  const r=DB.reservas.find(x=>x.id===rid);
+  if(!r||esManual(r.estado))return;
+  const{data}=await sb.from('pagos').select('monto,tipo').eq('reserva_id',rid);
+  const pagado=(data||[]).reduce((s,p)=>p.tipo==='Devolucion'?s-Number(p.monto||0):s+Number(p.monto||0),0);
+  const estado=pagado>=totalReserva(r)?'Pagado':'Reservado';
+  if(estado!==r.estado)await sb.from('reservas').update({estado}).eq('id',rid);
+}
 function editPago(id){
   const p=DB.pagos.find(x=>x.id===id);if(!p)return;
   populateReservaSelectPagos();
   document.getElementById('p-id').value=p.id;
   document.getElementById('p-reserva').value=p.reserva_id;
   document.getElementById('p-tipo').value=p.tipo||'Pago';
-  document.getElementById('p-fecha').value=p.fecha;
+  document.getElementById('p-fecha').value=p.fecha||'';
   document.getElementById('p-monto').value=p.monto;
   document.getElementById('p-metodo').value=p.metodo||'';
   document.getElementById('p-banco').value=p.banco||'';
@@ -1088,431 +1188,305 @@ function editPago(id){
   onReservaChange();
   document.getElementById('modal-pago').classList.add('open');
 }
-
-async function deletePago(id){confirm_(`¿Eliminar el pago ${id}?`,async()=>{
-  const p=DB.pagos.find(x=>x.id===id);
-  await sb.from('pagos').delete().eq('id',id);
-  // Recalcular estado de reserva
-  if(p){
-    const r=DB.reservas.find(x=>x.id===p.reserva_id);
-    if(r&&r.estado!=='Cancelado'&&r.estado!=='No asistió'&&r.estado!=='Completó viaje'){
-      const allPagos=await sb.from('pagos').select('*').eq('reserva_id',p.reserva_id);
-      const totalPag=(allPagos.data||[]).reduce((s,x)=>x.tipo==='Devolucion'?s-Number(x.monto):s+Number(x.monto),0);
-      const total=r.precio*r.pasajeros;
-      await sb.from('reservas').update({estado:totalPag>=total?'Pagado':'Reservado'}).eq('id',p.reserva_id);
-    }
-  }
-  toast('Pago eliminado');await loadAll();
-});}
-
-// ── GASTO CRUD ─────────────────────────────────────────────────────────────
-function populateViajeSelect(){document.getElementById('g-viaje').innerHTML='<option value="">— Selecciona un viaje —</option>'+DB.viajes.map(v=>`<option value="${v.id}">${v.destino} (${fmtDate(v.fecha)})</option>`).join('');}
-function onGastoViajeChange(){
-  const vid=document.getElementById('g-viaje').value;
-  const pax=vid?getPasajeros(vid):0;
-  document.getElementById('g-pax-count').textContent=pax;
-  document.getElementById('g-info-pax').style.display=(vid&&document.getElementById('g-modo').value==='persona')?'block':'none';
-  calcGastoTotal();
+async function deletePago(id){
+  const p=DB.pagos.find(x=>x.id===id);if(!p)return;
+  confirm_(`¿Eliminar el pago ${id} de ${fmt(p.monto)}?`,async()=>{
+    try{
+      const{error}=await sb.from('pagos').delete().eq('id',id);
+      if(error)throw error;
+      DB.pagos=DB.pagos.filter(x=>x.id!==id);
+      await sincronizarEstado(p.reserva_id);
+      toast('Pago eliminado');await loadAll();
+    }catch(e){toast('Error: '+(e.message||e),'error');}
+  });
 }
 
+/* ══ GASTOS ══ */
+function populateViajeSelect(){
+  document.getElementById('g-viaje').innerHTML='<option value="">— Selecciona un viaje —</option>'+DB.viajes.map(v=>`<option value="${v.id}">${esc(v.destino)} (${fmtDate(v.fecha)})</option>`).join('');
+}
+function resetGastoForm(){
+  populateViajeSelect();
+  document.getElementById('g-id').value='';
+  document.getElementById('g-fecha').value=today();
+  ['g-desc','g-monto'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('g-cat').value='Transporte';
+  document.getElementById('g-modo').value='fijo';
+  document.getElementById('g-resumen').style.display='none';
+  showBox('g-info-pax',false);
+  document.getElementById('g-monto-label').innerHTML='Monto (RD$) <span class="req">*</span>';
+  document.getElementById('modal-gasto-title').textContent='Registrar gasto';
+}
+function onGastoViajeChange(){
+  const vid=document.getElementById('g-viaje').value;
+  document.getElementById('g-pax-count').textContent=vid?getPasajeros(vid):0;
+  showBox('g-info-pax',vid&&document.getElementById('g-modo').value==='persona');
+  calcGastoTotal();
+}
 function onGastoModoChange(){
-  const modo=document.getElementById('g-modo').value;
-  const esPersona=modo==='persona';
-  document.getElementById('g-monto-label').textContent=esPersona?'Precio por persona (RD$)':'Monto total (RD$)';
-  document.getElementById('g-info-pax').style.display=(esPersona&&document.getElementById('g-viaje').value)?'block':'none';
+  const esPersona=document.getElementById('g-modo').value==='persona';
+  document.getElementById('g-monto-label').innerHTML=(esPersona?'Precio por persona (RD$)':'Monto total (RD$)')+' <span class="req">*</span>';
+  showBox('g-info-pax',esPersona&&!!document.getElementById('g-viaje').value);
   document.getElementById('g-resumen').style.display=esPersona?'block':'none';
   calcGastoTotal();
 }
-
 function calcGastoTotal(){
-  const modo=document.getElementById('g-modo').value;
-  if(modo!=='persona'){document.getElementById('g-resumen').style.display='none';return;}
+  if(document.getElementById('g-modo').value!=='persona'){document.getElementById('g-resumen').style.display='none';return;}
   const vid=document.getElementById('g-viaje').value;
   const pax=vid?getPasajeros(vid):0;
   const precioPax=Number(document.getElementById('g-monto').value)||0;
   const total=precioPax*pax;
   document.getElementById('g-r-precio').textContent=fmt(precioPax);
   document.getElementById('g-r-pax').textContent=pax+' pasajero'+(pax!==1?'s':'');
-  document.getElementById('g-r-total').textContent=fmt(total);
-  document.getElementById('g-r-total').style.color=total>0?'var(--teal)':'var(--gray-dk)';
+  const t=document.getElementById('g-r-total');
+  t.textContent=fmt(total);t.style.color=total>0?'var(--teal)':'var(--gray-dk)';
   document.getElementById('g-resumen').style.display='block';
 }
-
 async function saveGasto(){
+  if(saving)return;
   const vid=document.getElementById('g-viaje').value;
   if(!vid){toast('Selecciona un viaje','error');return;}
-  const id=document.getElementById('g-id').value||nextId(DB.gastos,'G');
+  const fecha=document.getElementById('g-fecha').value;
+  if(!fecha){toast('Selecciona la fecha','error');return;}
+  const monto=Number(document.getElementById('g-monto').value)||0;
+  if(monto<=0){toast('El monto debe ser mayor a 0','error');return;}
   const modo=document.getElementById('g-modo').value;
-  const montoIngresado=Number(document.getElementById('g-monto').value)||0;
-  if(montoIngresado<=0){toast('Ingresa el monto','error');return;}
-  let montoFinal=montoIngresado;
-  let desc=document.getElementById('g-desc').value;
+  let montoFinal=monto,desc=document.getElementById('g-desc').value.trim();
   if(modo==='persona'){
     const pax=getPasajeros(vid);
     if(pax<=0){toast('Este viaje no tiene pasajeros registrados','error');return;}
-    montoFinal=montoIngresado*pax;
-    const sufijo=` (${fmt(montoIngresado)} x ${pax} pax)`;
-    desc=(desc||document.getElementById('g-cat').value)+sufijo;
+    montoFinal=monto*pax;
+    desc=(desc||document.getElementById('g-cat').value)+` (${fmt(monto)} x ${pax} pax)`;
   }
-  const obj={id,viaje_id:vid,cat:document.getElementById('g-cat').value,descripcion:desc,fecha:document.getElementById('g-fecha').value,monto:montoFinal};
-  const{error}=await sb.from('gastos').upsert(obj);
-  if(error){toast('Error: '+error.message,'error');return;}
-  toast('Gasto guardado ✓');closeModal('modal-gasto');await loadAll();
+  saving=true;lockBtn('btn-save-gasto',true);
+  try{
+    const id=document.getElementById('g-id').value||await genId('G','seq_gastos');
+    const{error}=await sb.from('gastos').upsert({id,viaje_id:vid,cat:document.getElementById('g-cat').value,descripcion:desc,fecha,monto:montoFinal});
+    if(error)throw error;
+    toast('Gasto guardado ✓');closeModal('modal-gasto');await loadAll();
+  }catch(e){toast('Error: '+(e.message||e),'error');}
+  finally{saving=false;lockBtn('btn-save-gasto',false);}
 }
-
 function editGasto(id){
-  const g=DB.gastos.find(x=>x.id===id);
-  if(!g)return;
+  const g=DB.gastos.find(x=>x.id===id);if(!g)return;
   populateViajeSelect();
   document.getElementById('g-id').value=g.id;
   document.getElementById('g-viaje').value=g.viaje_id;
-  document.getElementById('g-cat').value=g.cat;
+  document.getElementById('g-cat').value=g.cat||'Otro';
   document.getElementById('g-desc').value=g.descripcion||'';
-  document.getElementById('g-fecha').value=g.fecha;
+  document.getElementById('g-fecha').value=g.fecha||'';
   document.getElementById('g-monto').value=g.monto;
   document.getElementById('g-modo').value='fijo';
   onGastoModoChange();
   document.getElementById('modal-gasto-title').textContent='Editar gasto';
   document.getElementById('modal-gasto').classList.add('open');
 }
-async function deleteGasto(id){confirm_('¿Eliminar este gasto?',async()=>{await sb.from('gastos').delete().eq('id',id);toast('Gasto eliminado');await loadAll();});}
-
-// ── EXPORT ─────────────────────────────────────────────────────────────────
-function exportExcel(){
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.viajes.map(v=>({ID:v.id,Destino:v.destino,Fecha:fmtDate(v.fecha),Precio:v.precio,Capacidad:v.capacidad,Estado:v.estado,Puntos:(v.pickups||[]).map(p=>`${p.lugar}(${p.hora})`).join('|')}))),'Viajes');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.clientes.map(c=>({ID:c.id,Nombre:c.nombre,Apellido:c.apellido,Tel:c.tel,Instagram:c.ig,Correo:c.email,'Saldo a favor':c.saldo_favor||0,Notas:c.notas}))),'Clientes');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.reservas.map(r=>{const cl=getCliente(r.cliente_id);const vj=getViaje(r.viaje_id);const tot=r.precio*r.pasajeros;const pag=getPagado(r.id);return{ID:r.id,Viaje:vj.destino,Cliente:`${cl.nombre||''} ${cl.apellido||''}`,Punto:r.pickup,Precio:r.precio,Pasajeros:r.pasajeros,Total:tot,Pagado:pag,Balance:Math.max(tot-pag,0),Fecha:fmtDate(r.fecha),Estado:r.estado};})),'Reservas');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.pagos.map(p=>({ID:p.id,Reserva:p.reserva_id,Fecha:fmtDate(p.fecha),Tipo:p.tipo||'Pago',Monto:p.monto,Metodo:p.metodo,Banco:p.banco,Ref:p.ref,Comentario:p.comment}))),'Pagos');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.gastos.map(g=>({ID:g.id,Viaje:g.viaje_id,Cat:g.cat,Descripcion:g.descripcion,Fecha:fmtDate(g.fecha),Monto:g.monto}))),'Gastos');
-  XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');
+async function deleteGasto(id){
+  const g=DB.gastos.find(x=>x.id===id);if(!g)return;
+  confirm_(`¿Eliminar el gasto ${id} de ${fmt(g.monto)}?`,async()=>{
+    try{
+      const{error}=await sb.from('gastos').delete().eq('id',id);
+      if(error)throw error;
+      toast('Gasto eliminado');await loadAll();
+    }catch(e){toast('Error: '+(e.message||e),'error');}
+  });
 }
 
+/* ══ HISTORIAL CLIENTE ══ */
+function verHistorial(cid){
+  const cl=getCliente(cid);if(!cl.id)return;
+  document.getElementById('hist-title').textContent='Historial de '+nombreCliente(cid);
+  const res=DB.reservas.filter(r=>r.cliente_id===cid);
+  const completados=res.filter(r=>r.estado==='Completó viaje').length;
+  const totalPagado=res.reduce((s,r)=>s+getPagado(r.id),0);
+  const balanceTotal=res.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>s+balanceReserva(r),0);
+  const promos=res.filter(r=>r.tipo==='Promotor');
+  let totalRef=0;promos.forEach(rp=>{totalRef+=DB.reservas.filter(x=>x.referido_por===rp.id&&x.estado!=='Cancelado').length;});
 
-
-// ── HISTORIAL DEL CLIENTE ──────────────────────────────────────────────────
-async function verHistorial(cid){
-  const cl=getCliente(cid);
-  if(!cl.id)return;
-  document.getElementById('hist-title').textContent=`Historial de ${cl.nombre} ${cl.apellido}`;
-
-  const reservasCliente=DB.reservas.filter(r=>r.cliente_id===cid);
-  const completados=reservasCliente.filter(r=>r.estado==='Completó viaje').length;
-  const cancelados=reservasCliente.filter(r=>r.estado==='Cancelado').length;
-  const totalPagado=reservasCliente.reduce((s,r)=>s+getPagado(r.id),0);
-  const balanceTotal=reservasCliente.filter(r=>r.estado!=='Cancelado').reduce((s,r)=>{
-    return s+Math.max(r.precio*r.pasajeros-getPagado(r.id),0);
-  },0);
-  const vecesPromotor=reservasCliente.filter(r=>r.tipo==='Promotor').length;
-
-  // Contar referidos totales
-  let totalReferidos=0;
-  const reservasPromotor=reservasCliente.filter(r=>r.tipo==='Promotor');
-  for(const rp of reservasPromotor){
-    totalReferidos+=DB.reservas.filter(x=>x.referido_por===rp.id&&x.estado!=='Cancelado').length;
-  }
-
-  let html=`
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
-      <div class="kpi" style="padding:12px"><div class="kpi-label">Total viajes</div><div class="kpi-val accent" style="font-size:20px">${reservasCliente.length}</div></div>
-      <div class="kpi" style="padding:12px"><div class="kpi-label">Completados</div><div class="kpi-val green" style="font-size:20px">${completados}</div></div>
-      <div class="kpi" style="padding:12px"><div class="kpi-label">Total pagado</div><div class="kpi-val green" style="font-size:16px">${fmt(totalPagado)}</div></div>
-      <div class="kpi" style="padding:12px"><div class="kpi-label">Balance</div><div class="kpi-val ${balanceTotal>0?'red':'green'}" style="font-size:16px">${fmt(balanceTotal)}</div></div>
-    </div>`;
-
-  // Datos de contacto
-  html+=`<div style="background:var(--gray-lt);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:13px">
+  let html=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Total viajes</div><div class="kpi-val accent" style="font-size:20px">${res.length}</div></div>
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Completados</div><div class="kpi-val green" style="font-size:20px">${completados}</div></div>
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Total pagado</div><div class="kpi-val green" style="font-size:16px">${fmt(totalPagado)}</div></div>
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Balance</div><div class="kpi-val ${balanceTotal>0?'red':'green'}" style="font-size:16px">${fmt(balanceTotal)}</div></div>
+  </div>
+  <div style="background:var(--gray-lt);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:13px">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div><span style="color:var(--gray-dk)">Teléfono:</span> <strong>${cl.tel||'—'}</strong></div>
-      <div><span style="color:var(--gray-dk)">Instagram:</span> <strong>${cl.ig||'—'}</strong></div>
-      <div><span style="color:var(--gray-dk)">Correo:</span> <strong>${cl.email||'—'}</strong></div>
+      <div><span style="color:var(--gray-dk)">Teléfono:</span> <strong>${esc(cl.tel||'—')}</strong></div>
+      <div><span style="color:var(--gray-dk)">Instagram:</span> <strong>${esc(cl.ig||'—')}</strong></div>
+      <div><span style="color:var(--gray-dk)">Correo:</span> <strong>${esc(cl.email||'—')}</strong></div>
       <div><span style="color:var(--gray-dk)">Saldo a favor:</span> <strong style="color:${Number(cl.saldo_favor||0)>0?'var(--teal)':'var(--gray-dk)'}">${fmt(cl.saldo_favor||0)}</strong></div>
     </div>
   </div>`;
-
-  if(vecesPromotor>0){
-    html+=`<div class="saldo-box" style="display:block;background:#FFF0E6;border-color:var(--orange);color:#c45f00">
-      <i class="ti ti-star"></i> Ha sido promotor <strong>${vecesPromotor}</strong> ${vecesPromotor===1?'vez':'veces'} y ha traído <strong>${totalReferidos}</strong> ${totalReferidos===1?'persona':'personas'}.
-    </div>`;
+  if(promos.length>0){
+    html+=`<div class="info-box show info-orange"><i class="ti ti-star"></i> Ha sido promotor <strong>${promos.length}</strong> ${promos.length===1?'vez':'veces'} y ha traído <strong>${totalRef}</strong> ${totalRef===1?'persona':'personas'}.</div>`;
   }
-
-  // Tabla de viajes
-  if(reservasCliente.length>0){
-    const ordenadas=[...reservasCliente].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
-    html+=`<div class="section-label">Viajes realizados</div>
-    <div class="table-wrap"><table style="min-width:unset"><thead><tr><th>Viaje</th><th>Fecha</th><th>Pas.</th><th>Total</th><th>Pagado</th><th>Balance</th><th>Estado</th></tr></thead><tbody>`;
-    ordenadas.forEach(r=>{
-      const vj=getViaje(r.viaje_id);
-      const tot=r.precio*r.pasajeros;
-      const pag=getPagado(r.id);
-      const bal=Math.max(tot-pag,0);
-      const estado=r.estado==='Cancelado'||r.estado==='No asistió'||r.estado==='Completó viaje'?r.estado:estadoAuto(r.id);
+  if(res.length>0){
+    const ord=[...res].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+    html+=`<div class="section-label">Viajes</div><div class="table-wrap"><table style="min-width:unset"><thead><tr><th>Viaje</th><th>Fecha</th><th>Pas.</th><th>Total</th><th>Pagado</th><th>Balance</th><th>Estado</th></tr></thead><tbody>`;
+    ord.forEach(r=>{
+      const vj=getViaje(r.viaje_id),tot=totalReserva(r),pag=getPagado(r.id),bal=Math.max(tot-pag,0),est=estadoReserva(r);
       const promo=r.tipo==='Promotor'?' <span class="badge badge-orange" style="font-size:9px">Promotor</span>':'';
-      html+=`<tr><td>${vj.destino||'—'}${promo}</td><td>${fmtDate(r.fecha)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(estado)}">${estado}</span></td></tr>`;
+      html+=`<tr><td>${esc(vj.destino||'—')}${promo}</td><td>${fmtDate(r.fecha)}</td><td>${r.pasajeros}</td><td>${fmt(tot)}</td><td>${fmt(pag)}</td><td style="color:${bal>0?'var(--red)':'var(--teal)'};font-weight:600">${fmt(bal)}</td><td><span class="badge ${badgeR(est)}">${est}</span></td></tr>`;
     });
     html+=`</tbody></table></div>`;
-  } else {
-    html+=`<p style="font-size:13px;color:var(--gray-dk);text-align:center;padding:20px">Este cliente aún no tiene viajes registrados.</p>`;
-  }
-
-  if(cl.notas){
-    html+=`<div class="section-label">Notas</div><p style="font-size:13px;color:var(--text)">${cl.notas}</p>`;
-  }
-
+  }else html+=`<p style="font-size:13px;color:var(--gray-dk);text-align:center;padding:20px">Sin viajes registrados.</p>`;
+  if(cl.notas)html+=`<div class="section-label">Notas</div><p style="font-size:13px">${esc(cl.notas)}</p>`;
   document.getElementById('hist-content').innerHTML=html;
   document.getElementById('modal-historial').classList.add('open');
 }
 
-// ── PROMOTOR ────────────────────────────────────────────────────────────────
-let referidosTmp=[];
+/* ══ PANEL PROMOTOR (FIX: cuenta por cliente_id, no por texto) ══ */
+function verReferidos(rid){
+  const r=DB.reservas.find(x=>x.id===rid);if(!r)return;
+  document.getElementById('modal-ref-title').textContent='Referidos de '+nombreCliente(r.cliente_id);
+  const prometidos=Number(r.referidos_prometidos||0);
+  const confirmados=DB.reservas.filter(x=>x.referido_por===rid&&x.estado!=='Cancelado');
+  const faltan=Math.max(prometidos-confirmados.length,0);
+  const generado=confirmados.reduce((s,x)=>s+getPagado(x.id),0);
+  const califica=confirmados.length>=9;
 
-function onTipoReservaChange(){
-  const esPromotor=document.getElementById('r-tipo').value==='Promotor';
-  // Mostrar/ocultar sección de referidos
-  document.getElementById('referidos-section').style.display=esPromotor?'block':'none';
-  // Mostrar/ocultar campo "referido por"
-  document.getElementById('r-referido-box').style.display=esPromotor?'none':'block';
-  // Mostrar/ocultar sección de pago
-  document.getElementById('pago-inicial-fields').style.display=esPromotor?'none':'block';
-  document.getElementById('promotor-pase-info').style.display=esPromotor?'block':'none';
-  if(esPromotor){
-    document.getElementById('r-precio').value='0';
-    calcTotalReserva();
-  }
-}
-
-function agregarReferido(){
-  const id='REF-'+Date.now();
-  referidosTmp.push({id,nombre:'',telefono:''});
-  renderReferidosTmp();
-}
-
-function renderReferidosTmp(){
-  document.getElementById('referidos-lista').innerHTML=referidosTmp.map((r,i)=>`
-    <div style="display:grid;grid-template-columns:1fr 140px auto;gap:8px;margin-bottom:8px;align-items:center">
-      <input type="text" placeholder="Nombre completo" value="${r.nombre}" onchange="updateReferido('${r.id}','nombre',this.value)" onblur="updateReferido('${r.id}','nombre',this.value)" style="padding:6px 10px;font-size:13px">
-      <input type="text" placeholder="Teléfono" value="${r.telefono}" onchange="updateReferido('${r.id}','telefono',this.value)" onblur="updateReferido('${r.id}','telefono',this.value)" style="padding:6px 10px;font-size:13px">
-      <button class="btn btn-icon btn-danger" onclick="removeReferido('${r.id}')"><i class="ti ti-trash"></i></button>
-    </div>`).join('')||'<p style="font-size:12px;color:var(--gray-dk)">Sin personas agregadas aún.</p>';
-}
-
-function updateReferido(id,field,val){
-  const r=referidosTmp.find(x=>x.id===id);
-  if(r)r[field]=val;
-}
-
-function removeReferido(id){
-  referidosTmp=referidosTmp.filter(x=>x.id!==id);
-  renderReferidosTmp();
-}
-
-function populateReferidoSelect(){
-  const vid=document.getElementById('r-viaje').value;
-  const tipo=document.getElementById('r-tipo').value;
-  const promotores=DB.reservas.filter(r=>r.tipo==='Promotor'&&r.viaje_id===vid&&r.estado!=='Cancelado');
-  const sel=document.getElementById('r-referido');
-  sel.innerHTML='<option value="">— Ninguno —</option>'+promotores.map(r=>{
-    const cl=getCliente(r.cliente_id);
-    return`<option value="${r.id}">${cl.nombre||''} ${cl.apellido||''} (${r.id})</option>`;
-  }).join('');
-  document.getElementById('r-referido-box').style.display=(tipo==='Normal'&&promotores.length>0)?'block':'none';
-}
-
-async function verReferidos(rid){
-  const r=DB.reservas.find(x=>x.id===rid);
-  if(!r)return;
-  const cl=getCliente(r.cliente_id);
-  document.getElementById('modal-ref-title').textContent=`Referidos de ${cl.nombre} ${cl.apellido}`;
-  
-  const{data:refs}=await sb.from('referidos').select('*').eq('reserva_id',rid);
-  const reservasRef=DB.reservas.filter(x=>x.referido_por===rid&&x.estado!=='Cancelado');
-  
-  let html=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-    <div class="kpi" style="padding:12px"><div class="kpi-label">Prometidos</div><div class="kpi-val accent">${(refs||[]).length}</div></div>
-    <div class="kpi" style="padding:12px"><div class="kpi-label">Confirmados</div><div class="kpi-val green">${reservasRef.length}</div></div>
+  let html=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Prometidos</div><div class="kpi-val accent" style="font-size:22px">${prometidos}</div></div>
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Confirmados</div><div class="kpi-val green" style="font-size:22px">${confirmados.length}</div></div>
+    <div class="kpi" style="padding:12px"><div class="kpi-label">Generado</div><div class="kpi-val green" style="font-size:16px">${fmt(generado)}</div></div>
   </div>`;
-  
-  if(refs&&refs.length>0){
-    html+=`<div style="font-size:12px;font-weight:600;color:var(--gray-dk);text-transform:uppercase;margin-bottom:8px">Personas prometidas</div>`;
-    refs.forEach(ref=>{
-      const confirmado=reservasRef.find(rx=>{const c2=getCliente(rx.cliente_id);return(c2.nombre+' '+c2.apellido).toLowerCase()===ref.nombre.toLowerCase();});
-      html+=`<div style="display:grid;grid-template-columns:1fr 130px 90px auto;gap:6px;margin-bottom:6px;align-items:center">
-        <input type="text" value="${ref.nombre||''}" onchange="updateRefDB('${ref.id}','nombre',this.value)" style="padding:6px 10px;font-size:13px" placeholder="Nombre">
-        <input type="text" value="${ref.telefono||''}" onchange="updateRefDB('${ref.id}','telefono',this.value)" style="padding:6px 10px;font-size:13px" placeholder="Teléfono">
-        <span class="badge ${confirmado?'badge-green':'badge-yellow'}">${confirmado?'✓ Reservó':'Pendiente'}</span>
-        <button class="btn btn-icon btn-danger" onclick="deleteRefDB('${ref.id}','${rid}')"><i class="ti ti-trash"></i></button>
-      </div>`;
+
+  if(califica)html+=`<div class="info-box show info-teal"><i class="ti ti-checks"></i> Confirmó <strong>${confirmados.length}</strong> referidos — <strong>califica para pase libre</strong>. Edita su reserva y pon el precio en RD$0.</div>`;
+  else html+=`<div class="info-box show info-orange"><i class="ti ti-alert-circle"></i> Confirmó <strong>${confirmados.length}</strong> de ${prometidos||'?'} — faltan <strong>${faltan}</strong> para las 9 del pase libre. Edita su precio según lo que acuerden.</div>`;
+
+  if(confirmados.length>0){
+    html+=`<div class="section-label">Personas confirmadas</div><div class="table-wrap"><table style="min-width:unset"><thead><tr><th>Reserva</th><th>Cliente</th><th>Total</th><th>Pagado</th><th>Estado</th></tr></thead><tbody>`;
+    confirmados.forEach(x=>{
+      html+=`<tr><td>${x.id}</td><td>${esc(nombreCliente(x.cliente_id))}</td><td>${fmt(totalReserva(x))}</td><td>${fmt(getPagado(x.id))}</td><td><span class="badge ${badgeR(estadoReserva(x))}">${estadoReserva(x)}</span></td></tr>`;
     });
-  } else {
-    html+=`<p style="font-size:13px;color:var(--gray-dk)">No hay personas registradas aún.</p>`;
+    html+=`</tbody></table></div>`;
+  }else{
+    html+=`<p style="font-size:13px;color:var(--gray-dk);text-align:center;padding:16px">Aún no hay referidos confirmados.</p>`;
   }
-  
-html+=`<div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;align-items:end">
-  <div class="form-group" style="margin:0">
-    <label class="form-label">Agregar desde clientes existentes</label>
-    <select id="ref-cliente-select" style="font-size:13px">
-      <option value="">— Escribir manualmente —</option>${DB.clientes.map(cx=>`<option value="${cx.id}">${cx.nombre} ${cx.apellido} — ${cx.tel||'sin tel'}</option>`).join('')}
-    </select>
-  </div>
-  <button class="btn btn-primary btn-sm" onclick="addRefFromSelect('${rid}')" style="margin-bottom:1px"><i class="ti ti-plus"></i> Agregar</button>
-</div>`;
-  
+  html+=`<p style="font-size:11px;color:var(--gray-dk);margin-top:10px"><i class="ti ti-info-circle"></i> Para vincular a alguien, edita su reserva y selecciona este promotor en "Referido por".</p>`;
   document.getElementById('modal-ref-content').innerHTML=html;
   document.getElementById('modal-referidos').classList.add('open');
 }
 
-async function updateRefDB(id,field,val){
-  await sb.from('referidos').update({[field]:val}).eq('id',id);
+/* ══ EXCEL ══ */
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.viajes.map(v=>({ID:v.id,Destino:v.destino,Fecha:fmtDate(v.fecha),Precio:v.precio,Capacidad:v.capacidad,Ocupados:getPasajeros(v.id),Libres:cuposLibres(v.id),Estado:v.estado,Puntos:(v.pickups||[]).map(p=>`${p.lugar}(${p.hora})`).join(' | ')}))),'Viajes');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.clientes.map(c=>({ID:c.id,Nombre:c.nombre,Apellido:c.apellido,Telefono:c.tel,Instagram:c.ig,Correo:c.email,'Saldo a favor':Number(c.saldo_favor||0),Notas:c.notas}))),'Clientes');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.reservas.map(r=>{
+    const vj=getViaje(r.viaje_id),tot=totalReserva(r),pag=getPagado(r.id);
+    return{ID:r.id,Viaje:vj.destino,Cliente:nombreCliente(r.cliente_id),Tipo:r.tipo||'Normal','Referido por':r.referido_por?nombreCliente((DB.reservas.find(x=>x.id===r.referido_por)||{}).cliente_id):'','Ref. prometidos':r.referidos_prometidos||0,Punto:r.pickup,Precio:r.precio,Pasajeros:r.pasajeros,Cupos:cuposReserva(r),Total:tot,Pagado:pag,Balance:Math.max(tot-pag,0),Fecha:fmtDate(r.fecha),Estado:estadoReserva(r)};
+  })),'Reservas');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.pagos.map(p=>{
+    const r=DB.reservas.find(x=>x.id===p.reserva_id)||{};
+    return{ID:p.id,Reserva:p.reserva_id,Cliente:nombreCliente(r.cliente_id),Fecha:fmtDate(p.fecha),Tipo:p.tipo||'Pago',Monto:p.tipo==='Devolucion'?-Number(p.monto||0):Number(p.monto||0),Metodo:p.metodo,Banco:p.banco,Referencia:p.ref,Comentario:p.comment};
+  })),'Pagos');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(DB.gastos.map(g=>({ID:g.id,Viaje:(getViaje(g.viaje_id).destino)||g.viaje_id,Categoria:g.cat,Descripcion:g.descripcion,Fecha:fmtDate(g.fecha),Monto:g.monto}))),'Gastos');
+  XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');
 }
 
-async function deleteRefDB(id,rid){
-  await sb.from('referidos').delete().eq('id',id);
-  await verReferidos(rid);
-}
-
-async function addRefDB(rid){
-  const id='REF-'+Date.now();
-  await sb.from('referidos').upsert({id,reserva_id:rid,nombre:'',telefono:'',estado:'Pendiente'});
-  await verReferidos(rid);
-  
-}
-async function addRefFromSelect(rid){
-  const sel=document.getElementById('ref-cliente-select');
-  const cid=sel.value;
-  const id='REF-'+Date.now();
-  if(cid){
-    const cl=getCliente(cid);
-    await sb.from('referidos').upsert({id,reserva_id:rid,nombre:(cl.nombre+' '+cl.apellido).trim(),telefono:cl.tel||'',estado:'Pendiente'});
-  } else {
-    await sb.from('referidos').upsert({id,reserva_id:rid,nombre:'',telefono:'',estado:'Pendiente'});
-  }
-  await verReferidos(rid);
-}
-// ── PRESUPUESTO ────────────────────────────────────────────────────────────
+/* ══ PRESUPUESTO ══ */
 let otrosCostos=[];
-
-function agregarOtro(){
-  const id=Date.now();
-  otrosCostos.push({id,desc:'',monto:0});
-  renderOtros();
-}
-
+const BUS_CAP={mini:15,med:30,grande:50};
+function agregarOtro(){otrosCostos.push({id:Date.now()+Math.random(),desc:'',monto:0});renderOtros();}
 function renderOtros(){
   document.getElementById('otros-lista').innerHTML=otrosCostos.map(o=>`
     <div style="display:grid;grid-template-columns:1fr 110px auto;gap:6px;margin-bottom:6px;align-items:center">
-      <input type="text" placeholder="Descripción" value="${o.desc}" oninput="updateOtro(${o.id},'desc',this.value)" style="padding:5px 8px;font-size:12px">
+      <input type="text" placeholder="Descripción" value="${esc(o.desc)}" onchange="updateOtro(${o.id},'desc',this.value)" style="padding:5px 8px;font-size:12px">
       <input type="number" placeholder="RD$" value="${o.monto||''}" oninput="updateOtro(${o.id},'monto',this.value)" style="padding:5px 8px;font-size:12px">
       <button class="btn btn-icon btn-danger" onclick="removeOtro(${o.id})"><i class="ti ti-trash"></i></button>
     </div>`).join('');
   calcPresupuesto();
 }
-
-function updateOtro(id,field,val){
-  const o=otrosCostos.find(x=>x.id===id);
-  if(o){o[field]=field==='monto'?Number(val):val;}
-  calcPresupuesto();
+function updateOtro(id,field,val){const o=otrosCostos.find(x=>x.id===id);if(o)o[field]=field==='monto'?Number(val)||0:val;calcPresupuesto();}
+function removeOtro(id){otrosCostos=otrosCostos.filter(x=>x.id!==id);renderOtros();}
+function getBusSeleccionado(){const s=document.querySelector('input[name="bus"]:checked');return s?s.value:'med';}
+function costosPorPersona(){
+  return(Number(document.getElementById('c-refri').value)||0)+(Number(document.getElementById('c-entrada').value)||0)+(Number(document.getElementById('c-almuerzo').value)||0)+otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
 }
-
-function removeOtro(id){
-  otrosCostos=otrosCostos.filter(x=>x.id!==id);
-  renderOtros();
-}
-
-function getBusSeleccionado(){
-  const sel=document.querySelector('input[name="bus"]:checked');
-  return sel?sel.value:'med';
-}
-
-function getBusCap(tipo){return{mini:15,med:30,grande:50}[tipo]||30;}
-
 function calcPresupuesto(){
-  const tMini=Number(document.getElementById('t-mini').value)||0;
-  const tMed=Number(document.getElementById('t-med').value)||0;
-  const tGrande=Number(document.getElementById('t-grande').value)||0;
-  const cppMini=tMini>0?Math.round(tMini/15):0;
-  const cppMed=tMed>0?Math.round(tMed/30):0;
-  const cppGrande=tGrande>0?Math.round(tGrande/50):0;
-  document.getElementById('cpp-mini').textContent=cppMini>0?fmt(cppMini):'—';
-  document.getElementById('cpp-med').textContent=cppMed>0?fmt(cppMed):'—';
-  document.getElementById('cpp-grande').textContent=cppGrande>0?fmt(cppGrande):'—';
-  const busElegido=getBusSeleccionado();
-  const cppElegido={mini:cppMini,med:cppMed,grande:cppGrande}[busElegido]||0;
+  const precios={mini:Number(document.getElementById('t-mini').value)||0,med:Number(document.getElementById('t-med').value)||0,grande:Number(document.getElementById('t-grande').value)||0};
+  const coord=Number(document.getElementById('coordinadores').value)||0;
+  /* FIX: divide entre cupos vendibles, no capacidad total */
+  ['mini','med','grande'].forEach(k=>{
+    const vend=Math.max(BUS_CAP[k]-coord,1);
+    const cpp=precios[k]>0?Math.round(precios[k]/vend):0;
+    document.getElementById('cpp-'+k).textContent=cpp>0?fmt(cpp):'—';
+  });
+  const bus=getBusSeleccionado();
+  const vendibles=Math.max(BUS_CAP[bus]-coord,1);
+  const cppElegido=precios[bus]>0?Math.round(precios[bus]/vendibles):0;
   const refri=Number(document.getElementById('c-refri').value)||0;
   const entrada=Number(document.getElementById('c-entrada').value)||0;
   const almuerzo=Number(document.getElementById('c-almuerzo').value)||0;
-  const totalOtros=otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
-  const costoTotal=cppElegido+refri+entrada+almuerzo+totalOtros;
-  const margen=Number(document.getElementById('margen').value)||30;
+  const otros=otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
+  const costoTotal=cppElegido+refri+entrada+almuerzo+otros;
+  const margen=Number(document.getElementById('margen').value)||0;
   const margenMonto=Math.round(costoTotal*margen/100);
-  const precioSugerido=costoTotal+margenMonto;
+  const sugerido=costoTotal+margenMonto;
   document.getElementById('r-transporte').textContent=cppElegido>0?fmt(cppElegido):'—';
   document.getElementById('r-refri').textContent=refri>0?fmt(refri):'—';
   document.getElementById('r-entrada').textContent=entrada>0?fmt(entrada):'—';
   document.getElementById('r-almuerzo').textContent=almuerzo>0?fmt(almuerzo):'—';
   document.getElementById('r-costo-total').textContent=costoTotal>0?fmt(costoTotal):'—';
   document.getElementById('r-margen').textContent=margenMonto>0?fmt(margenMonto):'—';
-  document.getElementById('r-precio-sug').textContent=precioSugerido>0?fmt(precioSugerido):'—';
-  if(totalOtros>0){document.getElementById('r-otros-row').style.display='';document.getElementById('r-otros').textContent=fmt(totalOtros);}
-  else document.getElementById('r-otros-row').style.display='none';
+  document.getElementById('r-precio-sug').textContent=sugerido>0?fmt(sugerido):'—';
+  const row=document.getElementById('r-otros-row');
+  if(otros>0){row.style.display='';document.getElementById('r-otros').textContent=fmt(otros);}else row.style.display='none';
   calcSensibilidad();
 }
-
 function usarPrecioSugerido(){
-  const sug=document.getElementById('r-precio-sug').textContent;
-  if(sug==='—')return;
-  const num=Number(sug.replace('RD$','').replace(/,/g,'').replace(/\./g,''));
-  document.getElementById('precio-final').value=num;
+  const t=document.getElementById('r-precio-sug').textContent;
+  if(t==='—')return;
+  document.getElementById('precio-final').value=Number(t.replace(/[^\d]/g,''))||0;
   calcSensibilidad();
 }
-
 function calcSensibilidad(){
-  const busElegido=getBusSeleccionado();
-  const busPrecios={mini:Number(document.getElementById('t-mini').value)||0,med:Number(document.getElementById('t-med').value)||0,grande:Number(document.getElementById('t-grande').value)||0};
-  const precioTransporte=busPrecios[busElegido]||0;
-  const cap=getBusCap(busElegido);
-  const refri=Number(document.getElementById('c-refri').value)||0;
-  const entrada=Number(document.getElementById('c-entrada').value)||0;
-  const almuerzo=Number(document.getElementById('c-almuerzo').value)||0;
-  const totalOtros=otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
-  const costosPorPersona=refri+entrada+almuerzo+totalOtros;
+  const bus=getBusSeleccionado();
+  const precioTransporte=Number(document.getElementById('t-'+bus).value)||0;
+  const coord=Number(document.getElementById('coordinadores').value)||0;
+  const vendibles=Math.max(BUS_CAP[bus]-coord,1);
+  const costosPax=costosPorPersona();
   const precioVenta=Number(document.getElementById('precio-final').value)||0;
+  const tbody=document.getElementById('tbody-sensibilidad');
   if(precioVenta<=0||precioTransporte<=0){
-    document.getElementById('tbody-sensibilidad').innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Ingresa el precio de transporte y el precio final</td></tr>';
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Ingresa el precio del transporte y el precio final</td></tr>';
     return;
   }
   const pasos=[];
-  const inicio=Math.ceil(cap*0.5);
-  const step=Math.max(1,Math.floor(cap*0.1));
-  for(let p=inicio;p<=cap;p+=step){pasos.push(p);}
-  if(pasos[pasos.length-1]!==cap)pasos.push(cap);
-  const rows=pasos.map(p=>{
+  const step=Math.max(1,Math.round(vendibles*0.1));
+  for(let p=Math.max(1,Math.ceil(vendibles*0.5));p<=vendibles;p+=step)pasos.push(p);
+  if(pasos[pasos.length-1]!==vendibles)pasos.push(vendibles);
+  tbody.innerHTML=pasos.map(p=>{
     const ingresos=p*precioVenta;
-    const costoTotal=precioTransporte+(p*costosPorPersona);
-    const ganancia=ingresos-costoTotal;
-    const margenReal=ingresos>0?Math.round(ganancia/ingresos*100):0;
-    const color=ganancia<0?'var(--red)':ganancia===0?'var(--orange)':'var(--teal)';
-    return`<tr style="${p===cap?'background:var(--teal-lt);font-weight:600':''}"><td>${p}${p===cap?' ★':''}</td><td>${fmt(ingresos)}</td><td>${fmt(precioTransporte)}</td><td>${fmt(p*costosPorPersona)}</td><td style="color:${color};font-weight:600">${ganancia>=0?'+':''}${fmt(ganancia)}</td><td style="color:${color}">${margenReal}%</td></tr>`;
-  });
-  document.getElementById('tbody-sensibilidad').innerHTML=rows.join('');
+    /* los coordinadores también consumen refrigerio/entrada */
+    const costo=precioTransporte+((p+coord)*costosPax);
+    const gan=ingresos-costo;
+    const mg=ingresos>0?Math.round(gan/ingresos*100):0;
+    const col=gan<0?'var(--red)':gan===0?'var(--orange)':'var(--teal)';
+    return`<tr style="${p===vendibles?'background:var(--teal-lt);font-weight:600':''}"><td>${p}${p===vendibles?' ★':''}</td><td>${fmt(ingresos)}</td><td>${fmt(precioTransporte)}</td><td>${fmt((p+coord)*costosPax)}</td><td style="color:${col};font-weight:600">${gan>=0?'+':''}${fmt(gan)}</td><td style="color:${col}">${mg}%</td></tr>`;
+  }).join('');
 }
-
 function abrirCrearViaje(){
   const precio=Number(document.getElementById('precio-final').value)||0;
   if(precio<=0){toast('Define el precio final primero','error');return;}
-  const busElegido=getBusSeleccionado();
-  const cap=getBusCap(busElegido);
+  const bus=getBusSeleccionado();
   nav('viajes');
-  editingPickups=[];renderPickupList();
-  document.getElementById('v-id').value='';
+  resetViajeForm();
   document.getElementById('v-precio').value=precio;
-  document.getElementById('v-capacidad').value=cap;
-  document.getElementById('v-estado').value='Abierto';
-  ['v-destino','v-fecha','v-desc'].forEach(f=>document.getElementById(f).value='');
+  document.getElementById('v-capacidad').value=BUS_CAP[bus];
   document.getElementById('modal-viaje-title').textContent='Nuevo viaje — desde presupuesto';
   document.getElementById('modal-viaje').classList.add('open');
-  toast('Precio y capacidad cargados desde el presupuesto ✓');
+  toast('Precio y capacidad cargados ✓');
 }
 
+/* ══ INICIO ══ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+});
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
+});
 loadAll();
 </script>
 </body>
