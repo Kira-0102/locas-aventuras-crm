@@ -1307,14 +1307,15 @@ function removeReferido(id){
 }
 
 function populateReferidoSelect(){
-  // Llenar dropdown "Referido por" con promotores activos del mismo viaje
   const vid=document.getElementById('r-viaje').value;
+  const tipo=document.getElementById('r-tipo').value;
   const promotores=DB.reservas.filter(r=>r.tipo==='Promotor'&&r.viaje_id===vid&&r.estado!=='Cancelado');
   const sel=document.getElementById('r-referido');
   sel.innerHTML='<option value="">— Ninguno —</option>'+promotores.map(r=>{
     const cl=getCliente(r.cliente_id);
     return`<option value="${r.id}">${cl.nombre||''} ${cl.apellido||''} (${r.id})</option>`;
   }).join('');
+  document.getElementById('r-referido-box').style.display=(tipo==='Normal'&&promotores.length>0)?'block':'none';
 }
 
 async function verReferidos(rid){
