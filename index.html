@@ -224,73 +224,80 @@ input:disabled{background:var(--gray-lt);color:var(--gray-dk);cursor:not-allowed
       </div>
 
       <div class="page" id="page-presupuesto">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <div style="display:grid;grid-template-columns:1fr 1.15fr;gap:16px;margin-bottom:16px">
+
           <div class="card">
-            <div class="card-title">🚌 Cotización de transporte</div>
-            <table style="min-width:unset">
-              <thead><tr><th>Tipo</th><th>Cap.</th><th>Precio chofer</th><th>Costo/persona</th><th></th></tr></thead>
-              <tbody>
-                <tr><td>Minibús</td><td>15</td>
-                  <td><input type="number" id="t-mini" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
-                  <td id="cpp-mini" style="font-weight:600;color:var(--teal)">—</td>
-                  <td><input type="radio" name="bus" value="mini" onchange="calcPresupuesto()" style="width:auto"></td></tr>
-                <tr style="background:var(--gray-lt)"><td>Autobús mediano</td><td>30</td>
-                  <td><input type="number" id="t-med" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
-                  <td id="cpp-med" style="font-weight:600;color:var(--teal)">—</td>
-                  <td><input type="radio" name="bus" value="med" onchange="calcPresupuesto()" checked style="width:auto"></td></tr>
-                <tr><td>Autobús grande</td><td>50</td>
-                  <td><input type="number" id="t-grande" placeholder="0" oninput="calcPresupuesto()" style="width:110px;padding:5px 8px;font-size:12px"></td>
-                  <td id="cpp-grande" style="font-weight:600;color:var(--teal)">—</td>
-                  <td><input type="radio" name="bus" value="grande" onchange="calcPresupuesto()" style="width:auto"></td></tr>
-              </tbody>
-            </table>
-            <div class="form-group" style="margin-top:12px">
-              <label class="form-label">Coordinadores que no pagan</label>
-              <input type="number" id="coordinadores" value="4" min="0" oninput="calcPresupuesto()">
-              <p style="font-size:11px;color:var(--gray-dk);margin-top:4px">Se restan de la capacidad vendible.</p>
+            <div class="card-title">⚙️ Configuración del viaje</div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Capacidad del transporte</label><input type="number" id="p-capacidad" value="30" min="1" oninput="calcPresupuesto()"></div>
+              <div class="form-group"><label class="form-label">Coordinadores</label><input type="number" id="p-coord" value="3" min="0" oninput="calcPresupuesto()"></div>
+            </div>
+            <div class="info-box show info-sky" style="margin-bottom:14px"><i class="ti ti-users"></i> Pasajeros que pagan: <strong id="p-pagan">27</strong></div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">Margen de ganancia sobre el costo</label>
+              <div style="display:flex;align-items:center;gap:10px">
+                <input type="number" id="p-margen" value="20" min="0" max="300" oninput="calcPresupuesto()" style="width:100px">
+                <span style="font-size:16px;font-weight:600;color:var(--mango,var(--orange))">%</span>
+              </div>
+              <p style="font-size:11px;color:var(--gray-dk);margin-top:6px">Se aplica sobre el costo real por pasajero.</p>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-title">👤 Costos por persona</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-              <div class="form-group" style="margin:0"><label class="form-label">Refrigerio <span style="color:var(--teal);font-size:10px">siempre</span></label><input type="number" id="c-refri" placeholder="0" oninput="calcPresupuesto()"></div>
-              <div class="form-group" style="margin:0"><label class="form-label">Entrada al lugar</label><input type="number" id="c-entrada" placeholder="0" oninput="calcPresupuesto()"></div>
-              <div class="form-group" style="margin:0"><label class="form-label">Almuerzo</label><input type="number" id="c-almuerzo" placeholder="0" oninput="calcPresupuesto()"></div>
+            <div class="card-title">💰 Costos del viaje</div>
+            <div id="costos-lista"></div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn btn-sm btn-primary" onclick="agregarCosto()"><i class="ti ti-plus"></i> Agregar costo</button>
+              <button class="btn btn-sm" onclick="cargarPlantilla()"><i class="ti ti-template"></i> Cargar plantilla base</button>
             </div>
-            <div class="section-label" style="margin-top:8px">Otros costos</div>
-            <div id="otros-lista"></div>
-            <button class="btn btn-sm" onclick="agregarOtro()" style="margin-top:6px"><i class="ti ti-plus"></i> Agregar otro costo</button>
+            <p style="font-size:11px;color:var(--gray-dk);margin-top:8px">
+              <strong>Fijo</strong>: monto total del viaje (transporte, refrigerio comprado en bulto).<br>
+              <strong>Variable</strong>: precio por persona &times; el grupo que lo consume.
+            </p>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="display:grid;grid-template-columns:1fr 1.15fr;gap:16px">
           <div class="card">
-            <div class="card-title">📊 Resultado del presupuesto</div>
+            <div class="card-title">📊 Desglose del cálculo</div>
             <table style="min-width:unset"><tbody>
-              <tr><td style="color:var(--gray-dk)">Transporte por persona</td><td id="r-transporte" style="font-weight:600;text-align:right">—</td></tr>
-              <tr><td style="color:var(--gray-dk)">Refrigerio</td><td id="r-refri" style="font-weight:600;text-align:right">—</td></tr>
-              <tr><td style="color:var(--gray-dk)">Entrada</td><td id="r-entrada" style="font-weight:600;text-align:right">—</td></tr>
-              <tr><td style="color:var(--gray-dk)">Almuerzo</td><td id="r-almuerzo" style="font-weight:600;text-align:right">—</td></tr>
-              <tr id="r-otros-row" style="display:none"><td style="color:var(--gray-dk)">Otros</td><td id="r-otros" style="font-weight:600;text-align:right">—</td></tr>
-              <tr style="border-top:2px solid var(--border)"><td style="font-weight:700;color:var(--navy)">Costo total/persona</td><td id="r-costo-total" style="font-weight:700;color:var(--navy);text-align:right;font-size:16px">—</td></tr>
-              <tr><td style="color:var(--gray-dk)">Margen<input type="number" id="margen" value="30" min="0" max="200" oninput="calcPresupuesto()" style="width:55px;padding:3px 6px;font-size:12px;display:inline-block;margin-left:6px">%</td><td id="r-margen" style="font-weight:600;color:var(--orange);text-align:right">—</td></tr>
-              <tr style="background:var(--teal-lt)"><td style="font-weight:700;color:var(--teal);font-size:14px">Precio sugerido</td><td id="r-precio-sug" style="font-weight:700;color:var(--teal);text-align:right;font-size:18px">—</td></tr>
-              <tr><td style="color:var(--gray-dk)">Precio final (editable)</td><td><input type="number" id="precio-final" placeholder="0" oninput="calcSensibilidad()" style="text-align:right;font-weight:600;font-size:14px"></td></tr>
+              <tr><td colspan="2" style="padding:6px 12px;font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;background:var(--teal-lt)">Costo total del viaje</td></tr>
+              <tr><td style="color:var(--gray-dk)">Costos variables</td><td id="d-variables" style="font-weight:600;text-align:right">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Costos fijos</td><td id="d-fijos" style="font-weight:600;text-align:right">—</td></tr>
+              <tr style="border-top:1px solid var(--border)"><td style="font-weight:700;color:var(--navy)">Total</td><td id="d-total" style="font-weight:700;color:var(--navy);text-align:right">—</td></tr>
+
+              <tr><td colspan="2" style="padding:6px 12px;font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;background:var(--teal-lt)">Reparto por grupo</td></tr>
+              <tr><td style="color:var(--gray-dk)">Costo de los pasajeros</td><td id="d-costo-pax" style="font-weight:600;text-align:right">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Costo de los coordinadores</td><td id="d-costo-coord" style="font-weight:600;text-align:right;color:var(--orange)">—</td></tr>
+
+              <tr><td colspan="2" style="padding:6px 12px;font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;background:var(--teal-lt)">Costo por pasajero</td></tr>
+              <tr><td style="color:var(--gray-dk)">Costo propio</td><td id="d-propio" style="font-weight:600;text-align:right">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Subsidio de coordinadores</td><td id="d-subsidio" style="font-weight:600;text-align:right;color:var(--orange)">—</td></tr>
+              <tr style="border-top:1px solid var(--border)"><td style="font-weight:700;color:var(--navy)">Costo real por pasajero</td><td id="d-costo-real" style="font-weight:700;color:var(--navy);text-align:right;font-size:15px">—</td></tr>
+              <tr><td style="color:var(--gray-dk)">Ganancia por pasajero</td><td id="d-ganancia-pax" style="font-weight:600;text-align:right;color:var(--orange)">—</td></tr>
+              <tr style="background:var(--teal-lt)"><td style="font-weight:700;color:var(--teal);font-size:14px">Precio sugerido</td><td id="d-sugerido" style="font-weight:700;color:var(--teal);text-align:right;font-size:19px">—</td></tr>
             </tbody></table>
-            <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn btn-sm" onclick="usarPrecioSugerido()"><i class="ti ti-wand"></i> Usar precio sugerido</button>
+
+            <div style="margin-top:14px">
+              <label class="form-label">Precio final de venta (editable)</label>
+              <input type="number" id="p-precio-final" placeholder="0" oninput="calcSensibilidad()" style="font-weight:700;font-size:16px;text-align:right">
+            </div>
+            <div id="p-resultado" class="info-box" style="margin-top:12px"></div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-sm" onclick="usarPrecioSugerido()"><i class="ti ti-wand"></i> Usar sugerido</button>
+              <button class="btn btn-sm" onclick="redondearPrecio()"><i class="ti ti-arrow-up-right"></i> Redondear a 50</button>
               <button class="btn btn-primary btn-sm" onclick="abrirCrearViaje()"><i class="ti ti-map-pin"></i> Crear viaje</button>
             </div>
           </div>
 
           <div class="card">
             <div class="card-title">📈 Tabla de sensibilidad</div>
-            <p style="font-size:12px;color:var(--gray-dk);margin-bottom:10px">Ganancia según pasajeros que paguen</p>
+            <p style="font-size:12px;color:var(--gray-dk);margin-bottom:10px">Los costos variables bajan si van menos pasajeros. Los fijos no.</p>
             <div class="table-wrap"><table style="min-width:unset">
-              <thead><tr><th>Pasajeros</th><th>Ingresos</th><th>Transporte</th><th>Otros</th><th>Ganancia</th><th>Margen</th></tr></thead>
-              <tbody id="tbody-sensibilidad"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Ingresa los datos para ver la tabla</td></tr></tbody>
+              <thead><tr><th>Pasajeros</th><th>Ingresos</th><th>Costo variable</th><th>Costo fijo</th><th>Ganancia</th><th>Margen</th></tr></thead>
+              <tbody id="tbody-sensibilidad"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Agrega costos y define el precio final</td></tr></tbody>
             </table></div>
+            <div id="equilibrio-box" class="info-box" style="margin-top:12px"></div>
           </div>
         </div>
       </div>
@@ -1385,102 +1392,201 @@ function exportExcel(){
   XLSX.writeFile(wb,'Locas_Aventuras_CRM.xlsx');
 }
 
-/* ══ PRESUPUESTO ══ */
-let otrosCostos=[];
-const BUS_CAP={mini:15,med:30,grande:50};
-function agregarOtro(){otrosCostos.push({id:Date.now()+Math.random(),desc:'',monto:0});renderOtros();}
-function renderOtros(){
-  document.getElementById('otros-lista').innerHTML=otrosCostos.map(o=>`
-    <div style="display:grid;grid-template-columns:1fr 110px auto;gap:6px;margin-bottom:6px;align-items:center">
-      <input type="text" placeholder="Descripción" value="${esc(o.desc)}" onchange="updateOtro(${o.id},'desc',this.value)" style="padding:5px 8px;font-size:12px">
-      <input type="number" placeholder="RD$" value="${o.monto||''}" oninput="updateOtro(${o.id},'monto',this.value)" style="padding:5px 8px;font-size:12px">
-      <button class="btn btn-icon btn-danger" onclick="removeOtro(${o.id})"><i class="ti ti-trash"></i></button>
-    </div>`).join('');
+/* ══ PRESUPUESTO — metodología por grupos ══ */
+let costos=[];
+const GRUPOS={todos:'Todos (pasajeros + coordinadores)',pasajeros:'Solo pasajeros',coordinadores:'Solo coordinadores'};
+
+function capacidadP(){return Math.max(Number(document.getElementById('p-capacidad').value)||0,0);}
+function coordP(){return Math.max(Number(document.getElementById('p-coord').value)||0,0);}
+function paganP(){return Math.max(capacidadP()-coordP(),0);}
+
+function agregarCosto(nombre='',tipo='variable',monto='',grupo='todos'){
+  costos.push({id:Date.now()+Math.random(),nombre,tipo,monto:monto===''?'':Number(monto),grupo});
+  renderCostos();
+}
+function cargarPlantilla(){
+  costos=[];
+  agregarCosto('Transporte','fijo',17000);
+  agregarCosto('Refrigerio','fijo',2500);
+  agregarCosto('Almuerzo','variable',400,'todos');
+  agregarCosto('Actividad','variable',3300,'pasajeros');
+  toast('Plantilla cargada — ajusta los montos ✓');
+}
+function updateCosto(id,campo,val){
+  const c=costos.find(x=>x.id===id);if(!c)return;
+  c[campo]=(campo==='monto')?(val===''?'':Number(val)):val;
+  if(campo==='tipo')renderCostos();else calcPresupuesto();
+}
+function removeCosto(id){costos=costos.filter(x=>x.id!==id);renderCostos();}
+
+function renderCostos(){
+  const el=document.getElementById('costos-lista');
+  if(!costos.length){el.innerHTML='<p style="font-size:12px;color:var(--gray-dk);padding:12px 0">Sin costos aún. Agrega uno o carga la plantilla base.</p>';calcPresupuesto();return;}
+  el.innerHTML=costos.map(c=>{
+    const esVar=c.tipo==='variable';
+    const cant=esVar?cantidadGrupo(c.grupo):0;
+    const sub=esVar?(Number(c.monto)||0)*cant:(Number(c.monto)||0);
+    return`<div style="background:${esVar?'var(--sky-lt)':'var(--gray-lt)'};border:1px solid ${esVar?'#C7E9F0':'var(--border)'};border-radius:var(--radius);padding:10px 12px;margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 96px auto;gap:6px;align-items:center;margin-bottom:${esVar?'6px':'0'}">
+        <input type="text" placeholder="Nombre del costo" value="${esc(c.nombre)}" onchange="updateCosto(${c.id},'nombre',this.value)" style="padding:6px 10px;font-size:13px">
+        <select onchange="updateCosto(${c.id},'tipo',this.value)" style="padding:6px 8px;font-size:12px">
+          <option value="fijo"${!esVar?' selected':''}>Fijo</option>
+          <option value="variable"${esVar?' selected':''}>Variable</option>
+        </select>
+        <button class="btn btn-icon btn-danger" onclick="removeCosto(${c.id})"><i class="ti ti-trash"></i></button>
+      </div>
+      <div style="display:grid;grid-template-columns:${esVar?'110px 1fr':'110px 1fr'};gap:6px;align-items:center">
+        <input type="number" placeholder="RD$" value="${c.monto===''?'':c.monto}" oninput="updateCosto(${c.id},'monto',this.value)" style="padding:6px 10px;font-size:13px">
+        ${esVar?`<select onchange="updateCosto(${c.id},'grupo',this.value)" style="padding:6px 8px;font-size:12px">
+          ${Object.entries(GRUPOS).map(([k,v])=>`<option value="${k}"${c.grupo===k?' selected':''}>${v}</option>`).join('')}
+        </select>`:`<span style="font-size:12px;color:var(--gray-dk)">Monto total del viaje</span>`}
+      </div>
+      <div style="font-size:11px;color:var(--gray-dk);margin-top:5px">
+        ${esVar?`${fmt(Number(c.monto)||0)} &times; ${cant} = <strong style="color:var(--teal)">${fmt(sub)}</strong>`:`Total: <strong style="color:var(--teal)">${fmt(sub)}</strong>`}
+      </div>
+    </div>`;
+  }).join('');
   calcPresupuesto();
 }
-function updateOtro(id,field,val){const o=otrosCostos.find(x=>x.id===id);if(o)o[field]=field==='monto'?Number(val)||0:val;calcPresupuesto();}
-function removeOtro(id){otrosCostos=otrosCostos.filter(x=>x.id!==id);renderOtros();}
-function getBusSeleccionado(){const s=document.querySelector('input[name="bus"]:checked');return s?s.value:'med';}
-function costosPorPersona(){
-  return(Number(document.getElementById('c-refri').value)||0)+(Number(document.getElementById('c-entrada').value)||0)+(Number(document.getElementById('c-almuerzo').value)||0)+otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
+
+function cantidadGrupo(grupo,pax=null,coord=null){
+  const p=pax===null?paganP():pax;
+  const c=coord===null?coordP():coord;
+  if(grupo==='pasajeros')return p;
+  if(grupo==='coordinadores')return c;
+  return p+c;
 }
-function calcPresupuesto(){
-  const precios={mini:Number(document.getElementById('t-mini').value)||0,med:Number(document.getElementById('t-med').value)||0,grande:Number(document.getElementById('t-grande').value)||0};
-  const coord=Number(document.getElementById('coordinadores').value)||0;
-  /* FIX: divide entre cupos vendibles, no capacidad total */
-  ['mini','med','grande'].forEach(k=>{
-    const vend=Math.max(BUS_CAP[k]-coord,1);
-    const cpp=precios[k]>0?Math.round(precios[k]/vend):0;
-    document.getElementById('cpp-'+k).textContent=cpp>0?fmt(cpp):'—';
+
+/* Reparte cada costo entre pasajeros y coordinadores según quién lo consume */
+function repartir(pax,coord){
+  let paxDirecto=0,coordDirecto=0,fijos=0,variables=0;
+  costos.forEach(c=>{
+    const monto=Number(c.monto)||0;
+    if(monto<=0)return;
+    if(c.tipo==='fijo'){fijos+=monto;return;}
+    if(c.grupo==='pasajeros'){paxDirecto+=monto*pax;variables+=monto*pax;}
+    else if(c.grupo==='coordinadores'){coordDirecto+=monto*coord;variables+=monto*coord;}
+    else{paxDirecto+=monto*pax;coordDirecto+=monto*coord;variables+=monto*(pax+coord);}
   });
-  const bus=getBusSeleccionado();
-  const vendibles=Math.max(BUS_CAP[bus]-coord,1);
-  const cppElegido=precios[bus]>0?Math.round(precios[bus]/vendibles):0;
-  const refri=Number(document.getElementById('c-refri').value)||0;
-  const entrada=Number(document.getElementById('c-entrada').value)||0;
-  const almuerzo=Number(document.getElementById('c-almuerzo').value)||0;
-  const otros=otrosCostos.reduce((s,o)=>s+Number(o.monto||0),0);
-  const costoTotal=cppElegido+refri+entrada+almuerzo+otros;
-  const margen=Number(document.getElementById('margen').value)||0;
-  const margenMonto=Math.round(costoTotal*margen/100);
-  const sugerido=costoTotal+margenMonto;
-  document.getElementById('r-transporte').textContent=cppElegido>0?fmt(cppElegido):'—';
-  document.getElementById('r-refri').textContent=refri>0?fmt(refri):'—';
-  document.getElementById('r-entrada').textContent=entrada>0?fmt(entrada):'—';
-  document.getElementById('r-almuerzo').textContent=almuerzo>0?fmt(almuerzo):'—';
-  document.getElementById('r-costo-total').textContent=costoTotal>0?fmt(costoTotal):'—';
-  document.getElementById('r-margen').textContent=margenMonto>0?fmt(margenMonto):'—';
-  document.getElementById('r-precio-sug').textContent=sugerido>0?fmt(sugerido):'—';
-  const row=document.getElementById('r-otros-row');
-  if(otros>0){row.style.display='';document.getElementById('r-otros').textContent=fmt(otros);}else row.style.display='none';
-  calcSensibilidad();
+  /* los fijos se reparten proporcionalmente a las personas de cada grupo */
+  const personas=pax+coord;
+  const fijoPax=personas>0?fijos*(pax/personas):0;
+  const fijoCoord=personas>0?fijos*(coord/personas):0;
+  return{
+    fijos,variables,total:fijos+variables,
+    costoPax:paxDirecto+fijoPax,
+    costoCoord:coordDirecto+fijoCoord
+  };
 }
-function usarPrecioSugerido(){
-  const t=document.getElementById('r-precio-sug').textContent;
-  if(t==='—')return;
-  document.getElementById('precio-final').value=Number(t.replace(/[^\d]/g,''))||0;
-  calcSensibilidad();
-}
-function calcSensibilidad(){
-  const bus=getBusSeleccionado();
-  const precioTransporte=Number(document.getElementById('t-'+bus).value)||0;
-  const coord=Number(document.getElementById('coordinadores').value)||0;
-  const vendibles=Math.max(BUS_CAP[bus]-coord,1);
-  const costosPax=costosPorPersona();
-  const precioVenta=Number(document.getElementById('precio-final').value)||0;
-  const tbody=document.getElementById('tbody-sensibilidad');
-  if(precioVenta<=0||precioTransporte<=0){
-    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Ingresa el precio del transporte y el precio final</td></tr>';
-    return;
+
+function calcPresupuesto(){
+  const cap=capacidadP(),coord=coordP(),pagan=paganP();
+  document.getElementById('p-pagan').textContent=pagan;
+  const r=repartir(pagan,coord);
+  document.getElementById('d-variables').textContent=fmt(r.variables);
+  document.getElementById('d-fijos').textContent=fmt(r.fijos);
+  document.getElementById('d-total').textContent=fmt(r.total);
+  document.getElementById('d-costo-pax').textContent=fmt(r.costoPax);
+  document.getElementById('d-costo-coord').textContent=fmt(r.costoCoord);
+  if(pagan<=0||r.total<=0){
+    ['d-propio','d-subsidio','d-costo-real','d-ganancia-pax','d-sugerido'].forEach(id=>document.getElementById(id).textContent='—');
+    calcSensibilidad();return;
   }
-  const pasos=[];
-  const step=Math.max(1,Math.round(vendibles*0.1));
-  for(let p=Math.max(1,Math.ceil(vendibles*0.5));p<=vendibles;p+=step)pasos.push(p);
-  if(pasos[pasos.length-1]!==vendibles)pasos.push(vendibles);
-  tbody.innerHTML=pasos.map(p=>{
-    const ingresos=p*precioVenta;
-    /* los coordinadores también consumen refrigerio/entrada */
-    const costo=precioTransporte+((p+coord)*costosPax);
-    const gan=ingresos-costo;
-    const mg=ingresos>0?Math.round(gan/ingresos*100):0;
-    const col=gan<0?'var(--red)':gan===0?'var(--orange)':'var(--teal)';
-    return`<tr style="${p===vendibles?'background:var(--teal-lt);font-weight:600':''}"><td>${p}${p===vendibles?' ★':''}</td><td>${fmt(ingresos)}</td><td>${fmt(precioTransporte)}</td><td>${fmt((p+coord)*costosPax)}</td><td style="color:${col};font-weight:600">${gan>=0?'+':''}${fmt(gan)}</td><td style="color:${col}">${mg}%</td></tr>`;
-  }).join('');
+  const propio=r.costoPax/pagan;
+  const subsidio=r.costoCoord/pagan;
+  const costoReal=propio+subsidio;
+  const margen=Number(document.getElementById('p-margen').value)||0;
+  const ganancia=costoReal*margen/100;
+  const sugerido=costoReal+ganancia;
+  document.getElementById('d-propio').textContent=fmt(propio);
+  document.getElementById('d-subsidio').textContent=fmt(subsidio);
+  document.getElementById('d-costo-real').textContent=fmt(costoReal);
+  document.getElementById('d-ganancia-pax').textContent=fmt(ganancia);
+  document.getElementById('d-sugerido').textContent=fmt(sugerido);
+  calcSensibilidad();
 }
+
+function usarPrecioSugerido(){
+  const t=document.getElementById('d-sugerido').textContent;
+  if(t==='—'){toast('Agrega costos primero','error');return;}
+  document.getElementById('p-precio-final').value=Math.round(Number(t.replace(/[^\d]/g,''))||0);
+  calcSensibilidad();
+}
+function redondearPrecio(){
+  const v=Number(document.getElementById('p-precio-final').value)||0;
+  if(v<=0){toast('Define un precio primero','error');return;}
+  document.getElementById('p-precio-final').value=Math.ceil(v/50)*50;
+  calcSensibilidad();
+}
+
+function calcSensibilidad(){
+  const cap=capacidadP(),coord=coordP(),pagan=paganP();
+  const precio=Number(document.getElementById('p-precio-final').value)||0;
+  const tbody=document.getElementById('tbody-sensibilidad');
+  const resBox=document.getElementById('p-resultado');
+  const eqBox=document.getElementById('equilibrio-box');
+
+  if(precio<=0||pagan<=0||!costos.length){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray-dk)">Agrega costos y define el precio final</td></tr>';
+    resBox.className='info-box';eqBox.className='info-box';return;
+  }
+
+  /* Resultado a capacidad completa */
+  const rFull=repartir(pagan,coord);
+  const ganFull=precio*pagan-rFull.total;
+  const mgFull=precio*pagan>0?ganFull/(precio*pagan)*100:0;
+  resBox.innerHTML=`<i class="ti ti-report-money"></i> Con <strong>${pagan}</strong> pasajeros a ${fmt(precio)}: ingresos ${fmt(precio*pagan)}, gastos ${fmt(rFull.total)}, <strong>ganancia ${fmt(ganFull)}</strong> (${mgFull.toFixed(1)}% sobre venta).`;
+  resBox.className='info-box show '+(ganFull>=0?'info-teal':'info-red');
+
+  /* Filas de sensibilidad */
+  const pasos=[];
+  const step=Math.max(1,Math.round(pagan*0.1));
+  for(let p=Math.max(1,Math.ceil(pagan*0.4));p<pagan;p+=step)pasos.push(p);
+  pasos.push(pagan);
+
+  let equilibrio=null;
+  const filas=pasos.map(p=>{
+    const r=repartir(p,coord);
+    const ing=p*precio;
+    const gan=ing-r.total;
+    if(equilibrio===null&&gan>=0)equilibrio=p;
+    const mg=ing>0?Math.round(gan/ing*100):0;
+    const col=gan<0?'var(--red)':gan===0?'var(--orange)':'var(--teal)';
+    return`<tr style="${p===pagan?'background:var(--teal-lt);font-weight:600':''}"><td>${p}${p===pagan?' ★':''}</td><td>${fmt(ing)}</td><td>${fmt(r.variables)}</td><td>${fmt(r.fijos)}</td><td style="color:${col};font-weight:600">${gan>=0?'+':''}${fmt(gan)}</td><td style="color:${col}">${mg}%</td></tr>`;
+  });
+  tbody.innerHTML=filas.join('');
+
+  /* Punto de equilibrio exacto */
+  let eq=null;
+  for(let p=1;p<=pagan;p++){
+    const r=repartir(p,coord);
+    if(p*precio-r.total>=0){eq=p;break;}
+  }
+  if(eq){
+    const pct=Math.round(eq/pagan*100);
+    eqBox.innerHTML=`<i class="ti ti-target"></i> Punto de equilibrio: <strong>${eq} pasajeros</strong> (${pct}% del cupo). Con menos de ${eq} pierdes dinero.`;
+    eqBox.className='info-box show '+(pct<=60?'info-teal':pct<=80?'info-orange':'info-red');
+  }else{
+    eqBox.innerHTML=`<i class="ti ti-alert-triangle"></i> Con este precio nunca alcanzas el punto de equilibrio. Sube el precio o reduce costos.`;
+    eqBox.className='info-box show info-red';
+  }
+}
+
 function abrirCrearViaje(){
-  const precio=Number(document.getElementById('precio-final').value)||0;
+  const precio=Number(document.getElementById('p-precio-final').value)||0;
   if(precio<=0){toast('Define el precio final primero','error');return;}
-  const bus=getBusSeleccionado();
+  const cap=capacidadP();
+  if(cap<=0){toast('Define la capacidad del transporte','error');return;}
   nav('viajes');
   resetViajeForm();
-  document.getElementById('v-precio').value=precio;
-  document.getElementById('v-capacidad').value=BUS_CAP[bus];
+  document.getElementById('v-precio').value=Math.round(precio);
+  document.getElementById('v-capacidad').value=cap;
   document.getElementById('modal-viaje-title').textContent='Nuevo viaje — desde presupuesto';
   document.getElementById('modal-viaje').classList.add('open');
   toast('Precio y capacidad cargados ✓');
 }
 
-/* ══ INICIO ══ */
+renderCostos();
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape')document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
 });
