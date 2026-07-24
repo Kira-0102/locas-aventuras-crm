@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -28,20 +27,10 @@ REGLAS:
 - Nombre del negocio: Locas Aventuras.
 - No uses emojis excesivos, maximo 1-2 por respuesta.`;
 
-    // Construir el contenido para Gemini
     const contents = [];
-    
-    // System prompt como primer mensaje del usuario
-    contents.push({
-      role: 'user',
-      parts: [{ text: systemPrompt }]
-    });
-    contents.push({
-      role: 'model',
-      parts: [{ text: 'Entendido. Tengo acceso a los datos del CRM. ¿En qué puedo ayudarte?' }]
-    });
+    contents.push({ role: 'user', parts: [{ text: systemPrompt }] });
+    contents.push({ role: 'model', parts: [{ text: 'Entendido. Tengo acceso a los datos del CRM. ¿En qué puedo ayudarte?' }] });
 
-    // Historial de conversación
     messages.forEach(m => {
       contents.push({
         role: m.role === 'user' ? 'user' : 'model',
@@ -50,7 +39,7 @@ REGLAS:
     });
 
     const resp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${key}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,7 +54,7 @@ REGLAS:
     );
 
     const data = await resp.json();
-    
+
     if (data.error) {
       return res.status(500).json({ error: data.error.message || 'Error de Gemini' });
     }
