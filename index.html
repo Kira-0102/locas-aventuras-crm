@@ -224,11 +224,28 @@ input:disabled{background:var(--gray-lt);color:var(--gray-dk);cursor:not-allowed
       </div>
 
       <div class="page" id="page-presupuesto">
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:240px">
+              <i class="ti ti-file-text" style="font-size:20px;color:var(--teal)"></i>
+              <input type="text" id="p-nombre" placeholder="Nombre del presupuesto (ej. Jarabacoa Parapente)" style="font-weight:600;font-size:14px">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" id="btn-save-presu" onclick="guardarPresupuesto()"><i class="ti ti-device-floppy"></i> Guardar</button>
+              <button class="btn btn-sm" onclick="nuevoPresupuesto()"><i class="ti ti-file-plus"></i> Nuevo</button>
+              <button class="btn btn-sm" onclick="toggleHistorial()"><i class="ti ti-history"></i> Historial <span id="hist-count" style="background:var(--teal-lt);color:var(--teal);padding:1px 7px;border-radius:10px;font-size:11px;font-weight:700;margin-left:2px">0</span></button>
+            </div>
+          </div>
+          <div id="presu-actual" style="font-size:11px;color:var(--gray-dk);margin-top:8px;display:none"></div>
+          <div id="historial-lista" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"></div>
+        </div>
+
         <div style="display:grid;grid-template-columns:1fr 1.15fr;gap:16px;margin-bottom:16px">
 
           <div class="card">
             <div class="card-title">⚙️ Configuración del viaje</div>
             <div class="form-row">
+              <input type="hidden" id="p-id">
               <div class="form-group"><label class="form-label">Capacidad del transporte</label><input type="number" id="p-capacidad" value="30" min="1" oninput="calcPresupuesto()"></div>
               <div class="form-group"><label class="form-label">Coordinadores</label><input type="number" id="p-coord" value="3" min="0" oninput="calcPresupuesto()"></div>
             </div>
@@ -506,7 +523,7 @@ input:disabled{background:var(--gray-lt);color:var(--gray-dk);cursor:not-allowed
 const SUPA_URL='https://xkfhkuwvlrjxtdmtcigo.supabase.co';
 const SUPA_KEY='sb_publishable_PZPDmrG0kUHpKS7ARPXnLQ_gRkeSe3B';
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
-let DB={viajes:[],clientes:[],reservas:[],pagos:[],gastos:[]};
+let DB={viajes:[],clientes:[],reservas:[],pagos:[],gastos:[],presupuestos:[]};
 let currentPage='dashboard';
 let editingPickups=[];
 let sidebarCollapsed=false;
@@ -546,12 +563,13 @@ async function genId(prefijo,secuencia){
 /* ══ CARGA ══ */
 async function loadAll(){
   try{
-    const[v,c,r,p,g]=await Promise.all([
+    const[v,c,r,p,g,pr]=await Promise.all([
       sb.from('viajes').select('*'),
       sb.from('clientes').select('*'),
       sb.from('reservas').select('*'),
       sb.from('pagos').select('*'),
       sb.from('gastos').select('*'),
+      sb.from('presupuestos').select('*'),
     ]);
     const err=v.error||c.error||r.error||p.error||g.error;
     if(err)throw err;
@@ -560,6 +578,7 @@ async function loadAll(){
     DB.reservas=sortById(r.data||[]);
     DB.pagos=sortById(p.data||[]);
     DB.gastos=sortById(g.data||[]);
+    DB.presupuestos=(pr&&pr.data)?[...pr.data].sort((a,b)=>(b.creado||'').localeCompare(a.creado||'')):[];
     document.getElementById('error-banner').style.display='none';
     setDbStatus('connected');renderAll();
   }catch(e){setDbStatus('error',e.message||JSON.stringify(e));renderAll();}
@@ -625,7 +644,11 @@ function nav(page){
   closeMobileSidebar();
 }
 
-function renderAll(){renderDashboard();renderViajes();renderClientes();renderReservas();renderPagos();renderGastos();}
+function renderAll(){
+  renderDashboard();renderViajes();renderClientes();renderReservas();renderPagos();renderGastos();
+  const hc=document.getElementById('hist-count');
+  if(hc)hc.textContent=DB.presupuestos.length;
+}
 
 /* ══ DASHBOARD ══ */
 function renderDashboard(){
@@ -782,6 +805,11 @@ async function saveViaje(){
     const obj={id,destino,fecha,precio,capacidad,estado:document.getElementById('v-estado').value,descripcion:document.getElementById('v-desc').value.trim(),pickups:editingPickups};
     const{error}=await sb.from('viajes').upsert(obj);
     if(error)throw error;
+    /* Vincular el presupuesto que originó este viaje */
+    if(presupuestoPendiente){
+      await sb.from('presupuestos').update({viaje_id:id}).eq('id',presupuestoPendiente);
+      presupuestoPendiente=null;
+    }
     toast('Viaje guardado ✓');closeModal('modal-viaje');await loadAll();
   }catch(e){toast('Error: '+(e.message||e),'error');}
   finally{saving=false;lockBtn('btn-save-viaje',false);}
@@ -1611,18 +1639,172 @@ function calcSensibilidad(){
   }
 }
 
-function abrirCrearViaje(){
+/* ══ HISTORIAL DE PRESUPUESTOS ══ */
+function estadoPresupuesto(){
+  return{
+    nombre:document.getElementById('p-nombre').value.trim(),
+    capacidad:capacidadP(),
+    coordinadores:coordP(),
+    margen:Number(document.getElementById('p-margen').value)||0,
+    precio_final:Number(document.getElementById('p-precio-final').value)||0,
+    costos:costos.map(x=>({nombre:x.nombre,tipo:x.tipo,monto:Number(x.monto)||0,grupo:x.grupo}))
+  };
+}
+
+async function guardarPresupuesto(){
+  if(saving)return;
+  const st=estadoPresupuesto();
+  if(!st.nombre){toast('Ponle un nombre al presupuesto','error');return;}
+  if(!st.costos.length){toast('Agrega al menos un costo','error');return;}
+  saving=true;lockBtn('btn-save-presu',true);
+  try{
+    const id=document.getElementById('p-id').value||await genId('PR','seq_presupuestos');
+    const prev=DB.presupuestos.find(x=>x.id===id);
+    const obj={id,...st,viaje_id:prev?prev.viaje_id:null};
+    if(!prev)obj.creado=new Date().toISOString();
+    const{error}=await sb.from('presupuestos').upsert(obj);
+    if(error)throw error;
+    document.getElementById('p-id').value=id;
+    toast('Presupuesto guardado ✓');
+    await loadAll();
+    mostrarPresuActual();
+  }catch(e){toast('Error: '+(e.message||e),'error');}
+  finally{saving=false;lockBtn('btn-save-presu',false);}
+}
+
+function nuevoPresupuesto(){
+  const st=estadoPresupuesto();
+  const hayDatos=st.nombre||st.costos.some(x=>x.monto>0);
+  const limpiar=()=>{
+    document.getElementById('p-id').value='';
+    document.getElementById('p-nombre').value='';
+    document.getElementById('p-capacidad').value='30';
+    document.getElementById('p-coord').value='3';
+    document.getElementById('p-margen').value='20';
+    document.getElementById('p-precio-final').value='';
+    costos=[];renderCostos();
+    document.getElementById('presu-actual').style.display='none';
+    document.getElementById('historial-lista').style.display='none';
+    toast('Presupuesto nuevo ✓');
+  };
+  if(hayDatos&&!document.getElementById('p-id').value){
+    confirm_('Tienes un presupuesto sin guardar. ¿Descartarlo y empezar uno nuevo?',limpiar,'Presupuesto sin guardar','Descartar');
+  }else limpiar();
+}
+
+function cargarPresupuesto(id){
+  const p=DB.presupuestos.find(x=>x.id===id);
+  if(!p)return;
+  document.getElementById('p-id').value=p.id;
+  document.getElementById('p-nombre').value=p.nombre||'';
+  document.getElementById('p-capacidad').value=p.capacidad||30;
+  document.getElementById('p-coord').value=p.coordinadores||0;
+  document.getElementById('p-margen').value=p.margen||20;
+  costos=(p.costos||[]).map(x=>({id:Math.floor(Date.now()*1000+Math.random()*1000),nombre:x.nombre||'',tipo:x.tipo||'variable',monto:Number(x.monto)||0,grupo:x.grupo||'todos'}));
+  renderCostos();
+  document.getElementById('p-precio-final').value=p.precio_final||'';
+  calcSensibilidad();
+  document.getElementById('historial-lista').style.display='none';
+  mostrarPresuActual();
+  toast('Presupuesto cargado ✓');
+}
+
+function mostrarPresuActual(){
+  const id=document.getElementById('p-id').value;
+  const box=document.getElementById('presu-actual');
+  if(!id){box.style.display='none';return;}
+  const p=DB.presupuestos.find(x=>x.id===id);
+  if(!p){box.style.display='none';return;}
+  const vj=p.viaje_id?getViaje(p.viaje_id):null;
+  const fechaTxt=p.creado?new Date(p.creado).toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'numeric'}):'';
+  box.innerHTML=`<i class="ti ti-file-check" style="color:var(--teal)"></i> Editando <strong>${p.id}</strong>${fechaTxt?' · creado '+fechaTxt:''}${vj&&vj.id?` · vinculado a <strong>${esc(vj.destino)}</strong>`:' · sin viaje vinculado'}`;
+  box.style.display='block';
+}
+
+function toggleHistorial(){
+  const el=document.getElementById('historial-lista');
+  if(el.style.display==='block'){el.style.display='none';return;}
+  renderHistorial();
+  el.style.display='block';
+}
+
+function renderHistorial(){
+  const el=document.getElementById('historial-lista');
+  document.getElementById('hist-count').textContent=DB.presupuestos.length;
+  if(!DB.presupuestos.length){
+    el.innerHTML='<p style="font-size:13px;color:var(--gray-dk);text-align:center;padding:16px">Aún no has guardado presupuestos.</p>';
+    return;
+  }
+  const actual=document.getElementById('p-id').value;
+  el.innerHTML=`<div class="table-wrap"><table style="min-width:unset"><thead><tr><th>ID</th><th>Nombre</th><th>Cap.</th><th>Precio</th><th>Viaje</th><th>Creado</th><th style="text-align:right">Acciones</th></tr></thead><tbody>`+
+  DB.presupuestos.map(p=>{
+    const vj=p.viaje_id?getViaje(p.viaje_id):null;
+    const fecha=p.creado?new Date(p.creado).toLocaleDateString('es-DO',{day:'2-digit',month:'2-digit',year:'2-digit'}):'—';
+    const esActual=p.id===actual;
+    const vjTxt=vj&&vj.id?`<span class="badge badge-green">${esc(vj.destino)}</span>`:'<span style="color:var(--gray-dk);font-size:12px">—</span>';
+    return`<tr style="${esActual?'background:var(--teal-lt)':''}"><td>${p.id}${esActual?' <span style="font-size:10px;color:var(--teal);font-weight:700">actual</span>':''}</td><td><strong>${esc(p.nombre||'Sin nombre')}</strong></td><td>${p.capacidad||'—'}</td><td style="font-weight:600;color:var(--teal)">${fmt(p.precio_final)}</td><td>${vjTxt}</td><td style="font-size:12px;color:var(--gray-dk)">${fecha}</td><td><div class="actions-cell"><button class="btn btn-icon" onclick="cargarPresupuesto('${p.id}')" title="Cargar"><i class="ti ti-folder-open"></i></button><button class="btn btn-icon" onclick="duplicarPresupuesto('${p.id}')" title="Duplicar"><i class="ti ti-copy"></i></button><button class="btn btn-icon btn-danger" onclick="deletePresupuesto('${p.id}')" title="Eliminar"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join('')+`</tbody></table></div>`;
+}
+
+function duplicarPresupuesto(id){
+  const p=DB.presupuestos.find(x=>x.id===id);
+  if(!p)return;
+  cargarPresupuesto(id);
+  document.getElementById('p-id').value='';
+  document.getElementById('p-nombre').value=(p.nombre||'')+' (copia)';
+  document.getElementById('presu-actual').style.display='none';
+  toast('Copia lista — guárdala con otro nombre');
+}
+
+async function deletePresupuesto(id){
+  const p=DB.presupuestos.find(x=>x.id===id);
+  if(!p)return;
+  confirm_(`¿Eliminar el presupuesto "${p.nombre||id}"?`,async()=>{
+    try{
+      const{error}=await sb.from('presupuestos').delete().eq('id',id);
+      if(error)throw error;
+      if(document.getElementById('p-id').value===id){
+        document.getElementById('p-id').value='';
+        document.getElementById('presu-actual').style.display='none';
+      }
+      toast('Presupuesto eliminado');
+      await loadAll();
+      renderHistorial();
+    }catch(e){toast('Error: '+(e.message||e),'error');}
+  });
+}
+
+let presupuestoPendiente=null;
+
+async function abrirCrearViaje(){
   const precio=Number(document.getElementById('p-precio-final').value)||0;
   if(precio<=0){toast('Define el precio final primero','error');return;}
   const cap=capacidadP();
   if(cap<=0){toast('Define la capacidad del transporte','error');return;}
+
+  /* Guardar el presupuesto automáticamente antes de crear el viaje */
+  let presuId=document.getElementById('p-id').value;
+  const st=estadoPresupuesto();
+  if(!st.nombre)document.getElementById('p-nombre').value='Presupuesto '+new Date().toLocaleDateString('es-DO');
+  if(st.costos.length){
+    try{
+      if(!presuId)presuId=await genId('PR','seq_presupuestos');
+      const prev=DB.presupuestos.find(x=>x.id===presuId);
+      const obj={id:presuId,...estadoPresupuesto(),viaje_id:prev?prev.viaje_id:null};
+      if(!prev)obj.creado=new Date().toISOString();
+      await sb.from('presupuestos').upsert(obj);
+      document.getElementById('p-id').value=presuId;
+      presupuestoPendiente=presuId;
+    }catch(e){/* si falla el guardado igual dejamos crear el viaje */}
+  }
+
   nav('viajes');
   resetViajeForm();
   document.getElementById('v-precio').value=Math.round(precio);
   document.getElementById('v-capacidad').value=cap;
   document.getElementById('modal-viaje-title').textContent='Nuevo viaje — desde presupuesto';
   document.getElementById('modal-viaje').classList.add('open');
-  toast('Precio y capacidad cargados ✓');
+  toast(presupuestoPendiente?'Presupuesto guardado y datos cargados ✓':'Precio y capacidad cargados ✓');
 }
 
 renderCostos();
